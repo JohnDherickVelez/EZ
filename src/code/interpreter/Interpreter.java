@@ -59,18 +59,23 @@ public class Interpreter {
         ASTNode expression = node.getExpression();
 
         // 1. Evaluate the expression
-        Object value = evaluate(expression);
+        //Object value = evaluate(expression);
 
         // 2. Check if the variable exists
         if (!symbolTable.containsKey(identifier)) {
             throw new RuntimeException("Undefined variable: " + identifier + " at line " + node.getLineNumber());
         }
 
-        // 3. Type Checking (optional)
-        // You could add logic to check if the expression's type aligns with the variable's type
+        // 3. Type Checking
+        // DataType variableType = symbolTable.get(identifier).getDataType(); // Assuming your storage includes the type
+        // DataType expressionType = value.getDataType(); // Assuming value can provide its type
 
-        // 4. Update the symbol table
-        symbolTable.put(identifier, value);
+//        if (variableType != expressionType) {
+//            throw new RuntimeException("Type mismatch: Cannot assign " + expressionType + " to " + variableType + " at line " + node.getLineNumber());
+//        }
+//
+//        // 4. Update the symbol table (Assuming types match)
+//        symbolTable.put(identifier, value);
     }
 
 

@@ -2,11 +2,11 @@ package code.lexer;
 
 import code.model.Token;
 import code.model.TokenType;
-import java.io.FileReader;
-import java.io.IOException;
+//import java.io.FileReader;
+//import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
+//
 public class Lexer {
     private String sourceCode;
     private int currentIndex = 0;
@@ -62,7 +62,13 @@ public class Lexer {
         String wordStr = word.toString().toUpperCase();
         switch (wordStr) {
             case "INT": return new Token(TokenType.INT, wordStr, lineNumber);
-            // ... add cases for all your keywords
+            case "FLOAT": return new Token(TokenType.FLOAT, wordStr, lineNumber);
+            case "CHAR": return new Token(TokenType.CHAR, wordStr, lineNumber);
+            case "BOOL": return new Token(TokenType.BOOL, wordStr, lineNumber);
+
+            case "BEGIN": return new Token(TokenType.BEGIN, wordStr, lineNumber);
+            case "END": return new Token(TokenType.END, wordStr, lineNumber);
+
             default: return new Token(TokenType.IDENTIFIER, wordStr, lineNumber);
         }
     }

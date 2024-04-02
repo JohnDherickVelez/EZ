@@ -68,7 +68,7 @@ public class Lexer {
 
             case "BEGIN": return new Token(TokenType.BEGIN, wordStr, lineNumber);
             case "END": return new Token(TokenType.END, wordStr, lineNumber);
-
+            case "CODE": return new Token(TokenType.CODE, wordStr, lineNumber);
             default: return new Token(TokenType.IDENTIFIER, wordStr, lineNumber);
         }
     }
@@ -124,6 +124,8 @@ public class Lexer {
                     case ']':
                         tokens.add(new Token(TokenType.RBRACKET, "]", lineNumber));
                         break;
+                    case '#':
+                        tokens.add(new Token(TokenType.COMMENT, "#", lineNumber));
                     default:
                         throw new RuntimeException("Invalid character: " + currentChar + " at line " + lineNumber);
                 }

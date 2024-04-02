@@ -21,21 +21,27 @@ public class Parser {
 
     ASTNode parseStatements() {
         List<ASTNode> statements = new ArrayList<>();
-        expect(TokenType.BEGIN); // Ensure the code block starts with BEGIN CODE
-        advance();
 
-        while (currentToken().getType() != TokenType.END) {
-            ASTNode statement = parseStatement();
-            if (statement != null) {
-                statements.add(statement);
+        if(tokens.size()-1 != 0) {
+            expect(TokenType.BEGIN); // Ensure the code block starts with BEGIN CODE
+            advance();
+            expect(TokenType.CODE);
+            advance();
+
+            while (currentToken().getType() != TokenType.END && currentToken().getType() != TokenType.EOF) {
+                ASTNode statement = parseStatement();
+                if (statement != null) {
+                    statements.add(statement);
+                }
+                advance(); // Move to the next token
             }
-            // Advance to the next token
+
+
+            expect(TokenType.END); // Ensure the code block ends with END CODE
+            advance();
+            expect(TokenType.CODE);
             advance();
         }
-
-        expect(TokenType.END); // Ensure the code block ends with END CODE
-        advance();
-
         return new Statements(statements);
     }
 //        List<ASTNode> statements = new ArrayList<>();
@@ -47,7 +53,7 @@ public class Parser {
 //
 //        while (currentToken().getType() != TokenType.END) {
 //            statements.add(parseStatement());
-//            // Advance to the next token
+//            // Advance to  the next token
 //            advance();
 //        }
 //
@@ -94,13 +100,17 @@ public class Parser {
     }
 
     private Token advance() {
+        /*if(currentTokenIndex++ > tokens.size()-1)
+        {
+            return null;
+        }*/
         return tokens.get(currentTokenIndex++);
     }
 
     private void expect(TokenType expectedType) {
         Token currentToken = currentToken();
         if (currentToken.getType() != expectedType) {
-            throw new RuntimeException("Expected " + expectedType + " but found " + currentToken.getType());
+            throw new RuntimeException("Expected token " +expectedType + " but found " + currentToken().getType());
         }
     }
 }

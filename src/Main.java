@@ -12,6 +12,7 @@ public class Main {
         // Test string
         String sampleProgram = "BEGIN CODE\n" +
                 "INT a = 5;\n" +
+                "#comments" +
                 "FLOAT b = 3.14;\n" +
                 "END CODE";
 

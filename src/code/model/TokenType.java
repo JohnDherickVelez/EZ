@@ -9,6 +9,9 @@ public enum TokenType {
     // Identifiers
     IDENTIFIER,
 
+    // Comments
+    COMMENT,
+
     // Operators
     PLUS, MINUS, MULTIPLY, DIVIDE, // ... add others (MODULO, RELATIONAL, LOGICAL)
 

@@ -1,8 +1,6 @@
 import code.interpreter.Interpreter;
 import code.lexer.Lexer;
 import code.model.Token;
-import code.model.TokenType;
-import code.parser.ASTNode;
 import code.parser.Parser;
 
 import java.util.List;
@@ -41,3 +39,40 @@ public class Main {
         // You need to implement this method according to your AST structure
     }
 }
+
+//public class Main {
+//    public static void main(String[] args) {
+//        Scanner scanner = new Scanner(System.in);
+//
+//        System.out.println("Welcome to the interpreter.");
+//        System.out.println("Enter your commands and functions (type 'END CODE' to finish):");
+//
+//        StringBuilder codeBuilder = new StringBuilder();
+//
+//        while (true) {
+//            System.out.print("> ");
+//            String input = scanner.nextLine();
+//
+//            if (input.equals("END CODE")) {
+//                System.out.println("Parsing and interpreting code...");
+//                break;
+//            }
+//
+//            codeBuilder.append(input).append("\n");
+//        }
+//
+//        // Tokenize the entire code block
+//        Lexer lexer = new Lexer(codeBuilder.toString());
+//        List<Token> tokens = lexer.tokenize();
+//
+//        // Parse the tokens
+//        Parser parser = new Parser(tokens);
+//        ASTNode rootNode = parser.parse();
+//
+//        // Interpret the AST
+//        Interpreter interpreter = new Interpreter();
+//        interpreter.interpret(rootNode);
+//
+//        scanner.close();
+//    }
+//}

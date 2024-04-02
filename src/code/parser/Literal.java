@@ -9,7 +9,7 @@ public class Literal extends ASTNode {
     }
 
     @Override
-    void accept(Visitor visitor) {
+    public void accept(Visitor visitor) {
 
     }
 

@@ -5,5 +5,7 @@ public interface Visitor {
         void visit(Literal node);
 
         void visit(Statements statements);
-        // Add visit methods for other node types
+//        void visit(BeginCode node);
+//        void visit(EndCode node);
+//        // Add visit methods for other node types
 }

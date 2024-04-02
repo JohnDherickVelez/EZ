@@ -25,7 +25,12 @@ public class Parser {
         advance();
 
         while (currentToken().getType() != TokenType.END) {
-            statements.add(parseStatement());
+            ASTNode statement = parseStatement();
+            if (statement != null) {
+                statements.add(statement);
+            }
+            // Advance to the next token
+            advance();
         }
 
         expect(TokenType.END); // Ensure the code block ends with END CODE
@@ -33,6 +38,35 @@ public class Parser {
 
         return new Statements(statements);
     }
+//        List<ASTNode> statements = new ArrayList<>();
+//        expect(TokenType.BEGIN); // Ensure the code block starts with BEGIN CODE
+//        advance();
+//
+//        // Create BeginCode node
+//        BeginCode beginCode = new BeginCode();
+//
+//        while (currentToken().getType() != TokenType.END) {
+//            statements.add(parseStatement());
+//            // Advance to the next token
+//            advance();
+//        }
+//
+//        expect(TokenType.END); // Ensure the code block ends with END CODE
+//        advance();
+//
+//        // Create EndCode node
+//        EndCode endCode = new EndCode();
+//
+//        if (statements == null) {
+//            throw new RuntimeException("List of statements is null.");
+//        }
+//
+//        // Add statements to BeginCode node
+//        beginCode.setStatements(statements);
+//
+//        // Return BeginCode node
+//        return beginCode;
+//    }
 
     ASTNode parseStatement() {
         // Implement parsing logic for different types of statements
@@ -73,31 +107,3 @@ public class Parser {
 
 // Define ASTNode subclasses as before
 
-class Statements extends ASTNode {
-    // Represents a list of statements
-    List<ASTNode> statements;
-
-    Statements(List<ASTNode> statements) {
-        this.statements = statements;
-    }
-
-    @Override
-    void accept(Visitor visitor) {
-        visitor.visit(this);
-    }
-
-    @Override
-    public void visit(BinaryOperation node) {
-
-    }
-
-    @Override
-    public void visit(Literal node) {
-
-    }
-
-    @Override
-    public void visit(Statements statements) {
-
-    }
-}

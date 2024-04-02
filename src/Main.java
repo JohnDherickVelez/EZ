@@ -12,7 +12,7 @@ public class Main {
         // Test string
         String sampleProgram = "BEGIN CODE\n" +
                 "INT a = 5;\n" +
-                "#comments" +
+                "# comments\n" +
                 "FLOAT b = 3.14;\n" +
                 "END CODE";
 
@@ -23,6 +23,7 @@ public class Main {
         for (Token token : tokens) {
             System.out.println(token.getType() + ": " + token.getValue());
         }
+
         Parser parser = new Parser(tokens);
         ASTNode rootNode = parser.parse();
 
@@ -36,6 +37,7 @@ public class Main {
     }
     private static void printAST(ASTNode node) {
         // Perform depth-first traversal of the AST and print out node information
+
         // You need to implement this method according to your AST structure
     }
 }

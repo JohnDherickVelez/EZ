@@ -125,7 +125,8 @@ public class Lexer {
                         tokens.add(new Token(TokenType.RBRACKET, "]", lineNumber));
                         break;
                     case '#':
-                        tokens.add(new Token(TokenType.COMMENT, "#", lineNumber));
+                        skipComment();
+                        break;
                     default:
                         throw new RuntimeException("Invalid character: " + currentChar + " at line " + lineNumber);
                 }
@@ -136,5 +137,11 @@ public class Lexer {
 
         tokens.add(new Token(TokenType.EOF, null, lineNumber));
         return tokens;
+    }
+
+    private void skipComment() {    // Inc.1.2. Comment Recognition
+        while (currentIndex < sourceCode.length() && sourceCode.charAt(currentIndex) != '\n') {   // skips #comment until \n
+            currentIndex++;
+        }
     }
 }

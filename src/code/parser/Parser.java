@@ -22,7 +22,7 @@ public class Parser {
     ASTNode parseStatements() {
         List<ASTNode> statements = new ArrayList<>();
 
-        if(tokens.size()-1 != 0) {
+        if(tokens != null) {
             expect(TokenType.BEGIN); // Ensure the code block starts with BEGIN CODE
             advance();
             expect(TokenType.CODE);

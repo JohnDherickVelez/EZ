@@ -38,6 +38,11 @@ public class BinaryOperation extends ASTNode {
     }
 
     @Override
+    public void visit(VariableDeclarationNode node) {
+
+    }
+
+    @Override
     public void visit(Statements statements) {
 
     }

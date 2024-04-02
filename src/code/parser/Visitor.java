@@ -4,6 +4,7 @@ public interface Visitor {
         void visit(BinaryOperation node);
         void visit(Literal node);
 
+        void visit(VariableDeclarationNode node);
         void visit(Statements statements);
 //        void visit(BeginCode node);
 //        void visit(EndCode node);

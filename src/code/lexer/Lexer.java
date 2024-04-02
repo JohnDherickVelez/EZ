@@ -110,7 +110,7 @@ public class Lexer {
                         tokens.add(new Token(TokenType.RPAREN, ")", lineNumber));
                         break;
                     case '=':
-                        tokens.add(new Token(TokenType.ASSIGNMENT, "=", lineNumber));
+                        tokens.add(new Token(TokenType.ASSIGN, "=", lineNumber));
                         break;
                     case '$':
                         tokens.add(new Token(TokenType.DOLLAR, "$", lineNumber));

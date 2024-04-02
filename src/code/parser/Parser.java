@@ -75,16 +75,84 @@ public class Parser {
 //    }
 
     ASTNode parseStatement() {
-        // Implement parsing logic for different types of statements
-        // For simplicity, let's assume we only support arithmetic expressions for now
-        return parseExpression();
+        Token currentToken = currentToken(); // Assume a method currentToken() returns the current token
+
+        switch (currentToken.getType()) {
+            case INT:
+                return parseVariableDeclaration(TokenType.INT);
+            case FLOAT:
+                return parseVariableDeclaration(TokenType.FLOAT);
+            case CHAR:
+                return parseVariableDeclaration(TokenType.CHAR);
+            case BOOL:
+                return parseVariableDeclaration(TokenType.BOOL);
+            case BEGIN:
+                return parseBeginBlock();
+            case END:
+                return parseEndBlock();
+            case CODE:
+                return parseCodeBlock();
+            default:
+                // If it's not a keyword, assume it's an assignment or other type of statement
+                return parseAssignmentStatement();
+        }
     }
 
-    ASTNode parseExpression() {
-        // Implement parsing logic for expression
+    ASTNode parseVariableDeclaration(TokenType type) {
+        Token currentToken = currentToken(); // Assume a method currentToken() returns the current token
+        if (currentToken.getType() != TokenType.IDENTIFIER) {
+            throw new RuntimeException("Expected identifier in variable declaration.");
+        }
+
+        String variableName = currentToken.getValue();
+        advance(); // Move to the next token
+
+        ASTNode initialization = null;
+        if (currentToken().getType() == TokenType.ASSIGN) {
+            advance(); // Move past the '=' token
+            initialization = parseExpression(); // Assume parseExpression parses the initialization value
+        }
+
+        // Create a VariableDeclarationNode with the parsed information
+        return new VariableDeclarationNode(type, variableName, initialization);
+    }
+
+
+    ASTNode parseBeginBlock() {
+        // Implement logic to parse BEGIN block
         return null;
     }
 
+    ASTNode parseEndBlock() {
+        // Implement logic to parse END block
+        return null;
+    }
+
+    ASTNode parseCodeBlock() {
+        // Implement logic to parse CODE block
+        return null;
+    }
+
+    ASTNode parseAssignmentStatement() {
+        // Implement logic to parse assignment statements
+        return null;
+    }
+
+    ASTNode parseExpression() {
+        Token currentToken = currentToken(); // Assume a method currentToken() returns the current token
+
+        if (currentToken.getType() == TokenType.INT_LITERAL) {
+            //return new IntegerLiteralNode(Integer.parseInt(currentToken.getValue()));
+        } else if (currentToken.getType() == TokenType.IDENTIFIER) {
+            // Assume it's a variable or function call
+            //return parseVariableOrFunctionCallExpression();
+        } else {
+            throw new RuntimeException("Invalid expression syntax.");
+        }
+        return null;
+    }
+
+    /*
     ASTNode parseTerm() {
         // Implement parsing logic for term
         return null;
@@ -94,7 +162,7 @@ public class Parser {
         // Implement parsing logic for factor
         return null;
     }
-
+    */
     private Token currentToken() {
         return tokens.get(currentTokenIndex);
     }

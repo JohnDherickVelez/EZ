@@ -11,12 +11,11 @@ public enum TokenType {
 
     // Comments
     COMMENT,
-
     // Operators
     PLUS, MINUS, MULTIPLY, DIVIDE, // ... add others (MODULO, RELATIONAL, LOGICAL)
 
     // Special characters
-    LPAREN, RPAREN, ASSIGNMENT,DOLLAR, AMPERSAND, LBRACKET, RBRACKET,
+    LPAREN, RPAREN, ASSIGN, DOLLAR, AMPERSAND, LBRACKET, RBRACKET,
      // ... others ($, &, etc.)
 
     // Keywords

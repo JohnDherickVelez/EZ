@@ -2,6 +2,10 @@ package code.parser;
 
 import code.model.Token;
 import code.model.TokenType;
+import node.IntegerLiteralNode;
+import node.ASTNode;
+import node.Statements;
+import node.VariableDeclarationNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,48 +48,13 @@ public class Parser {
         }
         return new Statements(statements);
     }
-//        List<ASTNode> statements = new ArrayList<>();
-//        expect(TokenType.BEGIN); // Ensure the code block starts with BEGIN CODE
-//        advance();
-//
-//        // Create BeginCode node
-//        BeginCode beginCode = new BeginCode();
-//
-//        while (currentToken().getType() != TokenType.END) {
-//            statements.add(parseStatement());
-//            // Advance to  the next token
-//            advance();
-//        }
-//
-//        expect(TokenType.END); // Ensure the code block ends with END CODE
-//        advance();
-//
-//        // Create EndCode node
-//        EndCode endCode = new EndCode();
-//
-//        if (statements == null) {
-//            throw new RuntimeException("List of statements is null.");
-//        }
-//
-//        // Add statements to BeginCode node
-//        beginCode.setStatements(statements);
-//
-//        // Return BeginCode node
-//        return beginCode;
-//    }
 
     ASTNode parseStatement() {
         Token currentToken = currentToken(); // Assume a method currentToken() returns the current token
 
         switch (currentToken.getType()) {
-            case INT:
-                return parseVariableDeclaration(TokenType.INT);
-            case FLOAT:
-                return parseVariableDeclaration(TokenType.FLOAT);
-            case CHAR:
-                return parseVariableDeclaration(TokenType.CHAR);
-            case BOOL:
-                return parseVariableDeclaration(TokenType.BOOL);
+            case DATATYPE:
+                return parseVariableDeclaration(TokenType.DATATYPE);
             case BEGIN:
                 return parseBeginBlock();
             case END:
@@ -100,10 +69,11 @@ public class Parser {
 
     ASTNode parseVariableDeclaration(TokenType type) {
         Token currentToken = currentToken(); // Assume a method currentToken() returns the current token
-        if (currentToken.getType() != TokenType.IDENTIFIER) {
+        if (currentToken.getType() != TokenType.DATATYPE) {
             throw new RuntimeException("Expected identifier in variable declaration.");
         }
-
+        type = TokenType.valueOf(currentToken().getValue());
+        advance();
         String variableName = currentToken.getValue();
         advance(); // Move to the next token
 
@@ -112,6 +82,7 @@ public class Parser {
             advance(); // Move past the '=' token
             initialization = parseExpression(); // Assume parseExpression parses the initialization value
         }
+
 
         // Create a VariableDeclarationNode with the parsed information
         return new VariableDeclarationNode(type, variableName, initialization);
@@ -142,7 +113,7 @@ public class Parser {
         Token currentToken = currentToken(); // Assume a method currentToken() returns the current token
 
         if (currentToken.getType() == TokenType.INT_LITERAL) {
-            //return new IntegerLiteralNode(Integer.parseInt(currentToken.getValue()));
+            return new IntegerLiteralNode(Integer.parseInt(currentToken.getValue()));
         } else if (currentToken.getType() == TokenType.IDENTIFIER) {
             // Assume it's a variable or function call
             //return parseVariableOrFunctionCallExpression();
@@ -168,10 +139,6 @@ public class Parser {
     }
 
     private Token advance() {
-        /*if(currentTokenIndex++ > tokens.size()-1)
-        {
-            return null;
-        }*/
         return tokens.get(currentTokenIndex++);
     }
 
@@ -184,4 +151,3 @@ public class Parser {
 }
 
 // Define ASTNode subclasses as before
-

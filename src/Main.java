@@ -1,7 +1,7 @@
-import code.interpreter.Interpreter;
 import code.lexer.Lexer;
 import code.model.Token;
 import code.parser.Parser;
+import node.ASTNode;
 
 import java.util.List;
 
@@ -25,10 +25,10 @@ public class Main {
         Parser parser = new Parser(tokens);
         ASTNode rootNode = parser.parse();
 
+        rootNode.print(0);
         // Now you can traverse the AST and perform any actions based on the structure
         // For testing purposes, you can print out the parsed AST
-        printAST(rootNode);
-
+        /*printAST(rootNode);
         // Interpret the AST
         Interpreter interpreter = new Interpreter();
         interpreter.interpret(rootNode);
@@ -37,6 +37,7 @@ public class Main {
         // Perform depth-first traversal of the AST and print out node information
 
         // You need to implement this method according to your AST structure
+        */
     }
 }
 

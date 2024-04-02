@@ -61,10 +61,11 @@ public class Lexer {
 
         String wordStr = word.toString().toUpperCase();
         switch (wordStr) {
-            case "INT": return new Token(TokenType.INT, wordStr, lineNumber);
-            case "FLOAT": return new Token(TokenType.FLOAT, wordStr, lineNumber);
-            case "CHAR": return new Token(TokenType.CHAR, wordStr, lineNumber);
-            case "BOOL": return new Token(TokenType.BOOL, wordStr, lineNumber);
+            case "INT":
+            case "FLOAT":
+            case "CHAR":
+            case "BOOL":
+                return new Token(TokenType.DATATYPE, wordStr, lineNumber);
 
             case "BEGIN": return new Token(TokenType.BEGIN, wordStr, lineNumber);
             case "END": return new Token(TokenType.END, wordStr, lineNumber);

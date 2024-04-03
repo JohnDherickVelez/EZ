@@ -12,6 +12,7 @@ public class Main {
                 "INT a = 5;\n" +
                 "# comments\n" +
                 "FLOAT b = 3.14;\n" +
+                "DISPLAY: a\n" +
                 "END CODE";
 
         Lexer lexer = new Lexer(sampleProgram);

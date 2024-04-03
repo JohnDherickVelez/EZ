@@ -66,7 +66,8 @@ public class Lexer {
             case "CHAR":
             case "BOOL":
                 return new Token(TokenType.DATATYPE, wordStr, lineNumber);
-
+            case "DISPLAY:":
+                return new Token(TokenType.DISPLAY, wordStr, lineNumber);
             case "BEGIN": return new Token(TokenType.BEGIN, wordStr, lineNumber);
             case "END": return new Token(TokenType.END, wordStr, lineNumber);
             case "CODE": return new Token(TokenType.CODE, wordStr, lineNumber);
@@ -128,6 +129,10 @@ public class Lexer {
                     case '#':
                         skipComment();
                         break;
+                    /*case ':':
+                        String content =  contextDisplay();
+                        tokens.add(new Token(TokenType.CONTENT, content, lineNumber));
+                        tokens.add(new Token(TokenType.COLON, ":", lineNumber));*/
                     default:
                         throw new RuntimeException("Invalid character: " + currentChar + " at line " + lineNumber);
                 }
@@ -144,5 +149,15 @@ public class Lexer {
         while (currentIndex < sourceCode.length() && sourceCode.charAt(currentIndex) != '\n') {   // skips #comment until \n
             currentIndex++;
         }
+    }
+
+    private String contextDisplay() {
+        StringBuilder sb = new StringBuilder();
+        while (currentIndex < sourceCode.length() && sourceCode.charAt(currentIndex) != '\n') {
+            sb.append(sourceCode.charAt(currentIndex));
+            currentIndex++;
+        }
+        String content = sb.toString();
+        return content;
     }
 }

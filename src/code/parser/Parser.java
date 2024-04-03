@@ -2,10 +2,7 @@ package code.parser;
 
 import code.model.Token;
 import code.model.TokenType;
-import node.IntegerLiteralNode;
-import node.ASTNode;
-import node.Statements;
-import node.VariableDeclarationNode;
+import node.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,12 +52,14 @@ public class Parser {
         switch (currentToken.getType()) {
             case DATATYPE:
                 return parseVariableDeclaration(TokenType.DATATYPE);
-            case BEGIN:
+            /*case BEGIN:
                 return parseBeginBlock();
             case END:
                 return parseEndBlock();
             case CODE:
-                return parseCodeBlock();
+                return parseCodeBlock();*/
+            case DISPLAY:
+                return parseDisplayStatement();
             default:
                 // If it's not a keyword, assume it's an assignment or other type of statement
                 return parseAssignmentStatement();
@@ -88,6 +87,13 @@ public class Parser {
         return new VariableDeclarationNode(type, variableName, initialization);
     }
 
+    ASTNode parseDisplayStatement() { // TODO: Display?
+        // Implement logic to parse BEGIN block
+        expect(TokenType.DISPLAY);
+        advance();
+        ASTNode displayContent = parseExpression();
+        return new DisplayStatementNode(displayContent);
+    }
 
     ASTNode parseBeginBlock() {
         // Implement logic to parse BEGIN block

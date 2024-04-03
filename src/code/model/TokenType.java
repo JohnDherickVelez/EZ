@@ -18,7 +18,7 @@ public enum TokenType {
     // ... others ($, &, etc.)
 
     // Keywords
-    BEGIN, CODE, END, DISPLAY, // ... others if you add more
+    BEGIN, CODE, END, DISPLAY, CONTENT,// ... others if you add more
 
     // Literals
     INT_LITERAL, CHAR_LITERAL, BOOL_LITERAL, STRING_LITERAL,

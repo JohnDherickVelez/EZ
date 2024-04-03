@@ -60,6 +60,7 @@ public class Lexer {
         }
 
         String wordStr = word.toString().toUpperCase();
+        // let's use that here and show an error
         switch (wordStr) {
             case "INT":
             case "FLOAT":

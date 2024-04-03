@@ -9,7 +9,7 @@ public class Main {
     public static void main(String[] args) {
         // Test string
         String sampleProgram = "BEGIN CODE\n" +
-                "INT a = 5;\n" +
+                "INT int = 5;\n" +
                 "# comments\n" +
                 "FLOAT b = 3.14;\n" +
                 "DISPLAY: a\n" +

@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static code.lexer.ReservedWordChecker.isReservedWord;
+
 public class Parser {
     private List<Token> tokens;
     private int currentTokenIndex;
@@ -97,6 +99,11 @@ public class Parser {
         type = TokenType.valueOf(currentToken().getValue());
         advance();
         String variableName = currentToken.getValue();
+
+        if (isReservedWord(variableName)) {
+        throw new RuntimeException("Reserved word '" + variableName + "' cannot be used as a variable name.");
+        }
+
         advance(); // Move to the next token
 
         ASTNode initialization = null;

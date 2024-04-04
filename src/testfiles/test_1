@@ -1,0 +1,5 @@
+BEGIN CODE
+    INT a = 5
+    FLOAT b = 3.14
+    CHAR c = c
+END CODE

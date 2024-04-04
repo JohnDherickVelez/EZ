@@ -2,10 +2,10 @@ package code.model;
 
 public enum TokenType {
     // Basic types
-    DATATYPE, INT, CHAR, BOOL, FLOAT,
+    DATATYPE,
 
     // Identifiers
-    IDENTIFIER,
+    IDENTIFIER, INT, FLOAT,
 
     // Comments
     COMMENT,
@@ -23,6 +23,6 @@ public enum TokenType {
     // Literals
     INT_LITERAL, CHAR_LITERAL, BOOL_LITERAL, STRING_LITERAL,
 
-    // End of File
-    EOF
+    OPERATOR, // End of File
+    VARIABLE, ENDLINE, EOF
 }

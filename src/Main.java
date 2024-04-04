@@ -3,78 +3,52 @@ import code.model.Token;
 import code.parser.Parser;
 import node.ASTNode;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
         // Test string
-        String sampleProgram = "BEGIN CODE\n" +
-                "INT a = 5;\n" +
-                "# comments\n" +
-                "FLOAT b = 3.14;\n" +
-                "DISPLAY: a\n" +
-                "END CODE";
-
-        Lexer lexer = new Lexer(sampleProgram);
-        List<Token> tokens = lexer.tokenize();
-
-        System.out.println("Tokenization result:");
-        for (Token token : tokens) {
-            System.out.println(token.getType() + ": " + token.getValue());
-        }
-
-        Parser parser = new Parser(tokens);
-        ASTNode rootNode = parser.parse();
-
-        rootNode.print(0);
-        // Now you can traverse the AST and perform any actions based on the structure
-        // For testing purposes, you can print out the parsed AST
-        /*printAST(rootNode);
-        // Interpret the AST
-        Interpreter interpreter = new Interpreter();
-        interpreter.interpret(rootNode);
-    }
-    private static void printAST(ASTNode node) {
-        // Perform depth-first traversal of the AST and print out node information
-
-        // You need to implement this method according to your AST structure
-        */
-    }
-}
-
-//public class Main {
-//    public static void main(String[] args) {
-//        Scanner scanner = new Scanner(System.in);
+//        String sampleProgram =
+//                "BEGIN CODE\n" +
+//                "INT a = 5;\n" +
+//                "# comments\n" +
+//                "FLOAT b = 3.14;\n" +
+//                "DISPLAY: a\n" +
+//                "END CODE" +
+//                "# comment\n";
 //
-//        System.out.println("Welcome to the interpreter.");
-//        System.out.println("Enter your commands and functions (type 'END CODE' to finish):");
-//
-//        StringBuilder codeBuilder = new StringBuilder();
-//
-//        while (true) {
-//            System.out.print("> ");
-//            String input = scanner.nextLine();
-//
-//            if (input.equals("END CODE")) {
-//                System.out.println("Parsing and interpreting code...");
-//                break;
-//            }
-//
-//            codeBuilder.append(input).append("\n");
-//        }
-//
-//        // Tokenize the entire code block
-//        Lexer lexer = new Lexer(codeBuilder.toString());
+//        Lexer lexer = new Lexer(sampleProgram);
 //        List<Token> tokens = lexer.tokenize();
 //
-//        // Parse the tokens
-//        Parser parser = new Parser(tokens);
-//        ASTNode rootNode = parser.parse();
-//
-//        // Interpret the AST
-//        Interpreter interpreter = new Interpreter();
-//        interpreter.interpret(rootNode);
-//
-//        scanner.close();
-//    }
-//}
+//        for (Token token : tokens) {
+//            System.out.println(token.getType() + ": " + token.getValue());
+//        }
+        String filePath = "./src/testfiles/test_1"; // Replace this with the path to your text file
+        StringBuilder sourceCode = new StringBuilder();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sourceCode.append(line).append("\n"); // Append each line to the sourceCode string
+            }
+        } catch (IOException e) {
+            e.printStackTrace(); // Handle or log any IOException that occurs
+        }
+
+        // Now, the contents of the text file are stored in the sourceCode string
+        System.out.println("Source code:");
+        System.out.println(sourceCode);
+
+        Lexer lexer = new Lexer();
+        System.out.println("Tokenization result:");
+        List<Token> tokenlist = lexer.tokenizeSourceCode(String.valueOf(sourceCode));
+
+
+        Parser parser = new Parser(tokenlist);
+        ASTNode rootNode = parser.parse();
+        rootNode.print(0);
+    }
+}

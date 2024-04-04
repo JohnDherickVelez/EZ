@@ -3,6 +3,10 @@ package node;
 public class IntegerLiteralNode implements ASTNode {
     private final int value; // Add a field to store the integer value
 
+    public int getValue() {
+        return value;
+    }
+
     public IntegerLiteralNode(int value) {
         this.value = value;
     }

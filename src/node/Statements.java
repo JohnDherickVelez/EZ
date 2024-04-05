@@ -23,4 +23,3 @@ public class Statements implements ASTNode {
         }
     }
 }
-

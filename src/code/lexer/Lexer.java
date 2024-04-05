@@ -11,57 +11,57 @@ import java.util.regex.Pattern;
 
 //
 public class Lexer {
-        private String sourceCode;
-        private int currentTokenIndex = 0;
-        private List<Token> tokensList = new ArrayList<>();
-        // Constructor to initialize the tokensList
+    private String sourceCode;
+    private int currentTokenIndex = 0;
+    private List<Token> tokensList = new ArrayList<>();
+    // Constructor to initialize the tokensList
 
-        public List<Token> tokenizeSourceCode(String sourceCode) {
-            Pattern pattern = Pattern.compile("\\b\\w+\\b|\\n|[-+*/=<>!&|]");
-            Matcher matcher = pattern.matcher(sourceCode);
+    public List<Token> tokenizeSourceCode(String sourceCode) {
+        Pattern pattern = Pattern.compile("\\b\\w+\\b|\\n|[-+*/=<>!&|]");
+        Matcher matcher = pattern.matcher(sourceCode);
 
-            while (matcher.find()) {
-                String word = matcher.group(); // Get the matched word
+        while (matcher.find()) {
+            String word = matcher.group(); // Get the matched word
 
-                // Check for various cases and add tokens accordingly
-                switch (word) {
-                    case "INT":
-                    case "FLOAT":
-                    case "CHAR":
-                    case "BOOL":
-                        tokensList.add(new Token(TokenType.DATATYPE, word, true));
-                        break;
-                    case "\n":
-                        tokensList.add(new Token(TokenType.ENDLINE, "end of line", false));
-                        break;
-                    case "+":
-                    case "-":
-                    case "*":
-                    case "/":
-                    case "=":
-                    case "<":
-                    case ">":
-                    case "!":
-                    case "&":
-                    case "|":
-                        tokensList.add(new Token(TokenType.OPERATOR, word, true));
-                        break;
-                    default:
-                        tokensList.add(new Token(TokenType.VARIABLE, word, false));
-                        break;
-                }
-                System.out.println("Word: " + word);
-
-                // Print each token from the tokensList
+            // Check for various cases and add tokens accordingly
+            switch (word) {
+                case "INT":
+                case "FLOAT":
+                case "CHAR":
+                case "BOOL":
+                    tokensList.add(new Token(TokenType.DATATYPE, word, true));
+                    break;
+                case "\n":
+                    tokensList.add(new Token(TokenType.ENDLINE, "end of line", false));
+                    break;
+                case "+":
+                case "-":
+                case "*":
+                case "/":
+                case "=":
+                case "<":
+                case ">":
+                case "!":
+                case "&":
+                case "|":
+                    tokensList.add(new Token(TokenType.OPERATOR, word, true));
+                    break;
+                default:
+                    tokensList.add(new Token(TokenType.VARIABLE, word, false));
+                    break;
             }
-            System.out.println("Tokens:");
-            for (Token token : tokensList) {
-                System.out.println(currentTokenIndex + ": {" +"Token: " + token.getValue() + ", Token type: " + token.getType() + "}");
-                currentTokenIndex++;
-            }
-            return tokensList;
+            System.out.println("Word: " + word);
+
+            // Print each token from the tokensList
         }
+        System.out.println("Tokens:");
+        for (Token token : tokensList) {
+            System.out.println(currentTokenIndex + ": {" +"Token: " + token.getValue() + ", Token type: " + token.getType() + "}");
+            currentTokenIndex++;
+        }
+        return tokensList;
     }
+}
 
 //    private String sourceCode;
 //    private int currentIndex = 0;

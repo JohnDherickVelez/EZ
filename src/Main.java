@@ -1,5 +1,6 @@
 import code.lexer.Lexer;
 import code.model.Token;
+import code.parser.CustomExceptions;
 import code.parser.Parser;
 import node.DelimiterNode;
 import node.Node;
@@ -11,33 +12,36 @@ import java.io.IOException;
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args) {
-            String filePath = "./src/testfiles/test_1"; // Replace this with the path to your text file
-            StringBuilder sourceCode = new StringBuilder();
+    public static void main(String[] args) throws CustomExceptions {
+        String filePath = "./src/testfiles/test_1"; // Replace this with the path to your text file
+        StringBuilder sourceCode = new StringBuilder();
 
-            try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    sourceCode.append(line).append("\n"); // Append each line to the sourceCode string
-                }
-            } catch (IOException e) {
-                e.printStackTrace(); // Handle or log any IOException that occurs
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sourceCode.append(line).append("\n"); // Append each line to the sourceCode string
             }
-
-            // Now, the contents of the text file are stored in the sourceCode string
-            System.out.println("Source code:");
-            System.out.println(sourceCode);
-
-            Lexer lexer = new Lexer();
-            List<Token> tokenlist = lexer.tokenizeSourceCode(String.valueOf(sourceCode));
-//        lexer.printAllTokens();
-            Parser parser = new Parser(tokenlist);
-
-            Node rootNode = parser.produceAST();
-
-            executeAST(rootNode);
-//        parser.produceAST();
+        } catch (IOException e) {
+            e.printStackTrace(); // Handle or log any IOException that occurs
         }
+
+        // Now, the contents of the text file are stored in the sourceCode string
+        System.out.println("Source code:");
+        System.out.println(sourceCode);
+
+        Lexer lexer = new Lexer();
+        List<Token> tokenlist = lexer.tokenizeSourceCode(String.valueOf(sourceCode));
+
+
+//        lexer.printAllTokens();
+        Parser parser = new Parser(tokenlist);
+
+        Node rootNode = parser.produceAST();
+
+        executeAST(rootNode);
+//        parser.produceAST();
+    }
+
     private static void executeAST(Node node) {
         // Perform appropriate actions based on node type
         if (node instanceof DelimiterNode) {

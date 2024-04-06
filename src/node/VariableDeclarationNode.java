@@ -1,7 +1,5 @@
 package node;
 
-import code.model.TokenType;
-
 public class VariableDeclarationNode extends Node {
     private String variableName;
     private String dataType;

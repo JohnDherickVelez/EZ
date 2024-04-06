@@ -36,7 +36,7 @@ public class Token {
         DELIMITER,
         COMMENT,
         WHITESPACE,
-        OTHER
+        S_QUOTE, OTHER
     }
     }
 

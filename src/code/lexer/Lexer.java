@@ -1,7 +1,7 @@
 package code.lexer;
 
 import code.model.Token;
-import code.model.TokenType;
+import code.parser.CustomExceptions;
 //import java.io.FileReader;
 //import java.io.IOException;
 import java.util.ArrayList;
@@ -16,10 +16,18 @@ public class Lexer {
     private List<Token> tokensList = new ArrayList<>();
     // Constructor to initialize the tokensList
 
-    public List<Token> tokenizeSourceCode(String sourceCode) {
-        Pattern pattern = Pattern.compile("\\b\\w+\\b|\\n|[-+*/=<>!&|]");
-        Matcher matcher = pattern.matcher(sourceCode);
+    public List<Token> tokenizeSourceCode(String sourceCode) throws CustomExceptions {
+//        Pattern pattern = Pattern.compile("\\b\\w+\\b|\\n|[-+*/=<>!&|]");
+        Pattern pattern = Pattern.compile("\\b[\\w.]+\\b|\\n|[-+*/=<>!&|]|'.'"); // good regex for float LEZGOO FUCK YOU REGEX
+//        Pattern pattern = Pattern.compile("\\b\\w+\\b|\\n|[-+*/=<>!&|]|'");
 
+//        Pattern pattern = Pattern.compile("\\b\\w+\\b|\\n|[-+*/=<>!&|]|'.'"); // good regex for ' ' but as a whole 'c'
+//        Pattern pattern = Pattern.compile("\\b[\\w.']+\\b|\\n|[-+*/=<>!&|]");
+
+
+
+//        Pattern pattern = Pattern.compile("\\b\\w+\\b|\\n|[-+*/=<>!&|]|'|(\\d+(\\.\\d+)?)");
+        Matcher matcher = pattern.matcher(sourceCode);
         while (matcher.find()) {
             String word = matcher.group(); // Get the matched word
 
@@ -51,6 +59,9 @@ public class Lexer {
                 case "|":
                     tokensList.add(new Token(Token.TokenType.OPERATOR, word, true));
                     break;
+                case "'":
+                    tokensList.add(new Token(Token.TokenType.S_QUOTE, word, true));
+                    break;
                 default:
                     tokensList.add(new Token(Token.TokenType.VARIABLE, word, false));
                     break;
@@ -61,20 +72,54 @@ public class Lexer {
         }
         System.out.println("Tokens:");
         for (Token token : tokensList) {
-            System.out.println(currentTokenIndex + ": {" +"Token: " + token.getValue() + ", Token type: " + token.getType() + "}");
+            System.out.println(currentTokenIndex + ": {" +"Token Value: " + token.getValue() + ", Token type: " + token.getType() + "}");
             currentTokenIndex++;
         }
+        checkTokenGrammar(tokensList);
+
         return tokensList;
     }
-    int tokenIndex = 0;
-    public void printAllTokens() {
-        for(Token token : tokensList) {
-            System.out.println("Token " + tokenIndex + " " + token.getType());
-            tokenIndex++;
+
+    public void checkTokenGrammar(List<Token> tokensList) throws CustomExceptions {
+        boolean foundBegin = false;
+        boolean foundCodeAfterBegin = false;
+        boolean foundEnd = false;
+        boolean foundCodeAfterEnd = false;
+
+        for (int i = 0; i < tokensList.size() - 1; i++) {
+            Token currentToken = tokensList.get(i);
+            Token nextToken = tokensList.get(i + 1);
+
+            if (currentToken.getValue().equals("BEGIN")) {
+                foundBegin = true;
+                if (nextToken.getValue().equals("CODE")) {
+                    foundCodeAfterBegin = true;
+                }
+            } else if (currentToken.getValue().equals("END")) {
+                foundEnd = true;
+                if (nextToken.getValue().equals("CODE")) {
+                    foundCodeAfterEnd = true;
+                }
+            }
+        }
+
+        if (!foundBegin) {
+            throw new CustomExceptions("Missing starting statement 'BEGIN'");
+        }
+
+        if (!foundCodeAfterBegin) {
+            throw new CustomExceptions("Missing 'CODE' after 'BEGIN'");
+        }
+
+        if (!foundEnd) {
+            throw new CustomExceptions("Missing ending statement 'END'");
+        }
+
+        if (!foundCodeAfterEnd) {
+            throw new CustomExceptions("Missing 'CODE' after 'END'");
         }
     }
 }
-
 //    private String sourceCode;
 //    private int currentIndex = 0;
 //    private int lineNumber = 1;

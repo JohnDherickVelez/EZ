@@ -1,5 +1,9 @@
 BEGIN CODE
-    INT a = 5
-    FLOAT b = 3.14
-    CHAR c = c
-END CODE
+INT x, y, z=5
+CHAR a_1=’n’
+BOOL t=”TRUE”
+x=y=4
+a_1=’c’
+#this is a comment
+DISPLAY: x & t & z & $ & a_1 & [#] & “last”
+END COD

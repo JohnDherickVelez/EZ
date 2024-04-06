@@ -2,25 +2,34 @@ package node;
 
 import code.model.TokenType;
 
-public class VariableDeclarationNode implements ASTNode {
-    private final TokenType type;
-    private final String variableName;
-    private final ASTNode initialization;
+public class VariableDeclarationNode extends Node {
+    private String variableName;
+    private String dataType;
+    private String value;
 
-    public VariableDeclarationNode(TokenType type, String variableName, ASTNode initialization) {
-        this.type = type;
+    public VariableDeclarationNode(String dataType, String variableName, String value) {
+        this.dataType = dataType;
         this.variableName = variableName;
-        this.initialization = initialization;
+        this.value = value;
     }
 
-    @Override
-    public void print(int indentLevel) {
-        for (int i = 0; i < indentLevel; i++) {
-            System.out.print("  "); // Print indentation
-        }
-        System.out.println("Variable Declaration: " + type + " " + variableName);
-        if (initialization != null) {
-            initialization.print(indentLevel + 1); // Print initialization if present
-        }
+    public String getVariableName() {
+        return variableName;
+    }
+
+    public void setVariableName(String variableName) {
+        this.variableName = variableName;
+    }
+
+    public String getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
+    }
+
+    public String getValue() {
+        return value;
     }
 }

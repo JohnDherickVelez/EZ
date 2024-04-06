@@ -18,18 +18,22 @@ public class Lexer {
 
     public List<Token> tokenizeSourceCode(String sourceCode) throws CustomExceptions {
 //        Pattern pattern = Pattern.compile("\\b\\w+\\b|\\n|[-+*/=<>!&|]");
-        Pattern pattern = Pattern.compile("\\b[\\w.]+\\b|\\n|[-+*/=<>!&|]|'.'"); // good regex for float LEZGOO FUCK YOU REGEX
+        Pattern pattern = Pattern.compile("\\b[\\w.]+\\b|\\n|[-+*/=<>!&|]|#.*|'.'"); // good regex for float LEZGOO FUCK YOU REGEX
 //        Pattern pattern = Pattern.compile("\\b\\w+\\b|\\n|[-+*/=<>!&|]|'");
 
 //        Pattern pattern = Pattern.compile("\\b\\w+\\b|\\n|[-+*/=<>!&|]|'.'"); // good regex for ' ' but as a whole 'c'
 //        Pattern pattern = Pattern.compile("\\b[\\w.']+\\b|\\n|[-+*/=<>!&|]");
 
-
-
 //        Pattern pattern = Pattern.compile("\\b\\w+\\b|\\n|[-+*/=<>!&|]|'|(\\d+(\\.\\d+)?)");
         Matcher matcher = pattern.matcher(sourceCode);
         while (matcher.find()) {
             String word = matcher.group(); // Get the matched word
+
+            // Skip comments and continue until newline is encountered
+            if (word.startsWith("#")) {
+                // Skip this token (comment)
+                continue;
+            }
 
             // Check for various cases and add tokens accordingly
             switch (word) {

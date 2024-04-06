@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static code.lexer.ReservedWordChecker.isReservedWord;
+
 //
 public class Lexer {
     private String sourceCode;
@@ -104,6 +106,8 @@ public class Lexer {
                 if (nextToken.getValue().equals("CODE")) {
                     foundCodeAfterEnd = true;
                 }
+            } else if (!currentToken.getIsReservedKey() && isReservedWord(currentToken.getValue())) {
+                throw new CustomExceptions("Variable name is a reserved word: " + currentToken.getValue().toString());
             }
         }
 
@@ -122,6 +126,7 @@ public class Lexer {
         if (!foundCodeAfterEnd) {
             throw new CustomExceptions("Missing 'CODE' after 'END'");
         }
+
     }
 }
 //    private String sourceCode;

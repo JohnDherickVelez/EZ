@@ -1,5 +1,5 @@
 BEGIN CODE
-INT int = 2
+INT float = 2
 INT a_1 = 15
 INT d = 17
 FLOAT b = 3.14

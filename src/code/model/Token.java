@@ -18,6 +18,7 @@ public class Token {
         return value;
     }
 
+    public boolean getIsReservedKey() {return isReservedKey; }
     @Override
     public String toString() {
         return "Token {" +

@@ -19,6 +19,7 @@ public class Lexer {
     // Constructor to initialize the tokensList
 
     public List<Token> tokenizeSourceCode(String sourceCode) throws CustomExceptions {
+        try{
 //        Pattern pattern = Pattern.compile("\\b\\w+\\b|\\n|[-+*/=<>!&|]");
         Pattern pattern = Pattern.compile("\\b[\\w.]+\\b|\\n|[-+*/=<>!&|]|#.*|'.'"); // good regex for float LEZGOO FUCK YOU REGEX
 //        Pattern pattern = Pattern.compile("\\b\\w+\\b|\\n|[-+*/=<>!&|]|'");
@@ -82,7 +83,10 @@ public class Lexer {
             currentTokenIndex++;
         }
         checkTokenGrammar(tokensList);
-
+        } catch (CustomExceptions ex) {
+            // Handle the custom exception
+            System.out.println("Custom exception caught: " + ex.getMessage());
+        }
         return tokensList;
     }
 

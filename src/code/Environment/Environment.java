@@ -45,7 +45,7 @@ public class Environment {
         Object value = switch (variableNode.getDataType()) {
             case "INT" -> Integer.parseInt(variableValue);
             case "FLOAT" -> Float.parseFloat(variableValue);
-            case "CHAR" -> variableValue.charAt(0); // Assuming single character value
+            case "CHAR" -> variableValue.charAt(1); // Assuming single character value
             case "BOOL" -> Boolean.parseBoolean(variableValue);
             default -> null;
         };

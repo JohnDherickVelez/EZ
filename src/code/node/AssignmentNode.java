@@ -1,4 +1,4 @@
-package node;
+package code.node;
 
 public class AssignmentNode {
 //    implements ASTNode
@@ -17,6 +17,6 @@ public class AssignmentNode {
 //        }
 //        System.out.println("Assignment Statement:");
 //        System.out.println("  Variable: " + variableName);
-//        value.print(indentLevel + 1); // Recursively print value node
+//        value.print(indentLevel + 1); // Recursively print value code.node
 //    } imma comment lng sa for noww pra mapushh gomen!!!!
 }

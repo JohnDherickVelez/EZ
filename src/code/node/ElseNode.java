@@ -1,4 +1,4 @@
-package node;
+package code.node;
 
 public class ElseNode{
 //     implements ASTNode
@@ -14,6 +14,6 @@ public class ElseNode{
 //            System.out.print("  "); // Print indentation
 //        }
 //        System.out.println("Else Statement:");
-//        elseBody.print(indentLevel + 1); // Recursively print else body node
+//        elseBody.print(indentLevel + 1); // Recursively print else body code.node
 //    }
 }

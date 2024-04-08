@@ -1,4 +1,4 @@
-package node;
+package code.node;
 
 public class DelimiterNode extends Node{
     private String dataType;

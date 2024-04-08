@@ -1,4 +1,4 @@
-package node;
+package code.node;
 
 public class IfNode  {
 //    implements ASTNode
@@ -17,8 +17,8 @@ public class IfNode  {
 //        }
 //        System.out.println("If Statement:");
 //        System.out.println("  Condition:");
-//        condition.print(indentLevel + 1); // Recursively print condition node
+//        condition.print(indentLevel + 1); // Recursively print condition code.node
 //        System.out.println("  Body:");
-//        ifBody.print(indentLevel + 1); // Recursively print if body node
+//        ifBody.print(indentLevel + 1); // Recursively print if body code.node
 //    }
 }

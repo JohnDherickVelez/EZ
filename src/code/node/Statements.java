@@ -1,6 +1,4 @@
-package node;
-
-import java.util.List;
+package code.node;
 
 //public class Statements implements ASTNode {
 //    private final List<ASTNode> statements;

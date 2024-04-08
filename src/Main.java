@@ -1,14 +1,17 @@
+import code.Environment.Environment;
 import code.lexer.Lexer;
 import code.model.Token;
+import code.node.DisplayNode;
 import code.parser.CustomExceptions;
 import code.parser.Parser;
-import node.DelimiterNode;
-import node.Node;
-import node.VariableDeclarationNode;
+import code.node.DelimiterNode;
+import code.node.Node;
+import code.node.VariableDeclarationNode;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
@@ -32,18 +35,20 @@ public class Main {
         Lexer lexer = new Lexer();
         List<Token> tokenlist = lexer.tokenizeSourceCode(String.valueOf(sourceCode));
 
-
+        Environment environment = new Environment();
+        List<String> variableList = new ArrayList<>();
 //        lexer.printAllTokens();
-        Parser parser = new Parser(tokenlist);
+        Parser parser = new Parser(tokenlist, environment);
 
         Node rootNode = parser.produceAST();
 
         executeAST(rootNode);
 //        parser.produceAST();
+        environment.displayVariables();
     }
 
     private static void executeAST(Node node) {
-        // Perform appropriate actions based on node type
+        // Perform appropriate actions based on code.node type
         if (node instanceof DelimiterNode) {
             DelimiterNode delimiterNode = (DelimiterNode) node;
             // Execute functionality based on delimiter type
@@ -62,6 +67,10 @@ public class Main {
             String variableValue = variableNode.getValue();
             // Perform actions based on variable type, name, and value
             System.out.println("Variable declaration: " + variableType + " " + variableName + " = " + variableValue);
+        } else if (node instanceof DisplayNode) {
+            DisplayNode displayNode = (DisplayNode) node;
+            // Print out the value stored in the DisplayNode
+            System.out.println("Display: " + displayNode.getValue());
         }
 
         // Traverse child nodes recursively

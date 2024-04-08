@@ -1,7 +1,8 @@
 package code.parser;
 
+import code.Environment.Environment;
 import code.model.Token;
-import node.*;
+import code.node.*;
 
 import java.util.*;
 
@@ -10,141 +11,18 @@ public class Parser {
     private int currentTokenIndex = 0;
 
     private List<Node> ASTNode = new ArrayList<>();
+    private List<String> variableList = new ArrayList<>();
+    private Environment environment;
 
-
-    public Parser(List<Token> tokensList) {
+//    public Parser(List<Token> tokensList) {
+//        this.tokensList = tokensList;
+//    }
+    public Parser(List<Token> tokensList, Environment environment) {
         this.tokensList = tokensList;
+        this.environment = environment;
     }
-
-//    public Node parseNextToken() {
-//        if (currentTokenIndex < tokensList.size()) {
-//            Token currentToken = tokensList.get(currentTokenIndex);
-//            currentTokenIndex++;
-//
-//            switch(currentToken.getType()) { // Assuming Token has a method getType() returning the token type
-//                case DELIMITER:
-////                    return parseDelimiter()
-////                    return parseIntegerLiteral(currentToken);
-//                case IDENTIFIER:
-////                    return parseIdentifier(currentToken);
-//                case VARIABLE:
-////                    return VariableDeclarationNode();
-//                    return null;
-//                // Add more cases for other token types
-//                default:
-//                    throw new RuntimeException("Invalid token type: " + currentToken.getType());
-//            }
-//        } else {
-//            // End of tokens reached
-//            return null;
-//        }
-//    }
-
-    //    public Node produceAST() {
-//        String patternForTypes = "\\b(INT|CHAR|FLOAT|BOOL)\\b";
-//        ASTNode rootNode = new ASTNode();
-//        for (int i = 0; i < tokensList.size(); i++) {
-//            Token token = tokensList.get(i);
-//
-//            switch (token.getType()) {
-//                case DELIMITER:
-//                    if (Objects.equals(String.valueOf(token.getValue()), "BEGIN")) {
-//                        // Add logic for processing "BEGIN" token
-//                        if (i + 1 < tokensList.size() &&
-//                                Objects.equals(tokensList.get(i + 1).getValue(), "CODE")) {
-//                            // Add logic for processing "BEGIN CODE" sequence
-//                            ASTNode.add(new DelimiterNode("BEGIN_CODE", true));
-//                            // Move to the next token after "CODE"
-//                            i++;
-//                        }
-//                    }
-//                    if(Objects.equals(String.valueOf(token.getValue()), "END")) {
-//                        if (i + 1 < tokensList.size() &&
-//                                Objects.equals(tokensList.get(i + 1).getValue(), "CODE")) {
-//                            // Add logic for processing "BEGIN CODE" sequence
-//                            ASTNode.add(new DelimiterNode("END_CODE", false));
-//                            // Move to the next token after "CODE"
-//                            i++;
-//                        }
-//                    }
-//                    break;
-//                    // Don't forget to break after each case
-//                case DATATYPE:
-//                    if (token.getValue().equals("INT")) { // check if the datatype is INT
-//                        // Ensure there are enough tokens remaining
-//                        if (i + 3 < tokensList.size()) {
-//                            String varname = tokensList.get(i + 1).getValue();
-//                            String operator = tokensList.get(i + 2).getValue();
-//                            String value = tokensList.get(i + 3).getValue();
-//
-//                            // Check if variable name, operator, and value are valid
-//                            if (operator.equals("=") && value.matches("[0-9]+")) {
-//                                ASTNode.add(new VariableDeclarationNode("int", varname, value));
-//                            }
-//                        }
-//                        break;
-//                    }
-////                    if (Objects.equals(String.valueOf(token.getValue()), "INT")) { // check if there is datatype
-////                        // Add logic for processing variable tokens
-////                        String int_placeholder = String.valueOf(token.getType());
-////                        if(i+1 < tokensList.size() &&
-////                                Objects.equals(tokensList.get(i + 1).getValue(), "\\b[a-zA-Z0-9_-]+\\b") && // check if there is variable name
-////                                token.getType() == Token.TokenType.VARIABLE) {
-////                            String varname_placeholder = String.valueOf(token.getValue());
-////                            if(i+1 < tokensList.size() &&
-////                                    Objects.equals(tokensList.get(i + 1).getValue(), "=") && // check if there is = equals sign
-////                                    token.getType() == Token.TokenType.OPERATOR) {
-////                                if(i+1 < tokensList.size() &&
-////                                        Objects.equals(tokensList.get(i + 1).getValue(), "[0-9]+") && // check if there is a number
-////                                        token.getType() == Token.TokenType.VARIABLE) { // i dont know what im doing but im confident af
-////                                    String var_placeholder = String.valueOf(token.getValue());
-////                                        ASTNode.add(new VariableDeclarationNode(int_placeholder, varname_placeholder, var_placeholder));
-////                                }
-////                            }
-////                        } // turns out this is wrong and am too sad to delete this
-////                    }
-//                    if (Objects.equals(String.valueOf(token.getValue()), "FLOAT")) {
-//                        if (i + 3 < tokensList.size()) {
-//                            String varname = tokensList.get(i + 1).getValue();
-//                            String operator = tokensList.get(i + 2).getValue();
-//                            String value = tokensList.get(i + 3).getValue();
-//
-//                            if (operator.equals("=") && value.matches("\\d*\\.\\d+")) {
-//                                ASTNode.add(new VariableDeclarationNode("float", varname, value));
-//                            }
-//                        }
-//                        break;
-//                    }
-//                    if (Objects.equals(String.valueOf(token.getValue()), "CHAR")) {
-//                        if (i + 3 < tokensList.size()) {
-//                            String varname = tokensList.get(i + 1).getValue();
-//                            String operator = tokensList.get(i + 2).getValue();
-//                            String value = tokensList.get(i + 3).getValue();
-//
-//                            if (operator.equals("=") && value.matches("'.'")) {
-//                                ASTNode.add(new VariableDeclarationNode("char", varname, value));
-//                            }
-//                        }
-//                        break;
-//                    }
-//                    if (Objects.equals(String.valueOf(token.getValue()), "BOOL")) {
-//                        if (i + 3 < tokensList.size()) {
-//                            String varname = tokensList.get(i + 1).getValue();
-//                            String operator = tokensList.get(i + 2).getValue();
-//                            String value = tokensList.get(i + 3).getValue();
-//                            if (operator.equals("=") && (value.equals("true") || value.equals("false"))) {
-//                                ASTNode.add(new VariableDeclarationNode("bool", varname, value));
-//                            }
-//                        }
-//                        break;
-//                    }
-//                    break;
-//            }
-//        }
-//        return rootNode;
-//    }
     public ASTNode produceAST() throws CustomExceptions {
-        ASTNode rootNode = new ASTNode(); // Create the root node
+        ASTNode rootNode = new ASTNode(); // Create the root code.node
 
         for (int i = 0; i < tokensList.size(); i++) {
             Token token = tokensList.get(i);
@@ -179,24 +57,38 @@ public class Parser {
 
                             if (operator.equals("=")) {
                                 if (token.getValue().equals("INT") && value.matches("[0-9]+")) {
-                                    rootNode.addChild(new VariableDeclarationNode("int", varname, value));
+                                    VariableDeclarationNode intVariableNode = new VariableDeclarationNode("INT", varname, value);
+                                    rootNode.addChild(intVariableNode);
+                                    environment.placeVariables(intVariableNode); // Place the variable into the environment
                                 }
                                 if (token.getValue().equals("FLOAT") && value.matches("\\d*\\.\\d+")) {
-                                    rootNode.addChild(new VariableDeclarationNode("float", varname, value));
+                                    rootNode.addChild(new VariableDeclarationNode("FLOAT", varname, value));
                                 }
                                 if (token.getValue().equals("CHAR") && value.matches("'.'")) {
-                                    rootNode.addChild(new VariableDeclarationNode("char", varname, value));
+                                    rootNode.addChild(new VariableDeclarationNode("CHAR", varname, value));
                                 }
                                 if (token.getValue().equals("BOOL") && (value.equals("true") || value.equals("false"))) {
-                                    rootNode.addChild(new VariableDeclarationNode("bool", varname, value));
+                                    rootNode.addChild(new VariableDeclarationNode("BOOL", varname, value));
                                 }
                             }
                         }
                     }
                     break;
+
+                case DISPLAY:
+                    // Iterate through tokens until encountering ENDLINE
+                    while (i < tokensList.size() && tokensList.get(i).getType() != Token.TokenType.ENDLINE) {
+                        Token displayToken = tokensList.get(i);
+                        if (displayToken.getType() == Token.TokenType.VARIABLE) {
+                            // If the token is a variable, add its name to the variableList
+                            variableList.add(displayToken.getValue());
+                        }
+                        i++; // Move to the next token
+                    }
+                    break;
             }
         }
-        return rootNode; // Return the root node of the AST
+        return rootNode; // Return the root code.node of the AST
     }
 }
 //    private List<Token> tokens;

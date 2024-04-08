@@ -1,4 +1,4 @@
-package node;
+package code.node;
 
 public class VariableDeclarationNode extends Node {
     private String variableName;

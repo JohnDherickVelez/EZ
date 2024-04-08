@@ -1,4 +1,4 @@
-package node;
+package code.node;
 
 //public class IntegerLiteralNode implements ASTNode {
 //    private final int value; // Add a field to store the integer value

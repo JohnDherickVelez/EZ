@@ -1,4 +1,4 @@
-package node;
+package code.node;
 
 public class ASTNode extends Node{
 

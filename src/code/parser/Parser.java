@@ -62,13 +62,19 @@ public class Parser {
                                     environment.placeVariables(intVariableNode); // Place the variable into the environment
                                 }
                                 if (token.getValue().equals("FLOAT") && value.matches("\\d*\\.\\d+")) {
-                                    rootNode.addChild(new VariableDeclarationNode("FLOAT", varname, value));
+                                    VariableDeclarationNode floatVariableNode = (new VariableDeclarationNode("FLOAT", varname, value));
+                                    rootNode.addChild(floatVariableNode);
+                                    environment.placeVariables(floatVariableNode);
                                 }
                                 if (token.getValue().equals("CHAR") && value.matches("'.'")) {
-                                    rootNode.addChild(new VariableDeclarationNode("CHAR", varname, value));
+                                    VariableDeclarationNode charVariableNode = (new VariableDeclarationNode("CHAR", varname, value));
+                                    rootNode.addChild(charVariableNode);
+                                    environment.placeVariables(charVariableNode);
                                 }
                                 if (token.getValue().equals("BOOL") && (value.equals("true") || value.equals("false"))) {
-                                    rootNode.addChild(new VariableDeclarationNode("BOOL", varname, value));
+                                    VariableDeclarationNode boolVariableNode = (new VariableDeclarationNode("BOOL", varname, value));
+                                    rootNode.addChild(boolVariableNode);
+                                    environment.placeVariables(boolVariableNode);
                                 }
                             }
                         }

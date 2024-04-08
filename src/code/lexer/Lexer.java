@@ -82,9 +82,9 @@ public class Lexer {
             currentTokenIndex++;
         }
         checkTokenGrammar(tokensList);
-        } catch (CustomExceptions ex) {
+        } catch (CustomExceptions e) {
             // Handle the custom exception
-            System.out.println("Custom exception caught: " + ex.getMessage());
+            System.out.println("Custom exception caught: " + e.getMessage());
         }
         return tokensList;
     }

@@ -91,6 +91,15 @@ public class Parser {
                         }
                         i++; // Move to the next token
                     }
+                    for (String varName : variableList) {
+                        Object value = environment.getVariable(varName);
+                        if (value != null) {
+                            rootNode.addChild(new DisplayNode(value.toString()));
+                        }
+                    }
+                    // create a function that loops throughout the environment to see if the strings inside variableList
+                    // match that of the variables inside the Environment
+                    // If it does, create a DisplayNode for this with parameters of the value of the token only
                     break;
             }
         }

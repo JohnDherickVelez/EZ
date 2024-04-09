@@ -5,4 +5,5 @@ INT a_1 = 15
 INT d = 17
 FLOAT b = 3.14
 CHAR c = 'c'
+DISPLAY: a_1 d b c
 END CODE

@@ -27,24 +27,34 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace(); // Handle or log any IOException that occurs
         }
+        // Place all Testing functions here:
 
-        // Now, the contents of the text file are stored in the sourceCode string
+        // Test if source code is indeed converted to String (Can Comment tests when running full program)
         System.out.println("Source code:");
         System.out.println(sourceCode);
 
+        // Test if Lexer successfully tokenizes the source code
         Lexer lexer = new Lexer();
         List<Token> tokenlist = lexer.tokenizeSourceCode(String.valueOf(sourceCode));
 
+        // Environment and Variable List for Variable Hashmap storage
         Environment environment = new Environment();
         List<String> variableList = new ArrayList<>();
-//        lexer.printAllTokens();
+
+        // Parser Instantiation
         Parser parser = new Parser(tokenlist, environment);
 
+        // Initializes the root node of the AST
         Node rootNode = parser.produceAST();
 
+        // Traverses AST
         executeAST(rootNode);
-//        parser.produceAST();
+
+        // Displays variables inside the environment
         environment.displayVariables();
+
+        // Place Interpreter only functions here:
+
     }
 
     private static void executeAST(Node node) {
@@ -70,9 +80,9 @@ public class Main {
         } else if (node instanceof DisplayNode) {
             DisplayNode displayNode = (DisplayNode) node;
             // Print out the value stored in the DisplayNode
-            System.out.println("Display: " + displayNode.getValue());
+//            System.out.println("Display: " + displayNode.getValue());
+            System.out.println(displayNode.getValue());
         }
-
         // Traverse child nodes recursively
         List<Node> children = node.getChildren();
         for (Node child : children) {

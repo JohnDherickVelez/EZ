@@ -42,6 +42,7 @@ public class Lexer {
                 case "BEGIN":
                 case "END":
                 case "CODE":
+                case ":":
                     tokensList.add(new Token(Token.TokenType.DELIMITER, word, true));
                     break;
                 case "INT":
@@ -65,6 +66,9 @@ public class Lexer {
                 case "|":
                     tokensList.add(new Token(Token.TokenType.OPERATOR, word, true));
                     break;
+                case "DISPLAY":
+                    tokensList.add(new Token(Token.TokenType.DISPLAY, word, true));
+                    break;
                 case "'":
                     tokensList.add(new Token(Token.TokenType.S_QUOTE, word, true));
                     break;
@@ -76,6 +80,7 @@ public class Lexer {
 
             // Print each token from the tokensList
         }
+        // Can comment this out when running full deployment of interpreter ( This only tests the tokenizer if it works)
         System.out.println("Tokens:");
         for (Token token : tokensList) {
             System.out.println(currentTokenIndex + ": {" +"Token Value: " + token.getValue() + ", Token type: " + token.getType() + "}");

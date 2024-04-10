@@ -82,24 +82,42 @@ public class Parser {
                     break;
 
                 case DISPLAY:
-                    // Iterate through tokens until encountering ENDLINE
-                    while (i < tokensList.size() && tokensList.get(i).getType() != Token.TokenType.ENDLINE) {
-                        Token displayToken = tokensList.get(i);
-                        if (displayToken.getType() == Token.TokenType.VARIABLE) {
-                            // If the token is a variable, add its name to the variableList
-                            variableList.add(displayToken.getValue());
+                    try {
+                        StringBuilder stringBuilder = new StringBuilder();
+                        boolean isFirstVariable = true; // Flag to track if it's the first variable
+                        while (i < tokensList.size() && tokensList.get(i).getType() != Token.TokenType.ENDLINE) {
+                            Token displayToken = tokensList.get(i);
+                            if (displayToken.getType() == Token.TokenType.VARIABLE) {
+                                // If the token is a variable, and it's not the first variable or if it's the first variable itself, add its name to the variableList
+                                if (!isFirstVariable) {
+                                    throw new CustomExceptions("Expected '&' token between variables.");
+                                } else {
+                                    variableList.add(displayToken.getValue());
+                                    isFirstVariable = false; // Reset the flag after processing the first variable
+                                }
+                            } else if (displayToken.getType() == Token.TokenType.OPERATOR && displayToken.getValue().equals("&")) {
+                                // Check if there's a variable after '&'
+                                if (i + 1 < tokensList.size() && tokensList.get(i + 1).getType() == Token.TokenType.VARIABLE) {
+                                    variableList.add(tokensList.get(i + 1).getValue());
+                                    i++; // Move to the next token as we've already processed the variable after '&'
+                                } else {
+                                    throw new CustomExceptions("Expected variable after '&' token.");
+                                }
+                            }
+                            i++; // Move to the next token
                         }
-                        i++; // Move to the next token
-                    }
-                    for (String varName : variableList) {
-                        Object value = environment.getVariable(varName);
-                        if (value != null) {
-                            rootNode.addChild(new DisplayNode(value.toString()));
+                        for (String varName : variableList) {
+                            Object value = environment.getVariable(varName);
+                            if (value != null) {
+                                stringBuilder.append(value);
+                            } else {
+                                throw new CustomExceptions("Value not inside environment! " + varName);
+                            }
                         }
+                        rootNode.addChild(new DisplayNode(stringBuilder.toString()));
+                    } catch (CustomExceptions e) {
+                        System.out.println("Custom exception caught: " + e.getMessage());
                     }
-                    // create a function that loops throughout the environment to see if the strings inside variableList
-                    // match that of the variables inside the Environment
-                    // If it does, create a DisplayNode for this with parameters of the value of the token only
                     break;
             }
         }

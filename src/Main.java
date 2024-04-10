@@ -59,8 +59,7 @@ public class Main {
 
     private static void executeAST(Node node) {
         // Perform appropriate actions based on code.node type
-        if (node instanceof DelimiterNode) {
-            DelimiterNode delimiterNode = (DelimiterNode) node;
+        if (node instanceof DelimiterNode delimiterNode) {
             // Execute functionality based on delimiter type
             if (delimiterNode.getDataType().equals("BEGIN_CODE")) {
                 // Logic to start the program
@@ -69,18 +68,14 @@ public class Main {
                 // Logic to end the program
                 System.out.println("Program ended...");
             }
-        } else if (node instanceof VariableDeclarationNode) {
-            VariableDeclarationNode variableNode = (VariableDeclarationNode) node;
+        } else if (node instanceof VariableDeclarationNode variableNode) {
             // Logic to handle variable declarations
             String variableType = variableNode.getDataType();
             String variableName = variableNode.getVariableName();
             String variableValue = variableNode.getValue();
             // Perform actions based on variable type, name, and value
             System.out.println("Variable declaration: " + variableType + " " + variableName + " = " + variableValue);
-        } else if (node instanceof DisplayNode) {
-            DisplayNode displayNode = (DisplayNode) node;
-            // Print out the value stored in the DisplayNode
-//            System.out.println("Display: " + displayNode.getValue());
+        } else if (node instanceof DisplayNode displayNode) {
             System.out.println(displayNode.getValue());
         }
         // Traverse child nodes recursively

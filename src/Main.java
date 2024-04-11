@@ -1,12 +1,9 @@
 import code.Environment.Environment;
 import code.lexer.Lexer;
 import code.model.Token;
-import code.node.DisplayNode;
+import code.node.*;
 import code.parser.CustomExceptions;
 import code.parser.Parser;
-import code.node.DelimiterNode;
-import code.node.Node;
-import code.node.VariableDeclarationNode;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -77,6 +74,10 @@ public class Main {
             System.out.println("Variable declaration: " + variableType + " " + variableName + " = " + variableValue);
         } else if (node instanceof DisplayNode displayNode) {
             System.out.println(displayNode.getValue());
+        } else if (node instanceof AssignmentNode assignmentNode) {
+            String variableName = assignmentNode.getVariableName();
+            String variableValue = assignmentNode.getValue();
+            System.out.println("Assignment statement: " + variableName + " = " + variableValue);
         }
         // Traverse child nodes recursively
         List<Node> children = node.getChildren();

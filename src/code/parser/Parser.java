@@ -27,6 +27,7 @@ public class Parser {
         for (int i = 0; i < tokensList.size(); i++) {
             Token token = tokensList.get(i);
 
+            try {
             switch (token.getType()) {
                 case DELIMITER:
                     if (Objects.equals(String.valueOf(token.getValue()), "BEGIN")) {
@@ -93,7 +94,6 @@ public class Parser {
                     break;
 
                 case DISPLAY:
-                    try {
                         StringBuilder stringBuilder = new StringBuilder();
                         boolean isFirstVariable = true; // Flag to track if it's the first variable
                         while (i < tokensList.size() && tokensList.get(i).getType() != Token.TokenType.ENDLINE) {
@@ -126,12 +126,49 @@ public class Parser {
                             }
                         }
                         rootNode.addChild(new DisplayNode(stringBuilder.toString()));
-                    } catch (CustomExceptions e) {
-                        System.out.println("Custom exception caught: " + e.getMessage());
+                    break;
+
+                case VARIABLE:
+                    if (environment.isDefined(token.getValue().toString())) { // check if variable exist [int x]
+                        String varname = token.getValue();
+                        Object new_value = null;
+                        i++; // Move to the next token
+                        if (i < tokensList.size()) {
+                            token = tokensList.get(i);
+                            if (token.getType() == Token.TokenType.ASSIGN) { // if encountered an assign operator
+                                i++;
+                                token = tokensList.get(i);
+                                // Update the variable value in the environment
+                                if (token.getType() == Token.TokenType.VARIABLE) { // for: [ x = y ]
+                                    // check if [y] exist
+                                    if (environment.isDefined(token.getValue().toString())) {
+                                        new_value = environment.getVariable(token.getValue().toString()); // update value in the environment
+                                        environment.setVariable(varname, new_value);
+                                    } else {
+                                        throw new CustomExceptions("Variable "+ token.getValue().toString() +" not initially declared");
+                                    }
+                                } else if (token.getType() == Token.TokenType.VALUE) { // for: [ x = 3 ]
+                                    new_value = token.getValue();
+                                    environment.setVariable(varname, new_value);
+                                }
+                                // add AssignmentNode to root
+                                rootNode.addChild(new AssignmentNode(varname,new_value));
+                            } else {
+                                throw new CustomExceptions("Invalid assignment for variable '" + varname + "'.");
+                            }
+                        } else {
+                            throw new CustomExceptions("Missing value for variable '" + varname + "'.");
+                        }
+                    } else {
+                        throw new CustomExceptions("Variable "+ token.getValue().toString() +" not initially declared");
                     }
                     break;
             }
             currentTokenIndex++;
+
+            } catch (CustomExceptions e) {
+                System.out.println("Custom exception caught: " + e.getMessage());
+            }
         }
         return rootNode; // Return the root code.node of the AST
     }

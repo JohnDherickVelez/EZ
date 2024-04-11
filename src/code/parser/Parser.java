@@ -163,6 +163,28 @@ public class Parser {
                         throw new CustomExceptions("Variable "+ token.getValue().toString() +" not initially declared");
                     }
                     break;
+                case SCAN:
+                    List<String> scanVariables = new ArrayList<>();
+                    i++; // Move to the next token after SCAN
+                    boolean commaExpected = false; // Flag to track if a comma is expected
+                    while (i < tokensList.size() && tokensList.get(i).getType() != Token.TokenType.ENDLINE) {
+                        Token scanToken = tokensList.get(i);
+                        if (scanToken.getType() == Token.TokenType.VARIABLE) {
+                            if (commaExpected) {
+                                throw new CustomExceptions("Expected ',' between variables.");
+                            }
+                            scanVariables.add(scanToken.getValue());
+                            commaExpected = true; // Set comma expected for the next iteration
+                        } else if (scanToken.getType() == Token.TokenType.DELIMITER && scanToken.getValue().equals(",")) {
+                            // If a comma is encountered, reset the comma expected flag
+                            commaExpected = false;
+                        } else {
+                            throw new CustomExceptions("Unexpected token: " + scanToken.getValue());
+                        }
+                        i++; // Move to the next token
+                    }
+                    rootNode.addChild(new ScanNode(scanVariables));
+                    break;
             }
             currentTokenIndex++;
 

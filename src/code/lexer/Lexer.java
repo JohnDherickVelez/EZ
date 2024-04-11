@@ -20,7 +20,7 @@ public class Lexer {
 
     public List<Token> tokenizeSourceCode(String sourceCode) throws CustomExceptions {
         try {
-            Pattern pattern = Pattern.compile("\\b[\\w.]+\\b|\\n|[-+*/=<>!&|]|#.*|'.'"); // good regex for float
+            Pattern pattern = Pattern.compile("\\b[\\w.]+\\b|\\n|[-+*/=<>!&|,]|#.*|'.'"); // good regex for float
 //        Pattern pattern = Pattern.compile("\\b\\w+\\b|\\n|[-+*/=<>!&|]");
 //        Pattern pattern = Pattern.compile("\\b\\w+\\b|\\n|[-+*/=<>!&|]|'");
 //        Pattern pattern = Pattern.compile("\\b\\w+\\b|\\n|[-+*/=<>!&|]|'.'"); // good regex for ' ' but as a whole 'c'
@@ -43,6 +43,7 @@ public class Lexer {
                 case "END":
                 case "CODE":
                 case ":":
+                case ",":
                     tokensList.add(new Token(Token.TokenType.DELIMITER, word, true));
                     break;
                 case "INT":
@@ -70,6 +71,9 @@ public class Lexer {
                     break;
                 case "DISPLAY":
                     tokensList.add(new Token(Token.TokenType.DISPLAY, word, true));
+                    break;
+                case "SCAN":
+                    tokensList.add(new Token(Token.TokenType.SCAN, word, true));
                     break;
                 case "'":
                     tokensList.add(new Token(Token.TokenType.S_QUOTE, word, true));

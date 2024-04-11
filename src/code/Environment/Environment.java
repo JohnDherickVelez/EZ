@@ -36,6 +36,9 @@ public class Environment {
     public void clear() {
         variables.clear();
     }
+    public void updateVariable(String variableName, int value) {
+        variables.put(variableName, value);
+    }
 
     public void placeVariables(VariableDeclarationNode variableNode) {
         String variableName = variableNode.getVariableName();

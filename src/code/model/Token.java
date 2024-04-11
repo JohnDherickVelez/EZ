@@ -40,5 +40,6 @@ public class Token {
         ASSIGN,
         WHITESPACE,
         S_QUOTE, DISPLAY,
+        SCAN,
     }
 }

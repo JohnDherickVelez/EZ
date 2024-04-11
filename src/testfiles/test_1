@@ -3,4 +3,6 @@ INT a = 5
 INT b = 4
 a = b
 b = 2
+SCAN: a,b
+DISPLAY: a & b
 END CODE

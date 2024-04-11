@@ -10,6 +10,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws CustomExceptions {
@@ -45,7 +46,7 @@ public class Main {
         Node rootNode = parser.produceAST();
 
         // Traverses AST
-        executeAST(rootNode);
+        executeAST(rootNode, environment);
 
         // Displays variables inside the environment
         environment.displayVariables();
@@ -54,7 +55,7 @@ public class Main {
 
     }
 
-    private static void executeAST(Node node) {
+    private static void executeAST(Node node, Environment environment) {
         // Perform appropriate actions based on code.node type
         if (node instanceof DelimiterNode delimiterNode) {
             // Execute functionality based on delimiter type
@@ -78,11 +79,31 @@ public class Main {
             String variableName = assignmentNode.getVariableName();
             String variableValue = assignmentNode.getValue();
             System.out.println("Assignment statement: " + variableName + " = " + variableValue);
+        } else if(node instanceof ScanNode scanNode) {
+            List<String> scannedVariables = scanNode.getScanVariables();
+            System.out.println("Scanned variables: " + scannedVariables);
+            Scanner scanner = new Scanner(System.in);
+            List<Integer> userInput = new ArrayList<>();
+
+            // Prompt the user for input based on scanned variables
+            for (String variableName : scannedVariables) {
+                System.out.print("Enter value for " + variableName + ": ");
+                int value = scanner.nextInt();
+                userInput.add(value);
+            }
+
+            // Update variables in the environment with user input
+            for (int i = 0; i < scannedVariables.size(); i++) {
+                String variableName = scannedVariables.get(i);
+                environment.updateVariable(variableName, userInput.get(i));
+            }
+
         }
+
         // Traverse child nodes recursively
         List<Node> children = node.getChildren();
         for (Node child : children) {
-            executeAST(child);
+            executeAST(child, environment);
         }
     }
 }

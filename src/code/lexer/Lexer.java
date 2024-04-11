@@ -81,9 +81,14 @@ public class Lexer {
                 default:
                     if (word.matches("'.'")) {
                     tokensList.add(new Token(Token.TokenType.VALUE, word, false)); // Tokenize as a single character literal
-                    } else if  (isNumeric(word)) {
+                    } else if (isNumeric(word)) {
                         tokensList.add(new Token(Token.TokenType.VALUE, word, false)); // Tokenize as a numeric literal
-                    } else {
+                    } else if (isBoolean(word)) {
+                        tokensList.add(new Token(Token.TokenType.VALUE, word, false)); // Tokenize as a numeric literal
+
+                    }
+
+                    else {
                         tokensList.add(new Token(Token.TokenType.VARIABLE, word, false)); // Default to variable if not a number
                     }
                     break;
@@ -151,6 +156,9 @@ public class Lexer {
 
     private boolean isNumeric(String str) {
         return str.matches("-?\\d+(\\.\\d+)?"); // Matches integers and floats (positive or negative)
+    }
+    private boolean isBoolean(String str) {
+        return str.equals("TRUE") || str.equals("FALSE");
     }
 
 }

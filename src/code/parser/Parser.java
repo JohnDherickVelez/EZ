@@ -184,8 +184,7 @@ public class Parser {
                         i++; // Move to the next token
                     }
                     rootNode.addChild(new ScanNode(scanVariables));
-                    break;
-            }
+                    break;            }
             currentTokenIndex++;
 
             } catch (CustomExceptions e) {
@@ -208,7 +207,10 @@ public class Parser {
                 VariableDeclarationNode charVariableNode = new VariableDeclarationNode("CHAR", variableName, value);
                 rootNode.addChild(charVariableNode);
                 environment.placeVariables(charVariableNode);
-            } else if (datatype.equals("BOOL") && (value.equals("true") || value.equals("false"))) {
+            } else if (datatype.equals("BOOL") && (value.equals("TRUE") || value.equals("FALSE"))) {
+                if (!value.matches("(TRUE|FALSE)")) {
+                    throw new CustomExceptions("Invalid value for BOOL variable '" + variableName + "'. It should be either \"TRUE\" or \"FALSE\".");
+                }
                 VariableDeclarationNode boolVariableNode = new VariableDeclarationNode("BOOL", variableName, value);
                 rootNode.addChild(boolVariableNode);
                 environment.placeVariables(boolVariableNode);

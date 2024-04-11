@@ -97,9 +97,7 @@ public class Main {
                 String variableName = scannedVariables.get(i);
                 environment.updateVariable(variableName, userInput.get(i));
             }
-
         }
-
         // Traverse child nodes recursively
         List<Node> children = node.getChildren();
         for (Node child : children) {

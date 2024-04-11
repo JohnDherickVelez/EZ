@@ -111,6 +111,23 @@ public class Parser {
                                 if (i + 1 < tokensList.size() && tokensList.get(i + 1).getType() == Token.TokenType.VARIABLE) {
                                     variableList.add(tokensList.get(i + 1).getValue());
                                     i++; // Move to the next token as we've already processed the variable after '&'
+                                } else if(i + 1 < tokensList.size() && tokensList.get(i + 1).getType() == Token.TokenType.OPERATOR && tokensList.get(i + 1).getValue().equals("$")) {
+                                    // if the displayToken encounters an $ sign, the string made from the string builder should do a next line or
+                                    // what should be my condition for this?
+                                    // For example:
+                                    // BEGIN CODE
+                                    //    INT a = 5
+                                    //    INT b = 4
+                                    //    BOOL c = TRUE
+                                    //    DISPLAY: a & $ & b & c
+                                    //    SCAN: a, b
+                                    //END CODE
+                                    // The output for this code should be:
+                                    //
+                                    // 5
+                                    // 4true
+                                    // as you can see, 5 called a next line
+                                    variableList.add("$");
                                 } else {
                                     throw new CustomExceptions("Expected variable after '&' token.");
                                 }
@@ -118,11 +135,21 @@ public class Parser {
                             i++; // Move to the next token
                         }
                         for (String varName : variableList) {
-                            Object value = environment.getVariable(varName);
-                            if (value != null) {
-                                stringBuilder.append(value);
+//                            Object value = environment.getVariable(varName);
+//                            if (value != null) {
+//                                stringBuilder.append(value);
+//                            } else {
+//                                throw new CustomExceptions("Value not inside environment! " + varName);
+//                            }
+                            if (varName.equals("$")) {
+                                stringBuilder.append("\n"); // Append a newline character if the variable name is "$"
                             } else {
-                                throw new CustomExceptions("Value not inside environment! " + varName);
+                                Object value = environment.getVariable(varName);
+                                if (value != null) {
+                                    stringBuilder.append(value);
+                                } else {
+                                    throw new CustomExceptions("Value not inside environment! " + varName);
+                                }
                             }
                         }
                         rootNode.addChild(new DisplayNode(stringBuilder.toString()));
@@ -184,9 +211,9 @@ public class Parser {
                         i++; // Move to the next token
                     }
                     rootNode.addChild(new ScanNode(scanVariables));
-                    break;            }
+                    break;
+                }
             currentTokenIndex++;
-
             } catch (CustomExceptions e) {
                 System.out.println("Custom exception caught: " + e.getMessage());
             }

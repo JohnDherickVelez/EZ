@@ -4,5 +4,6 @@ INT b = 4
 a = b
 b = 2
 BOOL c = TRUE
-DISPLAY: a & b & c
+DISPLAY: a & $ & b & c
+SCAN: a, b
 END CODE

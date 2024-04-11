@@ -58,22 +58,15 @@ public class Parser {
                             boolean assigned = false;
                             boolean decleared = false;
 
-                            while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) {
-                                // Print the value of the current token (for debugging purposes)
-                                System.out.println("Current Token: " + token.getValue());
+                            while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) { // Iterate through statement
 
-                                if (token.getType() == Token.TokenType.VARIABLE) {
+                                if (token.getType() == Token.TokenType.VARIABLE) { // Store variable
                                     variableNames.add(token.getValue());
                                     decleared = false;
-                                } else if (token.getType() == Token.TokenType.VALUE) {
+                                } else if (token.getType() == Token.TokenType.VALUE) { // Store value
                                     value = token.getValue();
                                     processVariableDeclaration(datatype, variableNames, value, rootNode); // Call the method
-
-                                    // Print the value and variable names after processing
-                                    System.out.println("Processed Value: " + value);
-                                    System.out.println("Processed Variable Names: " + variableNames);
-
-                                    variableNames.clear();
+                                    variableNames.clear(); // Clean list
                                     decleared = true;
                                 } else if (token.getType() == Token.TokenType.ASSIGN) {
                                     assigned = true;
@@ -86,9 +79,9 @@ public class Parser {
                                 }
                             }
 
-                            if(!decleared && !assigned) {
+                            if(!decleared && !assigned) { // For: int x, y, z = 3
                                 processVariableDeclaration(datatype, variableNames, value, rootNode); // Call the method
-                            } else if (!decleared && assigned){
+                            } else if (!decleared && assigned) {
                                 throw new CustomExceptions("No value assigned to variable");
                             }
 

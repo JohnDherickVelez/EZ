@@ -1,4 +1,13 @@
 BEGIN CODE
-INT a = 10
-a = 12
+# this is a comment
+INT a_1 = 15
+INT d = 17
+FLOAT b = 3.14
+CHAR c = 'c'
+DISPLAY: a_1 & d & b & c
+INT q = 15
+INT w = 17
+FLOAT e = 3.14
+CHAR r = 'c'
+DISPLAY: q & w & e & r
 END CODE

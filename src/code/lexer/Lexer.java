@@ -58,13 +58,15 @@ public class Lexer {
                 case "-":
                 case "*":
                 case "/":
-                case "=":
                 case "<":
                 case ">":
                 case "!":
                 case "&":
                 case "|":
                     tokensList.add(new Token(Token.TokenType.OPERATOR, word, true));
+                    break;
+                case "=":
+                    tokensList.add(new Token(Token.TokenType.ASSIGN, word, true));
                     break;
                 case "DISPLAY":
                     tokensList.add(new Token(Token.TokenType.DISPLAY, word, true));
@@ -73,7 +75,13 @@ public class Lexer {
                     tokensList.add(new Token(Token.TokenType.S_QUOTE, word, true));
                     break;
                 default:
-                    tokensList.add(new Token(Token.TokenType.VARIABLE, word, false));
+                    if (word.matches("'.'")) {
+                    tokensList.add(new Token(Token.TokenType.VALUE, word, false)); // Tokenize as a single character literal
+                    } else if  (isNumeric(word)) {
+                        tokensList.add(new Token(Token.TokenType.VALUE, word, false)); // Tokenize as a numeric literal
+                    } else {
+                        tokensList.add(new Token(Token.TokenType.VARIABLE, word, false)); // Default to variable if not a number
+                    }
                     break;
             }
             System.out.println("Word: " + word);
@@ -136,4 +144,9 @@ public class Lexer {
         }
 
     }
+
+    private boolean isNumeric(String str) {
+        return str.matches("-?\\d+(\\.\\d+)?"); // Matches integers and floats (positive or negative)
+    }
+
 }

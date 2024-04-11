@@ -31,11 +31,13 @@ public class Token {
         BEGIN_CODE,
         DATATYPE,
         VARIABLE,
+
+        VALUE,
         ENDLINE,
         IDENTIFIER,
         OPERATOR,
         DELIMITER,
-        COMMENT,
+        ASSIGN,
         WHITESPACE,
         S_QUOTE, DISPLAY,
     }

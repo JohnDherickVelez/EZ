@@ -31,7 +31,6 @@ public class Token {
         BEGIN_CODE,
         DATATYPE,
         VARIABLE,
-
         VALUE,
         ENDLINE,
         IDENTIFIER,
@@ -40,6 +39,6 @@ public class Token {
         ASSIGN,
         WHITESPACE,
         S_QUOTE, DISPLAY,
-        SCAN,
+        SCAN, OPEN_P, CLOSE_P, EXPRESSION,
     }
 }

@@ -1,5 +1,8 @@
 package code.parser;
 
+//import code.ArithmeticOperations.BinaryOperationNode;
+//import code.ArithmeticOperations.ValueNode;
+//import code.ArithmeticOperations.VariableNode;
 import code.Environment.Environment;
 import code.model.Token;
 import code.node.*;
@@ -14,9 +17,6 @@ public class Parser {
     private List<String> variableList = new ArrayList<>();
     private Environment environment;
 
-//    public Parser(List<Token> tokensList) {
-//        this.tokensList = tokensList;
-//    }
     public Parser(List<Token> tokensList, Environment environment) {
         this.tokensList = tokensList;
         this.environment = environment;
@@ -94,66 +94,75 @@ public class Parser {
                     break;
 
                 case DISPLAY:
-                        StringBuilder stringBuilder = new StringBuilder();
-                        boolean isFirstVariable = true; // Flag to track if it's the first variable
-                        while (i < tokensList.size() && tokensList.get(i).getType() != Token.TokenType.ENDLINE) {
-                            Token displayToken = tokensList.get(i);
-                            if (displayToken.getType() == Token.TokenType.VARIABLE) {
-                                // If the token is a variable, and it's not the first variable or if it's the first variable itself, add its name to the variableList
-                                if (!isFirstVariable) {
-                                    throw new CustomExceptions("Expected '&' token between variables.");
-                                } else {
-                                    variableList.add(displayToken.getValue());
-                                    isFirstVariable = false; // Reset the flag after processing the first variable
-                                }
-                            } else if (displayToken.getType() == Token.TokenType.OPERATOR && displayToken.getValue().equals("&")) {
-                                // Check if there's a variable after '&'
-                                if (i + 1 < tokensList.size() && tokensList.get(i + 1).getType() == Token.TokenType.VARIABLE) {
-                                    variableList.add(tokensList.get(i + 1).getValue());
-                                    i++; // Move to the next token as we've already processed the variable after '&'
-                                } else if(i + 1 < tokensList.size() && tokensList.get(i + 1).getType() == Token.TokenType.OPERATOR && tokensList.get(i + 1).getValue().equals("$")) {
-                                    // if the displayToken encounters an $ sign, the string made from the string builder should do a next line or
-                                    // what should be my condition for this?
-                                    // For example:
-                                    // BEGIN CODE
-                                    //    INT a = 5
-                                    //    INT b = 4
-                                    //    BOOL c = TRUE
-                                    //    DISPLAY: a & $ & b & c
-                                    //    SCAN: a, b
-                                    //END CODE
-                                    // The output for this code should be:
-                                    //
-                                    // 5
-                                    // 4true
-                                    // as you can see, 5 called a next line
-                                    variableList.add("$");
-                                } else {
-                                    throw new CustomExceptions("Expected variable after '&' token.");
-                                }
-                            }
-                            i++; // Move to the next token
-                        }
-                        for (String varName : variableList) {
-//                            Object value = environment.getVariable(varName);
-//                            if (value != null) {
-//                                stringBuilder.append(value);
-//                            } else {
-//                                throw new CustomExceptions("Value not inside environment! " + varName);
-//                            }
-                            if (varName.equals("$")) {
-                                stringBuilder.append("\n"); // Append a newline character if the variable name is "$"
+                    List<String> variableNames = new ArrayList<>();
+                    boolean isFirstVariable = true; // Flag to track if it's the first variable
+
+                    // Iterate through tokens until the end of the DISPLAY statement
+                    while (i < tokensList.size() && tokensList.get(i).getType() != Token.TokenType.ENDLINE) {
+                        Token displayToken = tokensList.get(i);
+                        if (displayToken.getType() == Token.TokenType.VARIABLE) {
+                            // If the token is a variable, add its name to the variableNames list
+                            variableNames.add(displayToken.getValue());
+                            isFirstVariable = false; // Reset the flag after processing the first variable
+                        } else if (displayToken.getType() == Token.TokenType.OPERATOR && displayToken.getValue().equals("&")) {
+                            // Check if there's a variable after '&'
+                            if (i + 1 < tokensList.size() && tokensList.get(i + 1).getType() == Token.TokenType.VARIABLE) {
+                                variableNames.add(tokensList.get(i + 1).getValue());
+                                i++; // Move to the next token as we've already processed the variable after '&'
+                            } else if (i + 1 < tokensList.size() && tokensList.get(i + 1).getType() ==
+                                    Token.TokenType.OPERATOR && tokensList.get(i + 1).getValue().equals("$")) {
+                                variableNames.add("$");
                             } else {
-                                Object value = environment.getVariable(varName);
-                                if (value != null) {
-                                    stringBuilder.append(value);
-                                } else {
-                                    throw new CustomExceptions("Value not inside environment! " + varName);
-                                }
+                                throw new CustomExceptions("Expected variable after '&' token.");
                             }
                         }
-                        rootNode.addChild(new DisplayNode(stringBuilder.toString()));
+                        i++; // Move to the next token
+                    }
+
+                    // Create a new DisplayNode with the list of variable names
+                    rootNode.addChild(new DisplayNode(variableNames));
                     break;
+//                        StringBuilder stringBuilder = new StringBuilder();
+//                        variableList.clear();
+//                        boolean isFirstVariable = true; // Flag to track if it's the first variable
+//                        while (i < tokensList.size() && tokensList.get(i).getType() != Token.TokenType.ENDLINE) {
+//                            Token displayToken = tokensList.get(i);
+//                            if (displayToken.getType() == Token.TokenType.VARIABLE) {
+//                                // If the token is a variable, and it's not the first variable or if it's the first variable itself, add its name to the variableList
+//                                if (!isFirstVariable) {
+//                                    throw new CustomExceptions("Expected '&' token between variables.");
+//                                } else {
+//                                    variableList.add(displayToken.getValue());
+//                                    isFirstVariable = false; // Reset the flag after processing the first variable
+//                                }
+//                            } else if (displayToken.getType() == Token.TokenType.OPERATOR && displayToken.getValue().equals("&")) {
+//                                // Check if there's a variable after '&'
+//                                if (i + 1 < tokensList.size() && tokensList.get(i + 1).getType() == Token.TokenType.VARIABLE) {
+//                                    variableList.add(tokensList.get(i + 1).getValue());
+//                                    i++; // Move to the next token as we've already processed the variable after '&'
+//                                } else if(i + 1 < tokensList.size() && tokensList.get(i + 1).getType() ==
+//                                        Token.TokenType.OPERATOR && tokensList.get(i + 1).getValue().equals("$")) {
+//                                    variableList.add("$");
+//                                } else {
+//                                    throw new CustomExceptions("Expected variable after '&' token.");
+//                                }
+//                            }
+//                            i++; // Move to the next token
+//                        }
+//                        for (String varName : variableList) {
+//                            if (varName.equals("$")) {
+//                                stringBuilder.append("\n"); // Append a newline character if the variable name is "$"
+//                            } else {
+//                                Object value = environment.getVariable(varName);
+//                                if (value != null) {
+//                                    stringBuilder.append(value);
+//                                } else {
+//                                    throw new CustomExceptions("Value not inside environment! " + varName);
+//                                }
+//                            }
+//                        }
+//                        rootNode.addChild(new DisplayNode(stringBuilder.toString()));
+//                    break;
 
                 case VARIABLE:
                     if (environment.isDefined(token.getValue().toString())) { // check if variable exist [int x]
@@ -169,7 +178,7 @@ public class Parser {
                                 if (token.getType() == Token.TokenType.VARIABLE) { // for: [ x = y ]
                                     // check if [y] exist
                                     if (environment.isDefined(token.getValue().toString())) {
-                                        new_value = environment.getVariable(token.getValue().toString()); // update value in the environment
+                                         new_value = environment.getVariable(token.getValue().toString()); // update value in the environment
                                         environment.setVariable(varname, new_value);
                                     } else {
                                         throw new CustomExceptions("Variable "+ token.getValue().toString() +" not initially declared");
@@ -212,6 +221,12 @@ public class Parser {
                     }
                     rootNode.addChild(new ScanNode(scanVariables));
                     break;
+//                case OPERATOR:
+//                    if (isArithmeticOperator(token)) {
+//                        Node expressionNode = parseArithmeticExpression(i);
+//                        rootNode.addChild(expressionNode);
+//                    } FUCK AST
+//                    break;
                 }
             currentTokenIndex++;
             } catch (CustomExceptions e) {
@@ -244,4 +259,41 @@ public class Parser {
             }
         }
     }
+//    private boolean isArithmeticOperator(Token token) {
+//        return token.getValue().equals("+") || token.getValue().equals("-") ||
+//                token.getValue().equals("*") || token.getValue().equals("/");
+//    }
+//
+//    private Node parseArithmeticExpression(int currentIndex) throws CustomExceptions {
+//        Token token = tokensList.get(currentIndex);
+//        // Assuming token is an arithmetic operator here
+//
+//        BinaryOperationNode operationNode = new BinaryOperationNode(token.getValue());
+//        currentIndex++; // Move to the next token after the operator
+//
+//        // Parse left expression
+//        Node leftExpression = parsePrimary(currentIndex - 1);
+//        operationNode.setLeftOperand(leftExpression);
+//
+//        // Parse right expression
+//        Node rightExpression = parsePrimary(currentIndex + 1);
+//        operationNode.setRightOperand(rightExpression);
+//
+//        return operationNode;
+//    }
+//
+//    private Node parsePrimary(int currentIndex) throws CustomExceptions {
+//        Token token = tokensList.get(currentIndex);
+//        // Assuming token is a number or variable here
+//
+//        if (token.getType() == Token.TokenType.VALUE) {
+//            // Create a node for the value
+//            return new ValueNode(token.getValue());
+//        } else if (token.getType() == Token.TokenType.VARIABLE) {
+//            // Assuming you handle variable lookup
+//            return new VariableNode(token.getValue());
+//        } else {
+//            throw new CustomExceptions("Invalid token in arithmetic expression");
+//        }
+//    }
 }

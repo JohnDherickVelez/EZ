@@ -21,6 +21,7 @@ public class Parser {
         this.tokensList = tokensList;
         this.environment = environment;
     }
+
     public ASTNode produceAST() throws CustomExceptions {
         ASTNode rootNode = new ASTNode(); // Create the root code.node
 
@@ -28,98 +29,128 @@ public class Parser {
             Token token = tokensList.get(i);
 
             try {
-            switch (token.getType()) {
-                case DELIMITER:
-                    if (Objects.equals(String.valueOf(token.getValue()), "BEGIN")) {
-                        // Add logic for processing "BEGIN" token
-                        if (i + 1 < tokensList.size() &&
-                                Objects.equals(tokensList.get(i + 1).getValue(), "CODE")) {
-                            // Add logic for processing "BEGIN CODE" sequence
-                            rootNode.addChild(new DelimiterNode("BEGIN_CODE", true));
-                            i++; // Move to the next token after "CODE"
+                switch (token.getType()) {
+                    case DELIMITER:
+                        if (Objects.equals(String.valueOf(token.getValue()), "BEGIN")) {
+                            // Add logic for processing "BEGIN" token
+                            if (i + 1 < tokensList.size() &&
+                                    Objects.equals(tokensList.get(i + 1).getValue(), "CODE")) {
+                                // Add logic for processing "BEGIN CODE" sequence
+                                rootNode.addChild(new DelimiterNode("BEGIN_CODE", true));
+                                i++; // Move to the next token after "CODE"
+                            }
+                        } else if (Objects.equals(String.valueOf(token.getValue()), "END")) {
+                            if (i + 1 < tokensList.size() &&
+                                    Objects.equals(tokensList.get(i + 1).getValue(), "CODE")) {
+                                // Add logic for processing "END CODE" sequence
+                                rootNode.addChild(new DelimiterNode("END_CODE", false));
+                                i++; // Move to the next token after "CODE"
+                            }
                         }
-                    } else if (Objects.equals(String.valueOf(token.getValue()), "END")) {
-                        if (i + 1 < tokensList.size() &&
-                                Objects.equals(tokensList.get(i + 1).getValue(), "CODE")) {
-                            // Add logic for processing "END CODE" sequence
-                            rootNode.addChild(new DelimiterNode("END_CODE", false));
-                            i++; // Move to the next token after "CODE"
-                        }
-                    }
-                    break;
+                        break;
 
-                case DATATYPE:
-                    if (token.getValue().equals("INT") || token.getValue().equals("FLOAT")
-                            || token.getValue().equals("CHAR") || token.getValue().equals("BOOL")) {
+                    case DATATYPE:
+                        if (token.getValue().equals("INT") || token.getValue().equals("FLOAT")
+                                || token.getValue().equals("CHAR") || token.getValue().equals("BOOL")) {
 
-                        if (i + 1 < tokensList.size()) {
-                            String datatype = token.getValue();
-                            List<String> variableNames = new ArrayList<>();
-                            String value = null;
-                            boolean assigned = false;
-                            boolean decleared = false;
+                            if (i + 1 < tokensList.size()) {
+                                String datatype = token.getValue();
+                                List<String> variableNames = new ArrayList<>();
+                                String value = null;
+                                boolean assigned = false;
+                                boolean decleared = false;
 
-                            while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) { // Iterate through statement
+                                while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) { // Iterate through statement
 
-                                if (token.getType() == Token.TokenType.VARIABLE) { // Store variable
-                                    variableNames.add(token.getValue());
-                                    decleared = false;
-                                } else if (token.getType() == Token.TokenType.VALUE) { // Store value
-                                    value = token.getValue();
+                                    if (token.getType() == Token.TokenType.VARIABLE) { // Store variable
+                                        variableNames.add(token.getValue());
+                                        decleared = false;
+                                    } else if (token.getType() == Token.TokenType.VALUE) { // Store value
+                                        value = token.getValue();
+                                        processVariableDeclaration(datatype, variableNames, value, rootNode); // Call the method
+                                        variableNames.clear(); // Clean list
+                                        decleared = true;
+                                    } else if (token.getType() == Token.TokenType.ASSIGN) {
+                                        assigned = true;
+                                    }
+
+                                    // Move to the next token
+                                    i++;
+                                    if (i < tokensList.size()) {
+                                        token = tokensList.get(i);
+                                    }
+                                }
+
+                                if (!decleared && !assigned) { // For: int x, y, z = 3
                                     processVariableDeclaration(datatype, variableNames, value, rootNode); // Call the method
-                                    variableNames.clear(); // Clean list
-                                    decleared = true;
-                                } else if (token.getType() == Token.TokenType.ASSIGN) {
-                                    assigned = true;
+                                } else if (!decleared && assigned) {
+                                    throw new CustomExceptions("No value assigned to variable");
                                 }
 
-                                // Move to the next token
-                                i++;
-                                if (i < tokensList.size()) {
-                                    token = tokensList.get(i);
-                                }
-                            }
-
-                            if(!decleared && !assigned) { // For: int x, y, z = 3
-                                processVariableDeclaration(datatype, variableNames, value, rootNode); // Call the method
-                            } else if (!decleared && assigned) {
-                                throw new CustomExceptions("No value assigned to variable");
-                            }
-
-                        } else {
-                            // Handle unexpected token (not an identifier)
-                            throw new CustomExceptions("Expected identifier for variable name.");
-                        }
-                    }
-                    break;
-
-                case DISPLAY:
-                    List<String> variableNames = new ArrayList<>();
-                    boolean isFirstVariable = true; // Flag to track if it's the first variable
-
-                    // Iterate through tokens until the end of the DISPLAY statement
-                    while (i < tokensList.size() && tokensList.get(i).getType() != Token.TokenType.ENDLINE) {
-                        Token displayToken = tokensList.get(i);
-                        if (displayToken.getType() == Token.TokenType.VARIABLE) {
-                            // If the token is a variable, add its name to the variableNames list
-                            variableNames.add(displayToken.getValue());
-                            isFirstVariable = false; // Reset the flag after processing the first variable
-                        } else if (displayToken.getType() == Token.TokenType.OPERATOR && displayToken.getValue().equals("&")) {
-                            // Check if there's a variable after '&'
-                            if (i + 1 < tokensList.size() && tokensList.get(i + 1).getType() == Token.TokenType.VARIABLE) {
-                                variableNames.add(tokensList.get(i + 1).getValue());
-                                i++; // Move to the next token as we've already processed the variable after '&'
-                            } else if (i + 1 < tokensList.size() && tokensList.get(i + 1).getType() ==
-                                    Token.TokenType.OPERATOR && tokensList.get(i + 1).getValue().equals("$")) {
-                                variableNames.add("$");
                             } else {
-                                throw new CustomExceptions("Expected variable after '&' token.");
+                                // Handle unexpected token (not an identifier)
+                                throw new CustomExceptions("Expected identifier for variable name.");
                             }
                         }
-                        i++; // Move to the next token
-                    }
+                        break;
 
-                    // Create a new DisplayNode with the list of variable names
+                    case DISPLAY:
+                        List<String> variableNames = new ArrayList<>();
+                        boolean isFirstVariable = true; // Flag to track if it's the first variable
+
+                        // Iterate through tokens until the end of the DISPLAY statement
+                        while (i < tokensList.size() && tokensList.get(i).getType() != Token.TokenType.ENDLINE) {
+                            Token displayToken = tokensList.get(i);
+                            if (displayToken.getType() == Token.TokenType.VARIABLE) {
+                                // If the token is a variable, add its name to the variableNames list
+                                variableNames.add(displayToken.getValue());
+                                isFirstVariable = false; // Reset the flag after processing the first variable
+                            } else if (displayToken.getType() == Token.TokenType.OPERATOR && displayToken.getValue().equals("&")) {
+                                // Check if there's a variable after '&'
+                                if (i + 1 < tokensList.size() && tokensList.get(i + 1).getType() == Token.TokenType.VARIABLE) {
+                                    variableNames.add(tokensList.get(i + 1).getValue());
+                                    i++; // Move to the next token as we've already processed the variable after '&'
+                                } else if (i + 1 < tokensList.size() && tokensList.get(i + 1).getType() ==
+                                        Token.TokenType.OPERATOR && tokensList.get(i + 1).getValue().equals("$")) {
+                                    variableNames.add("$");
+                                }
+                                if (i < tokensList.size()) {
+                                    Token nextToken = tokensList.get(i);
+
+                                    if (nextToken.getType() == Token.TokenType.VARIABLE) {
+                                        // Append the variable name to the list
+                                        variableNames.add(nextToken.getValue());
+                                    } else if (nextToken.getType() == Token.TokenType.OPERATOR && nextToken.getValue().equals("\"")) {
+                                        // Handle quoted text within DISPLAY
+                                        StringBuilder quotedText = new StringBuilder();
+                                        i++; // Move past the opening quote
+
+                                        while (i < tokensList.size() &&
+                                                tokensList.get(i).getType() != Token.TokenType.OPERATOR &&
+                                                !tokensList.get(i).getValue().equals("\"")) {
+                                            // Append token value to the quoted text
+                                            quotedText.append(tokensList.get(i).getValue());
+                                            i++; // Move to the next token
+                                        }
+
+                                        if (i < tokensList.size() &&
+                                                tokensList.get(i).getType() == Token.TokenType.OPERATOR &&
+                                                tokensList.get(i).getValue().equals("\"")) {
+                                            // Append the collected quoted text as a single variable name
+                                            variableNames.add(quotedText.toString());
+                                        }
+                                    }
+                                }
+                            }
+
+                            i++; // Move to the next token
+                        }
+
+
+
+
+
+                                // Create a new DisplayNode with the list of variable names
                     rootNode.addChild(new DisplayNode(variableNames));
                     break;
                 case VARIABLE:

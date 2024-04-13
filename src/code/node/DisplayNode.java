@@ -11,9 +11,12 @@ public class DisplayNode extends Node {
 //
 //    public String getValue() {
 //        return value;
+
 //    }
 //
     private List<String> variableNames;
+
+
 
     public DisplayNode(List<String> variableNames) {
         this.variableNames = variableNames;
@@ -22,4 +25,6 @@ public class DisplayNode extends Node {
     public List<String> getVariableNames() {
         return variableNames;
     }
+
+
 }

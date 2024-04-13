@@ -1,11 +1,13 @@
 BEGIN CODE
 INT a = 5
 INT b = 4
-a = b = 1
-a = 2
-b = a
-#BOOL c = TRUE
-#DISPLAY: a & $ & b & c
-#SCAN: a, b
-#DISPLAY: a & b
+a = b
+b = 2
+INT c = 5
+BOOL c = TRUE
+#a = 5 + 5
+DISPLAY: a & $ & b & c
+# SCAN: a, b,
+DISPLAY: a & b
+
 END CODE

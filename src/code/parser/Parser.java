@@ -122,104 +122,68 @@ public class Parser {
                     // Create a new DisplayNode with the list of variable names
                     rootNode.addChild(new DisplayNode(variableNames));
                     break;
-//                        StringBuilder stringBuilder = new StringBuilder();
-//                        variableList.clear();
-//                        boolean isFirstVariable = true; // Flag to track if it's the first variable
-//                        while (i < tokensList.size() && tokensList.get(i).getType() != Token.TokenType.ENDLINE) {
-//                            Token displayToken = tokensList.get(i);
-//                            if (displayToken.getType() == Token.TokenType.VARIABLE) {
-//                                // If the token is a variable, and it's not the first variable or if it's the first variable itself, add its name to the variableList
-//                                if (!isFirstVariable) {
-//                                    throw new CustomExceptions("Expected '&' token between variables.");
-//                                } else {
-//                                    variableList.add(displayToken.getValue());
-//                                    isFirstVariable = false; // Reset the flag after processing the first variable
-//                                }
-//                            } else if (displayToken.getType() == Token.TokenType.OPERATOR && displayToken.getValue().equals("&")) {
-//                                // Check if there's a variable after '&'
-//                                if (i + 1 < tokensList.size() && tokensList.get(i + 1).getType() == Token.TokenType.VARIABLE) {
-//                                    variableList.add(tokensList.get(i + 1).getValue());
-//                                    i++; // Move to the next token as we've already processed the variable after '&'
-//                                } else if(i + 1 < tokensList.size() && tokensList.get(i + 1).getType() ==
-//                                        Token.TokenType.OPERATOR && tokensList.get(i + 1).getValue().equals("$")) {
-//                                    variableList.add("$");
-//                                } else {
-//                                    throw new CustomExceptions("Expected variable after '&' token.");
-//                                }
-//                            }
-//                            i++; // Move to the next token
-//                        }
-//                        for (String varName : variableList) {
-//                            if (varName.equals("$")) {
-//                                stringBuilder.append("\n"); // Append a newline character if the variable name is "$"
-//                            } else {
-//                                Object value = environment.getVariable(varName);
-//                                if (value != null) {
-//                                    stringBuilder.append(value);
-//                                } else {
-//                                    throw new CustomExceptions("Value not inside environment! " + varName);
-//                                }
-//                            }
-//                        }
-//                        rootNode.addChild(new DisplayNode(stringBuilder.toString()));
-//                    break;
-
                 case VARIABLE:
                     String varname = token.getValue();
                     Object new_value = null;
                     String datatype = null;
                     while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) {
-                            //System.out.println("randomhskejklqwejlqkjeklqeqwe1   "+token.getValue().toString());
-                            if (token.getType() == Token.TokenType.ASSIGN) { // case: [x = y = z]
-                                token = tokensList.get(i-1); // set y as initial
-                                i--;
-                                varname = token.getValue().toString();
-                            }
-                            //System.out.println("randomhskejklqwejlqkjeklqeqwe1.2   "+token.getValue().toString());
-                            if (environment.isDefined(token.getValue().toString())) { // check if variable exist [int x]
-                                i++; // Move to the next token
-                                if (i < tokensList.size()) {
+                        //System.out.println("randomhskejklqwejlqkjeklqeqwe1   "+token.getValue().toString());
+                        if (token.getType() == Token.TokenType.ASSIGN) { // case: [x = y = z]
+                            token = tokensList.get(i-1); // set y as initial
+                            i--;
+                            varname = token.getValue().toString();
+                        }
+                        if (token.getType() == Token.TokenType.EXPRESSION)
+                        {
+                            i++;
+                            token = tokensList.get(i);
+                            continue;
+                        }
+                        //System.out.println("randomhskejklqwejlqkjeklqeqwe1.2   "+token.getValue().toString());
+                        if (environment.isDefined(token.getValue().toString())) { // check if variable exist [int x]
+                            i++; // Move to the next token
+                            if (i < tokensList.size()) {
+                                token = tokensList.get(i);
+                                //System.out.println("randomhskejklqwejlqkjeklqeqwe2   "+token.getValue().toString());
+                                if (token.getType() == Token.TokenType.ASSIGN) { // if encountered an assignment operator
+                                    i++;
                                     token = tokensList.get(i);
-                                    //System.out.println("randomhskejklqwejlqkjeklqeqwe2   "+token.getValue().toString());
-                                    if (token.getType() == Token.TokenType.ASSIGN) { // if encountered an assignment operator
-                                        i++;
-                                        token = tokensList.get(i);
-                                        datatype = environment.getVariableType(varname);
-                                        //System.out.println("randomhskejklqwejlqkjeklqeqwe3   "+token.getValue().toString());
-                                        // Update the variable value in the environment
-                                        if (token.getType() == Token.TokenType.VARIABLE) { // case: [x = y]
-                                            // check if [y] exist
-                                            if (environment.isDefined(token.getValue().toString())) { // TODO: currently allows words
-                                                new_value = environment.getVariable(token.getValue().toString()); // update value in the environment
-                                                if (variableValueValidator(datatype, new_value)) {
-                                                    environment.setVariable(varname, new_value);
-                                                } else {
-                                                    throw new CustomExceptions("Incorrect value" + token.getValue().toString());
-                                                }
-                                            } else {
-                                                throw new CustomExceptions("Variable " + token.getValue().toString() + " not initially declared");
-                                            }
-                                        } else if (token.getType() == Token.TokenType.VALUE) { // case: [x = 3]
-                                            new_value = token.getValue();
+                                    datatype = environment.getVariableType(varname);
+                                    //System.out.println("randomhskejklqwejlqkjeklqeqwe3   "+token.getValue().toString());
+                                    // Update the variable value in the environment
+                                    if (token.getType() == Token.TokenType.VARIABLE) { // case: [x = y]
+                                        // check if [y] exist
+                                        if (environment.isDefined(token.getValue().toString())) { // TODO: currently allows words
+                                            new_value = environment.getVariable(token.getValue().toString()); // update value in the environment
                                             if (variableValueValidator(datatype, new_value)) {
                                                 environment.setVariable(varname, new_value);
                                             } else {
                                                 throw new CustomExceptions("Incorrect value" + token.getValue().toString());
                                             }
+                                        } else {
+                                            throw new CustomExceptions("Variable " + token.getValue().toString() + " not initially declared");
                                         }
-                                        // add AssignmentNode to root
-                                        rootNode.addChild(new AssignmentNode(varname, new_value));
-                                        i++;
-                                        token = tokensList.get(i);
-                                    } else {
-                                        throw new CustomExceptions("Invalid assignment for variable '" + varname + "'.");
+                                    } else if (token.getType() == Token.TokenType.VALUE) { // case: [x = 3]
+                                        new_value = token.getValue();
+                                        if (variableValueValidator(datatype, new_value)) {
+                                            environment.setVariable(varname, new_value);
+                                        } else {
+                                            throw new CustomExceptions("Incorrect value" + token.getValue().toString());
+                                        }
                                     }
+                                    // add AssignmentNode to root
+                                    rootNode.addChild(new AssignmentNode(varname, new_value));
+                                    i++;
+                                    token = tokensList.get(i);
                                 } else {
-                                    throw new CustomExceptions("Missing value for variable '" + varname + "'.");
+                                    throw new CustomExceptions("Invalid assignment for variable '" + varname + "'.");
                                 }
                             } else {
-                                throw new CustomExceptions("Variable " + token.getValue().toString() + " not initially declared");
+                                throw new CustomExceptions("Missing value for variable '" + varname + "'.");
                             }
+                        } else {
+                            throw new CustomExceptions("Variable " + token.getValue().toString() + " not initially declared");
+                        }
                     }
                     break;
                 case SCAN:
@@ -244,12 +208,6 @@ public class Parser {
                     }
                     rootNode.addChild(new ScanNode(scanVariables));
                     break;
-//                case OPERATOR:
-//                    if (isArithmeticOperator(token)) {
-//                        Node expressionNode = parseArithmeticExpression(i);
-//                        rootNode.addChild(expressionNode);
-//                    } FUCK AST
-//                    break;
                 }
             currentTokenIndex++;
             } catch (CustomExceptions e) {

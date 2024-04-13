@@ -27,90 +27,101 @@ public class Lexer {
 //        Pattern pattern = Pattern.compile("\\b[\\w.']+\\b|\\n|[-+*/=<>!&|]");
 //        Pattern pattern = Pattern.compile("\\b\\w+\\b|\\n|[-+*/=<>!&|]|'|(\\d+(\\.\\d+)?)");
 
-        Matcher matcher = pattern.matcher(sourceCode);
-        while (matcher.find()) {
-            String word = matcher.group(); // Get the matched word
+            Matcher matcher = pattern.matcher(sourceCode);
+            StringBuilder expressionBuilder = new StringBuilder(); // To build expressions
 
-            // Skip comments and continue until newline is encountered
-            if (word.startsWith("#")) {
-                // Skip this token (comment)
-                continue;
-            }
+            while (matcher.find()) {
+                String word = matcher.group(); // Get the matched word
 
-            // Check for various cases and add tokens accordingly
-            switch (word) {
-                case "BEGIN":
-                case "END":
-                case "CODE":
-                case ":":
-                case ",":
-                    tokensList.add(new Token(Token.TokenType.DELIMITER, word, true));
-                    break;
-                case "INT":
-                case "FLOAT":
-                case "CHAR":
-                case "BOOL":
-                    tokensList.add(new Token(Token.TokenType.DATATYPE, word, true));
-                    break;
-                case "\n":
+                // Skip comments and continue until newline is encountered
+                if (word.startsWith("#")) {
+                    // Skip this token (comment)
+                    continue;
+                }
+
+                // Check for endline token
+                if (word.equals("\n")) {
+                    if (expressionBuilder.length() > 0) {
+                        // Add the current expression as a single token
+                        tokensList.add(new Token(Token.TokenType.EXPRESSION, expressionBuilder.toString().trim(), true));
+                        expressionBuilder.setLength(0); // Clear the expression builder
+                    }
                     tokensList.add(new Token(Token.TokenType.ENDLINE, "end of line", false));
-                    break;
-                case "+":
-                case "-":
-                case "*":
-                case "/":
-                case "<":
-                case ">":
-                case "!":
-                case "&":
-                case "|":
-                case "$":
-                    tokensList.add(new Token(Token.TokenType.OPERATOR, word, true));
-                    break;
-                case "(":
-                    tokensList.add(new Token(Token.TokenType.OPEN_P, word, true));
-                    break;
-                case ")":
-                    tokensList.add(new Token(Token.TokenType.CLOSE_P, word, true));
-                    break;
-                case "=":
-                    tokensList.add(new Token(Token.TokenType.ASSIGN, word, true));
-                    break;
-                case "DISPLAY":
-                    tokensList.add(new Token(Token.TokenType.DISPLAY, word, true));
-                    break;
-                case "SCAN":
-                    tokensList.add(new Token(Token.TokenType.SCAN, word, true));
-                    break;
-                case "'":
-                    tokensList.add(new Token(Token.TokenType.S_QUOTE, word, true));
-                    break;
-                default:
-                    if (word.matches("'.'")) {
-                    tokensList.add(new Token(Token.TokenType.VALUE, word, false)); // Tokenize as a single character literal
-                    } else if (isNumeric(word)) {
-                        tokensList.add(new Token(Token.TokenType.VALUE, word, false)); // Tokenize as a numeric literal
-                    } else if (isBoolean(word)) {
-                        tokensList.add(new Token(Token.TokenType.VALUE, word, false)); // Tokenize as a numeric literal
+                    continue;
+                }
 
-                    }
-
-                    else {
-                        tokensList.add(new Token(Token.TokenType.VARIABLE, word, false)); // Default to variable if not a number
-                    }
-                    break;
+                // If not an endline token, handle as before
+                switch (word) {
+                    case "BEGIN":
+                    case "END":
+                    case "CODE":
+                    case ":":
+                    case ",":
+                        tokensList.add(new Token(Token.TokenType.DELIMITER, word, true));
+                        break;
+                    case "INT":
+                    case "FLOAT":
+                    case "CHAR":
+                    case "BOOL":
+                        tokensList.add(new Token(Token.TokenType.DATATYPE, word, true));
+                        break;
+                    case "+":
+                    case "-":
+                    case "*":
+                    case "/":
+                    case "<":
+                    case ">":
+                    case "!":
+                    case "&":
+                    case "|":
+                    case "$":
+                        tokensList.add(new Token(Token.TokenType.OPERATOR, word, true));
+                        break;
+                    case "(":
+                        tokensList.add(new Token(Token.TokenType.OPEN_P, word, true));
+                        break;
+                    case ")":
+                        tokensList.add(new Token(Token.TokenType.CLOSE_P, word, true));
+                        break;
+                    case "=":
+                        tokensList.add(new Token(Token.TokenType.ASSIGN, word, true));
+                        break;
+                    case "DISPLAY":
+                        tokensList.add(new Token(Token.TokenType.DISPLAY, word, true));
+                        break;
+                    case "SCAN":
+                        tokensList.add(new Token(Token.TokenType.SCAN, word, true));
+                        break;
+                    case "'":
+                        tokensList.add(new Token(Token.TokenType.S_QUOTE, word, true));
+                        break;
+                    default:
+                        if (word.matches("'.'")) {
+                            tokensList.add(new Token(Token.TokenType.VALUE, word, false)); // Tokenize as a single character literal
+                        } else if (isNumeric(word)) {
+                            tokensList.add(new Token(Token.TokenType.VALUE, word, false)); // Tokenize as a numeric literal
+                        } else if (isBoolean(word)) {
+                            tokensList.add(new Token(Token.TokenType.VALUE, word, false)); // Tokenize as a numeric literal
+                        } else {
+                            tokensList.add(new Token(Token.TokenType.VARIABLE, word, false)); // Default to variable if not a number
+                        }
+                        break;
+                }
+                expressionBuilder.append(word).append(" "); // Append the word with a space delimiter
             }
-            System.out.println("Word: " + word);
+
+            // Handle the case where the source code ends with an expression without an endline
+            if (expressionBuilder.length() > 0) {
+                tokensList.add(new Token(Token.TokenType.EXPRESSION, expressionBuilder.toString().trim(), true));
+            }
 
             // Print each token from the tokensList
-        }
-        // Can comment this out when running full deployment of interpreter ( This only tests the tokenizer if it works)
-        System.out.println("Tokens:");
-        for (Token token : tokensList) {
-            System.out.println(currentTokenIndex + ": {" +"Token Value: " + token.getValue() + ", Token type: " + token.getType() + "}");
-            currentTokenIndex++;
-        }
-        checkTokenGrammar(tokensList);
+            System.out.println("Tokens:");
+            for (Token token : tokensList) {
+                System.out.println(currentTokenIndex + ": {" + "Token Value: " + token.getValue() + ", Token type: " + token.getType() + "}");
+                currentTokenIndex++;
+            }
+            checkTokenGrammar(tokensList);
         } catch (CustomExceptions e) {
             // Handle the custom exception
             System.out.println("Custom exception caught: " + e.getMessage());

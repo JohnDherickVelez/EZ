@@ -165,38 +165,54 @@ public class Parser {
 //                    break;
 
                 case VARIABLE:
-                    if (environment.isDefined(token.getValue().toString())) { // check if variable exist [int x]
-                        String varname = token.getValue();
-                        Object new_value = null;
-                        i++; // Move to the next token
-                        if (i < tokensList.size()) {
-                            token = tokensList.get(i);
-                            if (token.getType() == Token.TokenType.ASSIGN) { // if encountered an assign operator
-                                i++;
+                    if (token.getType() == Token.TokenType.ASSIGN) { // case: [x = y = z]
+                        token = tokensList.get(i-1); // set y as initial
+                    }
+                    while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) {
+                        if (environment.isDefined(token.getValue().toString())) { // check if variable exist [int x]
+                            String varname = token.getValue();
+                            Object new_value = null;
+                            String datatype = null;
+                            i++; // Move to the next token
+                            if (i < tokensList.size()) {
                                 token = tokensList.get(i);
-                                // Update the variable value in the environment
-                                if (token.getType() == Token.TokenType.VARIABLE) { // for: [ x = y ]
-                                    // check if [y] exist
-                                    if (environment.isDefined(token.getValue().toString())) {
-                                         new_value = environment.getVariable(token.getValue().toString()); // update value in the environment
-                                        environment.setVariable(varname, new_value);
-                                    } else {
-                                        throw new CustomExceptions("Variable "+ token.getValue().toString() +" not initially declared");
+                                if (token.getType() == Token.TokenType.ASSIGN) { // if encountered an assign operator
+                                    i++;
+                                    token = tokensList.get(i);
+                                    datatype = environment.getVariableType(varname);
+                                    // Update the variable value in the environment
+                                    // TODO: check if value is proper
+                                    if (token.getType() == Token.TokenType.VARIABLE) { // case: [x = y]
+                                        // check if [y] exist
+                                        if (environment.isDefined(token.getValue().toString())) { // TODO: currently allows words
+                                            new_value = environment.getVariable(token.getValue().toString()); // update value in the environment
+                                            if(variableValueValidator(datatype,new_value)) {
+                                                environment.setVariable(varname, new_value);
+                                            } else {
+                                                throw new CustomExceptions("Incorrect value" + token.getValue().toString());
+                                            }
+                                        } else {
+                                            throw new CustomExceptions("Variable " + token.getValue().toString() + " not initially declared");
+                                        }
+                                    } else if (token.getType() == Token.TokenType.VALUE) { // case: [x = 3]
+                                        new_value = token.getValue();
+                                        if(variableValueValidator(datatype,new_value)) {
+                                            environment.setVariable(varname, new_value);
+                                        } else {
+                                            throw new CustomExceptions("Incorrect value" + token.getValue().toString());
+                                        }
                                     }
-                                } else if (token.getType() == Token.TokenType.VALUE) { // for: [ x = 3 ]
-                                    new_value = token.getValue();
-                                    environment.setVariable(varname, new_value);
+                                    // add AssignmentNode to root
+                                    rootNode.addChild(new AssignmentNode(varname, new_value));
+                                } else {
+                                    throw new CustomExceptions("Invalid assignment for variable '" + varname + "'.");
                                 }
-                                // add AssignmentNode to root
-                                rootNode.addChild(new AssignmentNode(varname,new_value));
                             } else {
-                                throw new CustomExceptions("Invalid assignment for variable '" + varname + "'.");
+                                throw new CustomExceptions("Missing value for variable '" + varname + "'.");
                             }
                         } else {
-                            throw new CustomExceptions("Missing value for variable '" + varname + "'.");
+                            throw new CustomExceptions("Variable " + token.getValue().toString() + " not initially declared");
                         }
-                    } else {
-                        throw new CustomExceptions("Variable "+ token.getValue().toString() +" not initially declared");
                     }
                     break;
                 case SCAN:
@@ -257,6 +273,21 @@ public class Parser {
                 rootNode.addChild(boolVariableNode);
                 environment.placeVariables(boolVariableNode);
             }
+        }
+    }
+
+    private boolean variableValueValidator(String datatype, Object values) {
+        String value = values.toString();
+        if (datatype.equals("INT") && value.matches("[0-9]+")) {
+            return true;
+        } else if (datatype.equals("FLOAT") && value.matches("\\d*\\.\\d+")) {
+            return true;
+        } else if (datatype.equals("CHAR") && value.matches("'.'")) {
+            return true;
+        } else if (datatype.equals("BOOL") && (value.equals("TRUE") || value.equals("FALSE"))) {
+            return true;
+        } else {
+            return false;
         }
     }
 //    private boolean isArithmeticOperator(Token token) {

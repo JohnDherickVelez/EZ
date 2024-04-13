@@ -165,54 +165,61 @@ public class Parser {
 //                    break;
 
                 case VARIABLE:
-                    if (token.getType() == Token.TokenType.ASSIGN) { // case: [x = y = z]
-                        token = tokensList.get(i-1); // set y as initial
-                    }
+                    String varname = token.getValue();
+                    Object new_value = null;
+                    String datatype = null;
                     while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) {
-                        if (environment.isDefined(token.getValue().toString())) { // check if variable exist [int x]
-                            String varname = token.getValue();
-                            Object new_value = null;
-                            String datatype = null;
-                            i++; // Move to the next token
-                            if (i < tokensList.size()) {
-                                token = tokensList.get(i);
-                                if (token.getType() == Token.TokenType.ASSIGN) { // if encountered an assign operator
-                                    i++;
+                            //System.out.println("randomhskejklqwejlqkjeklqeqwe1   "+token.getValue().toString());
+                            if (token.getType() == Token.TokenType.ASSIGN) { // case: [x = y = z]
+                                token = tokensList.get(i-1); // set y as initial
+                                i--;
+                                varname = token.getValue().toString();
+                            }
+                            //System.out.println("randomhskejklqwejlqkjeklqeqwe1.2   "+token.getValue().toString());
+                            if (environment.isDefined(token.getValue().toString())) { // check if variable exist [int x]
+                                i++; // Move to the next token
+                                if (i < tokensList.size()) {
                                     token = tokensList.get(i);
-                                    datatype = environment.getVariableType(varname);
-                                    // Update the variable value in the environment
-                                    // TODO: check if value is proper
-                                    if (token.getType() == Token.TokenType.VARIABLE) { // case: [x = y]
-                                        // check if [y] exist
-                                        if (environment.isDefined(token.getValue().toString())) { // TODO: currently allows words
-                                            new_value = environment.getVariable(token.getValue().toString()); // update value in the environment
-                                            if(variableValueValidator(datatype,new_value)) {
+                                    //System.out.println("randomhskejklqwejlqkjeklqeqwe2   "+token.getValue().toString());
+                                    if (token.getType() == Token.TokenType.ASSIGN) { // if encountered an assignment operator
+                                        i++;
+                                        token = tokensList.get(i);
+                                        datatype = environment.getVariableType(varname);
+                                        //System.out.println("randomhskejklqwejlqkjeklqeqwe3   "+token.getValue().toString());
+                                        // Update the variable value in the environment
+                                        if (token.getType() == Token.TokenType.VARIABLE) { // case: [x = y]
+                                            // check if [y] exist
+                                            if (environment.isDefined(token.getValue().toString())) { // TODO: currently allows words
+                                                new_value = environment.getVariable(token.getValue().toString()); // update value in the environment
+                                                if (variableValueValidator(datatype, new_value)) {
+                                                    environment.setVariable(varname, new_value);
+                                                } else {
+                                                    throw new CustomExceptions("Incorrect value" + token.getValue().toString());
+                                                }
+                                            } else {
+                                                throw new CustomExceptions("Variable " + token.getValue().toString() + " not initially declared");
+                                            }
+                                        } else if (token.getType() == Token.TokenType.VALUE) { // case: [x = 3]
+                                            new_value = token.getValue();
+                                            if (variableValueValidator(datatype, new_value)) {
                                                 environment.setVariable(varname, new_value);
                                             } else {
                                                 throw new CustomExceptions("Incorrect value" + token.getValue().toString());
                                             }
-                                        } else {
-                                            throw new CustomExceptions("Variable " + token.getValue().toString() + " not initially declared");
                                         }
-                                    } else if (token.getType() == Token.TokenType.VALUE) { // case: [x = 3]
-                                        new_value = token.getValue();
-                                        if(variableValueValidator(datatype,new_value)) {
-                                            environment.setVariable(varname, new_value);
-                                        } else {
-                                            throw new CustomExceptions("Incorrect value" + token.getValue().toString());
-                                        }
+                                        // add AssignmentNode to root
+                                        rootNode.addChild(new AssignmentNode(varname, new_value));
+                                        i++;
+                                        token = tokensList.get(i);
+                                    } else {
+                                        throw new CustomExceptions("Invalid assignment for variable '" + varname + "'.");
                                     }
-                                    // add AssignmentNode to root
-                                    rootNode.addChild(new AssignmentNode(varname, new_value));
                                 } else {
-                                    throw new CustomExceptions("Invalid assignment for variable '" + varname + "'.");
+                                    throw new CustomExceptions("Missing value for variable '" + varname + "'.");
                                 }
                             } else {
-                                throw new CustomExceptions("Missing value for variable '" + varname + "'.");
+                                throw new CustomExceptions("Variable " + token.getValue().toString() + " not initially declared");
                             }
-                        } else {
-                            throw new CustomExceptions("Variable " + token.getValue().toString() + " not initially declared");
-                        }
                     }
                     break;
                 case SCAN:

@@ -3,9 +3,9 @@ package code.node;
 public class VariableDeclarationNode extends Node {
     private String variableName;
     private String dataType;
-    private String value;
+    private Object value; // Change the type of 'value' to Object to support both integers and arithmetic expressions
 
-    public VariableDeclarationNode(String dataType, String variableName, String value) {
+    public VariableDeclarationNode(String dataType, String variableName, Object value) {
         this.dataType = dataType;
         this.variableName = variableName;
         this.value = value;
@@ -27,7 +27,7 @@ public class VariableDeclarationNode extends Node {
         this.dataType = dataType;
     }
 
-    public String getValue() {
+    public Object getValue() {
         return value;
     }
 }

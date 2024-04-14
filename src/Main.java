@@ -18,7 +18,7 @@
 
     public class Main {
         public static void main(String[] args) throws CustomExceptions {
-            String filePath = "./src/testfiles/test_1"; // Replace this with the path to your text file
+            String filePath = "./src/testfiles/test_arith2"; // Replace this with the path to your text file
             StringBuilder sourceCode = new StringBuilder();
 
             try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
@@ -56,9 +56,7 @@
             environment.displayVariables();
 
             // Place Interpreter only functions here:
-
         }
-
         private static void executeAST(Node node, Environment environment) throws CustomExceptions {
             // Perform appropriate actions based on code.node type
             if (node instanceof DelimiterNode delimiterNode) {
@@ -74,10 +72,10 @@
                 // Logic to handle variable declarations
                 String variableType = variableNode.getDataType();
                 String variableName = variableNode.getVariableName();
-                String variableValue = variableNode.getValue();
+                String variableValue = (String) variableNode.getValue();
                 // Perform actions based on variable type, name, and value
                 System.out.println("Variable declaration: " + variableType + " " + variableName + " = " + variableValue);
-            }else if (node instanceof DisplayNode) {
+            } else if (node instanceof DisplayNode) {
                 DisplayNode displayNode = (DisplayNode) node;
                 StringBuilder outputBuilder = new StringBuilder();
 
@@ -99,39 +97,19 @@
                             outputBuilder.append(varName);
                         }
                     }
-
                     // Append a space after each item (including quoted text)
                     //outputBuilder.append(" ");
                 }
-
 //                // Remove the trailing space added after the last item
 //                if (outputBuilder.length() > 0) {
 //                    outputBuilder.setLength(outputBuilder.length() - 1);
 //                }
-
                 System.out.println(outputBuilder.toString());
             } else if (node instanceof AssignmentNode assignmentNode) {
                 String variableName = assignmentNode.getVariableName();
                 String variableValue = assignmentNode.getValue();
                 System.out.println("Assignment statement: " + variableName + " = " + variableValue);
-            }
-//            else if (node instanceof BinaryOperationNode binaryOperationNode) {
-//                // Logic for handling binary operation nodes (arithmetic expressions)
-//                String operator = binaryOperationNode.getOperator();
-//                Node leftOperand = binaryOperationNode.getLeftOperand();
-//                Node rightOperand = binaryOperationNode.getRightOperand();
-//
-//                // Evaluate left and right operands based on their types
-//                int leftValue = evaluateOperand(leftOperand, environment);
-//                int rightValue = evaluateOperand(rightOperand, environment);
-//
-//                // Perform the operation based on the operator
-//                int result = performOperation(operator, leftValue, rightValue);
-//
-//                // Print or handle the result as needed
-//                System.out.println("Arithmetic expression result: " + result);
-//            }
-            else if(node instanceof ScanNode scanNode) {
+            } else if(node instanceof ScanNode scanNode) {
                 List<String> scannedVariables = scanNode.getScanVariables();
                 System.out.println("Scanned variables: " + scannedVariables);
                 Scanner scanner = new Scanner(System.in);
@@ -143,7 +121,6 @@
                     int value = scanner.nextInt();
                     userInput.add(value);
                 }
-
                 // Update variables in the environment with user input
                 for (int i = 0; i < scannedVariables.size(); i++) {
                     String variableName = scannedVariables.get(i);
@@ -156,42 +133,6 @@
                 executeAST(child, environment);
             }
         }
-//        private static int evaluateOperand(Node operand, Environment environment) {
-//            if (operand instanceof ValueNode valueNode) {
-//                // If the operand is a value node, return its integer value
-//                return Integer.parseInt(valueNode.getValue());
-//            } else if (operand instanceof VariableNode variableNode) {
-//                // If the operand is a variable node, look up its value in the environment
-//                String variableName = variableNode.getVariableName();
-//                Object value = environment.getVariable(variableName);
-//                if (value instanceof Integer) {
-//                    return (int) value;
-//                } else {
-//                    throw new IllegalArgumentException("Variable '" + variableName + "' is not an integer");
-//                }
-//            } else {
-//                throw new IllegalArgumentException("Invalid operand node type");
-//            }
-//        }
-//
-//        private static int performOperation(String operator, int leftOperand, int rightOperand) {
-//            // Perform the specified operation and return the result
-//            switch (operator) {
-//                case "+":
-//                    return leftOperand + rightOperand;
-//                case "-":
-//                    return leftOperand - rightOperand;
-//                case "*":
-//                    return leftOperand * rightOperand;
-//                case "/":
-//                    if (rightOperand == 0) {
-//                        throw new ArithmeticException("Division by zero");
-//                    }
-//                    return leftOperand / rightOperand;
-//                default:
-//                    throw new IllegalArgumentException("Invalid operator: " + operator);
-//            }
-//        }
     }
 
 

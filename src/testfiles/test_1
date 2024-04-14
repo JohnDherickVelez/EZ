@@ -1,10 +1,13 @@
 BEGIN CODE
-INT a = 5
-INT b = 4
-a = b
-b = 2
-INT c = 5
-BOOL c = TRUE
-DISPLAY "jd"
+#INT a = 5
+#INT b = 4
+#a = b
+#b = 2
+#INT c = 5
+#BOOL c = TRUE
+DISPLAY: "JD"
+DISPLAY: []]
+DISPLAY: [&*&]
+
 
 END CODE

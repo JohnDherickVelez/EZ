@@ -97,6 +97,8 @@ public class Parser {
                         }
                         break;
 
+                    // COPY START
+                    // COPY START
                     case DISPLAY:
                         List<String> variableNames = new ArrayList<>();
                         boolean isFirstVariable = true; // Flag to track if it's the first variable
@@ -116,46 +118,39 @@ public class Parser {
                                 } else if (i + 1 < tokensList.size() && tokensList.get(i + 1).getType() ==
                                         Token.TokenType.OPERATOR && tokensList.get(i + 1).getValue().equals("$")) {
                                     variableNames.add("$");
+                                } else {
+                                    throw new CustomExceptions("Expected variable after '&' token.");
                                 }
-                                if (i < tokensList.size()) {
-                                    Token nextToken = tokensList.get(i);
+                            } else if (displayToken.getType() == Token.TokenType.IDENTIFIER && displayToken.getValue().equals("[")) {
+                                // Handle quoted text within DISPLAY
+                                StringBuilder BText = new StringBuilder();
 
-                                    if (nextToken.getType() == Token.TokenType.VARIABLE) {
-                                        // Append the variable name to the list
-                                        variableNames.add(nextToken.getValue());
-                                    } else if (nextToken.getType() == Token.TokenType.OPERATOR && nextToken.getValue().equals("\"")) {
-                                        // Handle quoted text within DISPLAY
-                                        StringBuilder quotedText = new StringBuilder();
-                                        i++; // Move past the opening quote
+                                // Move past the opening quote
 
-                                        while (i < tokensList.size() &&
-                                                tokensList.get(i).getType() != Token.TokenType.OPERATOR &&
-                                                !tokensList.get(i).getValue().equals("\"")) {
-                                            // Append token value to the quoted text
-                                            quotedText.append(tokensList.get(i).getValue());
-                                            i++; // Move to the next token
-                                        }
-
-                                        if (i < tokensList.size() &&
-                                                tokensList.get(i).getType() == Token.TokenType.OPERATOR &&
-                                                tokensList.get(i).getValue().equals("\"")) {
-                                            // Append the collected quoted text as a single variable name
-                                            variableNames.add(quotedText.toString());
-                                        }
-                                    }
+                                while (!displayToken.getValue().equals("]")) {
+                                    // Append token value to the quoted text
+                                    displayToken = tokensList.get(i);
+                                    BText.append(displayToken.getValue());
+                                    i++; // Move to the next token
+                                    System.out.println(displayToken.getValue() + displayToken.getType().toString());
                                 }
+                                String output = BText.toString();
+                                System.out.println(output);
+
+                                if (tokensList.get(i).getType() == Token.TokenType.IDENTIFIER &&
+                                        tokensList.get(i).getValue().equals("]")) {
+                                    // Append the collected quoted text as a single variable name
+                                    BText.append(tokensList.get(i).getValue());
+                                    variableNames.add(BText.toString());
+                                } else {variableNames.add(BText.toString());}
+
                             }
+                            i++;
 
-                            i++; // Move to the next token
                         }
-
-
-
-
-
-                                // Create a new DisplayNode with the list of variable names
-                    rootNode.addChild(new DisplayNode(variableNames));
-                    break;
+                        // Create a new DisplayNode with the list of variable names
+                        rootNode.addChild(new DisplayNode(variableNames));
+                        break;// CHANGES END
                 case VARIABLE:
                     String varname = token.getValue();
                     Object new_value = null;

@@ -74,10 +74,10 @@
                 // Logic to handle variable declarations
                 String variableType = variableNode.getDataType();
                 String variableName = variableNode.getVariableName();
-                String variableValue = variableNode.getValue();
+                String variableValue = (String) variableNode.getValue();
                 // Perform actions based on variable type, name, and value
                 System.out.println("Variable declaration: " + variableType + " " + variableName + " = " + variableValue);
-            }else if (node instanceof DisplayNode) {
+            }else if (node instanceof DisplayNode) {// COPY START
                 DisplayNode displayNode = (DisplayNode) node;
                 StringBuilder outputBuilder = new StringBuilder();
 
@@ -88,6 +88,12 @@
                         // This is quoted text, remove the surrounding quotes and append to the output
                         String textInsideQuotes = varName.substring(1, varName.length() - 1);
                         outputBuilder.append(textInsideQuotes);
+
+                    } else if (varName.startsWith("[") && varName.endsWith("]")) {
+                        // This is quoted text, remove the surrounding quotes and append to the output
+                        String textInsideBrackets = varName.substring(1, varName.length() - 1);
+                        outputBuilder.append(textInsideBrackets);
+
                     } else {
                         // Check if varName exists in the environment
                         Object value = environment.getVariable(varName);
@@ -101,15 +107,14 @@
                     }
 
                     // Append a space after each item (including quoted text)
-                    //outputBuilder.append(" ");
+                    outputBuilder.append(" ");
                 }
 
-//                // Remove the trailing space added after the last item
-//                if (outputBuilder.length() > 0) {
-//                    outputBuilder.setLength(outputBuilder.length() - 1);
-//                }
+                System.out.println(outputBuilder.toString());// CHANGES END
 
-                System.out.println(outputBuilder.toString());
+
+
+
             } else if (node instanceof AssignmentNode assignmentNode) {
                 String variableName = assignmentNode.getVariableName();
                 String variableValue = assignmentNode.getValue();

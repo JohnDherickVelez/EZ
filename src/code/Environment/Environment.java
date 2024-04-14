@@ -78,7 +78,7 @@ private Map<String, VariableInfo> variables;
 
         public void placeVariables(VariableDeclarationNode variableNode) {
             String variableName = variableNode.getVariableName();
-            String variableValue = variableNode.getValue();
+            String variableValue = (String) variableNode.getValue();
             String datatype = variableNode.getDataType();
 
             Object value = switch (datatype) {

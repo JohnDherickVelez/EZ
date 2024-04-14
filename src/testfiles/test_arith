@@ -1,0 +1,4 @@
+BEGIN CODE
+    INT a = 15 + 12
+    DISPLAY: a
+END CODE

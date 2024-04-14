@@ -101,19 +101,16 @@
                     }
 
                     // Append a space after each item (including quoted text)
-                    outputBuilder.append(" ");
+                    //outputBuilder.append(" ");
                 }
 
-                // Remove the trailing space added after the last item
-                if (outputBuilder.length() > 0) {
-                    outputBuilder.setLength(outputBuilder.length() - 1);
-                }
+//                // Remove the trailing space added after the last item
+//                if (outputBuilder.length() > 0) {
+//                    outputBuilder.setLength(outputBuilder.length() - 1);
+//                }
 
                 System.out.println(outputBuilder.toString());
-
-
-
-        } else if (node instanceof AssignmentNode assignmentNode) {
+            } else if (node instanceof AssignmentNode assignmentNode) {
                 String variableName = assignmentNode.getVariableName();
                 String variableValue = assignmentNode.getValue();
                 System.out.println("Assignment statement: " + variableName + " = " + variableValue);

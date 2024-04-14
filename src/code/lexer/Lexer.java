@@ -129,31 +129,6 @@ public class Lexer {
         return tokensList;
     }
 
-//    private List<Token> tokenizeExpressions(List<Token> tokensList) {
-//        List<Token> updatedTokensList = new ArrayList<>();
-//        boolean inExpression = false;
-//        StringBuilder expressionBuilder = new StringBuilder();
-//
-//        for (Token token : tokensList) {
-//            if (token.getType() == Token.TokenType.ASSIGN || token.getType() == Token.TokenType.OPEN_P || token.getType() == Token.TokenType.OPERATOR) {
-//                inExpression = true;
-//                expressionBuilder.append(token.getValue());
-//            } else if (token.getType() == Token.TokenType.CLOSE_P) {
-//                inExpression = false;
-//                expressionBuilder.append(token.getValue());
-//                updatedTokensList.add(new Token(Token.TokenType.EXPRESSION, expressionBuilder.toString(), true));
-//                expressionBuilder.setLength(0); // Clear the string builder
-//            } else {
-//                if (inExpression) {
-//                    expressionBuilder.append(token.getValue());
-//                } else {
-//                    updatedTokensList.add(token);
-//                }
-//            }
-//        }
-//
-//        return updatedTokensList;
-//    }
     public void checkTokenGrammar(List<Token> tokensList) throws CustomExceptions {
         boolean foundBegin = false;
         boolean foundCodeAfterBegin = false;

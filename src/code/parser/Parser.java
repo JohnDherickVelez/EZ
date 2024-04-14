@@ -25,6 +25,9 @@ public class Parser {
     public ASTNode produceAST() throws CustomExceptions {
         ASTNode rootNode = new ASTNode(); // Create the root code.node
 
+        Stack<Token> operandStack = new Stack<>();
+        Stack<Token> operatorStack = new Stack<>();
+
         for (int i = 0; i < tokensList.size(); i++) {
             Token token = tokensList.get(i);
 
@@ -239,6 +242,15 @@ public class Parser {
                     }
                     rootNode.addChild(new ScanNode(scanVariables));
                     break;
+                case EXPRESSION:
+                    if (!token.getValue().equals("BEGIN CODE") && !token.getValue().equals("END CODE")) {
+                        String expression = token.getValue();
+                        // Evaluate the expression
+//                        int result = evaluateExpression(expression);
+                        // Create a token for the result and add it to the operand stack
+//                        operandStack.push(new Token(Token.TokenType.VALUE, String.valueOf(result), false));
+                    }
+                    break;
                 }
             currentTokenIndex++;
             } catch (CustomExceptions e) {
@@ -286,41 +298,97 @@ public class Parser {
             return false;
         }
     }
-//    private boolean isArithmeticOperator(Token token) {
-//        return token.getValue().equals("+") || token.getValue().equals("-") ||
-//                token.getValue().equals("*") || token.getValue().equals("/");
-//    }
+
+//    private int evaluateExpression(String expression) throws CustomExceptions {
+//        // Split the expression into operands and operators
+//        String[] tokens = expression.split("\\s+");
 //
-//    private Node parseArithmeticExpression(int currentIndex) throws CustomExceptions {
-//        Token token = tokensList.get(currentIndex);
-//        // Assuming token is an arithmetic operator here
+//        // Operand stack for evaluating the expression
+//        Stack<Integer> operandStack = new Stack<>();
 //
-//        BinaryOperationNode operationNode = new BinaryOperationNode(token.getValue());
-//        currentIndex++; // Move to the next token after the operator
+//        // Operator stack for handling operator precedence
+//        Stack<Character> operatorStack = new Stack<>();
 //
-//        // Parse left expression
-//        Node leftExpression = parsePrimary(currentIndex - 1);
-//        operationNode.setLeftOperand(leftExpression);
+//        for (String token : tokens) {
+//            if (isNumeric(token)) {
+//                // If the token is a number, push it onto the operand stack
+//                operandStack.push(Integer.parseInt(token));
+//            } else if (isOperator(token)) {
+//                // If the token is an operator, handle operator precedence
+//                while (!operatorStack.isEmpty() && precedence(operatorStack.peek()) >= precedence(token.charAt(0))) {
+//                    processOperator(operandStack, operatorStack.pop());
+//                }
+//                // Push the current operator onto the operator stack
+//                operatorStack.push(token.charAt(0));
+//            }
+//        }
 //
-//        // Parse right expression
-//        Node rightExpression = parsePrimary(currentIndex + 1);
-//        operationNode.setRightOperand(rightExpression);
+//        // Process remaining operators
+//        while (!operatorStack.isEmpty()) {
+//            processOperator(operandStack, operatorStack.pop());
+//        }
 //
-//        return operationNode;
-//    }
-//
-//    private Node parsePrimary(int currentIndex) throws CustomExceptions {
-//        Token token = tokensList.get(currentIndex);
-//        // Assuming token is a number or variable here
-//
-//        if (token.getType() == Token.TokenType.VALUE) {
-//            // Create a node for the value
-//            return new ValueNode(token.getValue());
-//        } else if (token.getType() == Token.TokenType.VARIABLE) {
-//            // Assuming you handle variable lookup
-//            return new VariableNode(token.getValue());
+//        // The final result will be the top element of the operand stack
+//        if (!operandStack.isEmpty()) {
+//            return operandStack.pop();
 //        } else {
-//            throw new CustomExceptions("Invalid token in arithmetic expression");
+//            throw new CustomExceptions("Error evaluating expression: " + expression);
+//        }
+//    }
+
+//    private void processOperator(Stack<Integer> operandStack, char operator) throws CustomExceptions {
+//        // Pop two operands from the operand stack
+//        if (!operandStack.isEmpty()) {
+//            int operand2 = operandStack.pop();
+//            if (!operandStack.isEmpty()) {
+//                int operand1 = operandStack.pop();
+//                // Perform the operation and push the result onto the operand stack
+//                switch (operator) {
+//                    case '+':
+//                        operandStack.push(operand1 + operand2);
+//                        break;
+//                    case '-':
+//                        operandStack.push(operand1 - operand2);
+//                        break;
+//                    case '*':
+//                        operandStack.push(operand1 * operand2);
+//                        break;
+//                    case '/':
+//                        if (operand2 != 0) {
+//                            operandStack.push(operand1 / operand2);
+//                        } else {
+//                            throw new CustomExceptions("Division by zero error.");
+//                        }
+//                        break;
+//                    default:
+//                        throw new CustomExceptions("Invalid operator: " + operator);
+//                }
+//            } else {
+//                throw new CustomExceptions("Error processing operator: " + operator);
+//            }
+//        } else {
+//            throw new CustomExceptions("Error processing operator: " + operator);
+//        }
+//    }
+
+    private boolean isNumeric(String str) {
+        return str.matches("-?\\d+");
+    }
+
+    private boolean isOperator(String str) {
+        return str.matches("[-+*/]");
+    }
+
+//    private int precedence(char operator) {
+//        switch (operator) {
+//            case '+':
+//            case '-':
+//                return 1;
+//            case '*':
+//            case '/':
+//                return 2;
+//            default:
+//                return -1;
 //        }
 //    }
 }

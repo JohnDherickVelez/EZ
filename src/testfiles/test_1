@@ -7,7 +7,7 @@ BEGIN CODE
 #BOOL c = TRUE
 DISPLAY: "JD"
 DISPLAY: []]
-DISPLAY: [&*&]
+
 
 
 END CODE

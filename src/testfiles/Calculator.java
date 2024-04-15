@@ -7,16 +7,20 @@ public class Calculator {
     public static void main(String[] args) {
         HashMap<String, String> expressions = new HashMap<>();
         expressions.put("a", "15 + 15");
-        expressions.put("b", "((3*2) +5)");
+        expressions.put("b", "((3*2)+5)");
         expressions.put("c", "12");
         expressions.put("d", "((24*43)/(12+43))");
         expressions.put("e", "((24*43/2)/12+43)");
+        expressions.put("f", "5");
+        expressions.put("g", "((100 * 5)/10 + 10) * 1");
+//        expressions.put("h", "c");
 
         HashMap<String, Integer> results = new HashMap<>();
 
         for (String variable : expressions.keySet()) {
             try {
                 String expression = expressions.get(variable);
+                System.out.println(expression);
                 int result = evaluateExpression(expression);
                 results.put(variable, result);
             } catch (ArithmeticException e) {

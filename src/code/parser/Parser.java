@@ -3,6 +3,7 @@ package code.parser;
 //import code.ArithmeticOperations.BinaryOperationNode;
 //import code.ArithmeticOperations.ValueNode;
 //import code.ArithmeticOperations.VariableNode;
+import code.ArithmeticOperations.ExpressionParser;
 import code.Environment.Environment;
 import code.model.Token;
 import code.node.*;
@@ -24,9 +25,6 @@ public class Parser {
 
     public ASTNode produceAST() throws CustomExceptions {
         ASTNode rootNode = new ASTNode(); // Create the root code.node
-
-        Stack<Token> operandStack = new Stack<>();
-        Stack<Token> operatorStack = new Stack<>();
 
         for (int i = 0; i < tokensList.size(); i++) {
             Token token = tokensList.get(i);
@@ -68,9 +66,13 @@ public class Parser {
                                     if (token.getType() == Token.TokenType.VARIABLE) { // Store variable
                                         variableNames.add(token.getValue());
                                         decleared = false;
-                                    } else if (token.getType() == Token.TokenType.VALUE) { // Store value
-                                        value = token.getValue();
-                                        processVariableDeclaration(datatype, variableNames, value, rootNode); // Call the method
+                                    } else if (token.getType() == Token.TokenType.EXPRESSION) { // Store value
+//                                        value = token.getValue();
+                                        String expression = token.getValue();
+                                        ExpressionParser expressionParser = new ExpressionParser();
+                                        String result = String.valueOf(expressionParser.evaluateExpression(expression));
+
+                                        processVariableDeclaration(datatype, variableNames, result, rootNode); // Call the method
                                         variableNames.clear(); // Clean list
                                         decleared = true;
                                     } else if (token.getType() == Token.TokenType.ASSIGN) {
@@ -97,8 +99,6 @@ public class Parser {
                         }
                         break;
 
-                    // COPY START
-                    // COPY START
                     case DISPLAY:
                         List<String> variableNames = new ArrayList<>();
                         boolean isFirstVariable = true; // Flag to track if it's the first variable
@@ -132,7 +132,7 @@ public class Parser {
                                     displayToken = tokensList.get(i);
                                     BText.append(displayToken.getValue());
                                     i++; // Move to the next token
-                                    System.out.println(displayToken.getValue() + displayToken.getType().toString());
+//                                    System.out.println(displayToken.getValue() + displayToken.getType().toString());
                                 }
                                 String output = BText.toString();
                                 System.out.println(output);
@@ -150,7 +150,7 @@ public class Parser {
                         }
                         // Create a new DisplayNode with the list of variable names
                         rootNode.addChild(new DisplayNode(variableNames));
-                        break;// CHANGES END
+                        break;
                 case VARIABLE:
                     String varname = token.getValue();
                     Object new_value = null;
@@ -183,7 +183,7 @@ public class Parser {
                                     if (token.getType() == Token.TokenType.VARIABLE) { // case: [x = y]
                                         // check if [y] exist
                                         if (environment.isDefined(token.getValue().toString())) { // TODO: currently allows words
-                                            new_value = environment.getVariable(token.getValue().toString()); // update value in the environment
+                                            new_value = (String) environment.getVariable(token.getValue().toString()); // update value in the environment
                                             if (variableValueValidator(datatype, new_value)) {
                                                 environment.setVariable(varname, new_value);
                                             } else {
@@ -237,15 +237,15 @@ public class Parser {
                     }
                     rootNode.addChild(new ScanNode(scanVariables));
                     break;
-                case EXPRESSION:
-                    if (!token.getValue().equals("BEGIN CODE") && !token.getValue().equals("END CODE")) {
-                        String expression = token.getValue();
-                        // Evaluate the expression
-//                        int result = evaluateExpression(expression);
-                        // Create a token for the result and add it to the operand stack
-//                        operandStack.push(new Token(Token.TokenType.VALUE, String.valueOf(result), false));
-                    }
-                    break;
+//                case EXPRESSION:
+//                    if (!token.getValue().equals("BEGIN CODE") && !token.getValue().equals("END CODE")) {
+//                        String expression = token.getValue();
+//                        // Evaluate the expression
+////                        int result = evaluateExpression(expression);
+//                        // Create a token for the result and add it to the operand stack
+////                        operandStack.push(new Token(Token.TokenType.VALUE, String.valueOf(result), false));
+//                    }
+//                    break;
                 }
             currentTokenIndex++;
             } catch (CustomExceptions e) {
@@ -293,79 +293,6 @@ public class Parser {
             return false;
         }
     }
-
-//    private int evaluateExpression(String expression) throws CustomExceptions {
-//        // Split the expression into operands and operators
-//        String[] tokens = expression.split("\\s+");
-//
-//        // Operand stack for evaluating the expression
-//        Stack<Integer> operandStack = new Stack<>();
-//
-//        // Operator stack for handling operator precedence
-//        Stack<Character> operatorStack = new Stack<>();
-//
-//        for (String token : tokens) {
-//            if (isNumeric(token)) {
-//                // If the token is a number, push it onto the operand stack
-//                operandStack.push(Integer.parseInt(token));
-//            } else if (isOperator(token)) {
-//                // If the token is an operator, handle operator precedence
-//                while (!operatorStack.isEmpty() && precedence(operatorStack.peek()) >= precedence(token.charAt(0))) {
-//                    processOperator(operandStack, operatorStack.pop());
-//                }
-//                // Push the current operator onto the operator stack
-//                operatorStack.push(token.charAt(0));
-//            }
-//        }
-//
-//        // Process remaining operators
-//        while (!operatorStack.isEmpty()) {
-//            processOperator(operandStack, operatorStack.pop());
-//        }
-//
-//        // The final result will be the top element of the operand stack
-//        if (!operandStack.isEmpty()) {
-//            return operandStack.pop();
-//        } else {
-//            throw new CustomExceptions("Error evaluating expression: " + expression);
-//        }
-//    }
-
-//    private void processOperator(Stack<Integer> operandStack, char operator) throws CustomExceptions {
-//        // Pop two operands from the operand stack
-//        if (!operandStack.isEmpty()) {
-//            int operand2 = operandStack.pop();
-//            if (!operandStack.isEmpty()) {
-//                int operand1 = operandStack.pop();
-//                // Perform the operation and push the result onto the operand stack
-//                switch (operator) {
-//                    case '+':
-//                        operandStack.push(operand1 + operand2);
-//                        break;
-//                    case '-':
-//                        operandStack.push(operand1 - operand2);
-//                        break;
-//                    case '*':
-//                        operandStack.push(operand1 * operand2);
-//                        break;
-//                    case '/':
-//                        if (operand2 != 0) {
-//                            operandStack.push(operand1 / operand2);
-//                        } else {
-//                            throw new CustomExceptions("Division by zero error.");
-//                        }
-//                        break;
-//                    default:
-//                        throw new CustomExceptions("Invalid operator: " + operator);
-//                }
-//            } else {
-//                throw new CustomExceptions("Error processing operator: " + operator);
-//            }
-//        } else {
-//            throw new CustomExceptions("Error processing operator: " + operator);
-//        }
-//    }
-
     private boolean isNumeric(String str) {
         return str.matches("-?\\d+");
     }
@@ -373,17 +300,4 @@ public class Parser {
     private boolean isOperator(String str) {
         return str.matches("[-+*/]");
     }
-
-//    private int precedence(char operator) {
-//        switch (operator) {
-//            case '+':
-//            case '-':
-//                return 1;
-//            case '*':
-//            case '/':
-//                return 2;
-//            default:
-//                return -1;
-//        }
-//    }
 }

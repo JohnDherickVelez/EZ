@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 
 import static code.lexer.ReservedWordChecker.isReservedWord;
 
-//
 public class Lexer {
     private String sourceCode;
     private int currentTokenIndex = 0;
@@ -20,22 +19,32 @@ public class Lexer {
 
     public List<Token> tokenizeSourceCode(String sourceCode) throws CustomExceptions {
         try {
-            Pattern pattern = Pattern.compile("\\\"[^\\\"]*\\\"|\\b[\\w.]+\\b|\\n|[-+*/=<>!&|,$\\[\\]]|#.*|'.'");
+//            Pattern pattern = Pattern.compile("\\b[()\\w.]+\\b|\\n|[-+*/=<>!&|,$]|#.*|'.'"); // good regex for float
 //        Pattern pattern = Pattern.compile("\\b\\w+\\b|\\n|[-+*/=<>!&|]");
 //        Pattern pattern = Pattern.compile("\\b\\w+\\b|\\n|[-+*/=<>!&|]|'");
 //        Pattern pattern = Pattern.compile("\\b\\w+\\b|\\n|[-+*/=<>!&|]|'.'"); // good regex for ' ' but as a whole 'c'
 //        Pattern pattern = Pattern.compile("\\b[\\w.']+\\b|\\n|[-+*/=<>!&|]");
 //        Pattern pattern = Pattern.compile("\\b\\w+\\b|\\n|[-+*/=<>!&|]|'|(\\d+(\\.\\d+)?)");
-
+//            Pattern pattern = Pattern.compile("\\b[\\w.]+\\b|\\n|[-+*/=<>!&|,$()]|#.*|'.'"); // optimal for arithmetic operations DO NOT DELETE
+//            Pattern pattern = Pattern.compile("\\b[\\w.]+\\b|\\n|[-+*/=<>!&|,$()\\[\\]]|#.*|'.'");
+            Pattern pattern = Pattern.compile("\\\"[^\\\"]*\\\"|\\b[\\w.]+\\b|\\n|[-+*/=<>!&|,$()\\[\\]]|#.*|'.'");
             Matcher matcher = pattern.matcher(sourceCode);
             StringBuilder expressionBuilder = new StringBuilder(); // To build expressions
-
+            boolean skipBuildingExpression = false;
+            boolean assignmentFound = false;
             while (matcher.find()) {
                 String word = matcher.group(); // Get the matched word
 
                 // Skip comments and continue until newline is encountered
                 if (word.startsWith("#")) {
                     // Skip this token (comment)
+                    continue;
+                }
+
+                if (word.equals("=")) {
+                    assignmentFound = true;
+                    tokensList.add(new Token(Token.TokenType.ASSIGN, word, true));
+                    expressionBuilder.setLength(0);
                     continue;
                 }
 
@@ -47,8 +56,11 @@ public class Lexer {
                         expressionBuilder.setLength(0); // Clear the expression builder
                     }
                     tokensList.add(new Token(Token.TokenType.ENDLINE, "end of line", false));
+//                    skipBuildingExpression = false;
+                    assignmentFound = false;
                     continue;
                 }
+                // Check if we should skip building the expression
 
                 // If not an endline token, handle as before
                 switch (word) {
@@ -75,13 +87,12 @@ public class Lexer {
                     case "&":
                     case "|":
                     case "$":
-
                         tokensList.add(new Token(Token.TokenType.OPERATOR, word, true));
                         break;
                     case "[":
                     case "]":
                         tokensList.add(new Token(Token.TokenType.IDENTIFIER, word, true));
-
+                        break;
                     case "(":
                         tokensList.add(new Token(Token.TokenType.OPEN_P, word, true));
                         break;
@@ -92,9 +103,11 @@ public class Lexer {
                         tokensList.add(new Token(Token.TokenType.ASSIGN, word, true));
                         break;
                     case "DISPLAY":
+                        skipBuildingExpression = true;
                         tokensList.add(new Token(Token.TokenType.DISPLAY, word, true));
                         break;
                     case "SCAN":
+                        skipBuildingExpression = true;
                         tokensList.add(new Token(Token.TokenType.SCAN, word, true));
                         break;
                     case "'":
@@ -112,7 +125,13 @@ public class Lexer {
                         }
                         break;
                 }
-                expressionBuilder.append(word).append(" "); // Append the word with a space delimiter
+
+//                expressionBuilder.append(word).append(" "); // Append the word with a space delimiter
+                if (!skipBuildingExpression && !word.equals("BEGIN") && !word.equals("CODE") && !word.equals("END") && !word.equals("DISPLAY") && !word.equals("SCAN")) {
+                    expressionBuilder.append(word).append(" "); // Append the word with a space delimiter
+                }
+
+
             }
 
             // Handle the case where the source code ends with an expression without an endline

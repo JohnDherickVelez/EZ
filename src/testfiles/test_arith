@@ -1,4 +1,5 @@
 BEGIN CODE
-    INT a = 15 + 12
-    DISPLAY: a
+    INT a = 15 + 15
+    INT b = ((3*2)+5)
+    DISPLAY: a & b
 END CODE

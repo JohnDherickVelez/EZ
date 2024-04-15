@@ -1,5 +1,6 @@
 BEGIN CODE
-INT xyz, abc=100
-xyz= ((abc *5)/10 + 10) * -1
+INT xyz = ((100 * 5)/10 + 10) * 1
+INT abc=100
+
 DISPLAY: [[] & xyz & []]
 END CODE

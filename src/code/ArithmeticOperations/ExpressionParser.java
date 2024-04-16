@@ -5,6 +5,8 @@ import code.Environment.Environment;
 import java.util.HashMap;
 import java.util.Stack;
 
+import java.util.Stack;
+
 public class ExpressionParser {
     private String expression;
     private Environment environment;
@@ -14,44 +16,40 @@ public class ExpressionParser {
         this.environment = environment;
     }
 
-    public int evaluateExpression(String expression) {
-        // Remove whitespace from the expression
-//        System.out.println("THE Expression: " + expression);
+    public Number evaluateExpression(String expression) {
         expression = expression.replaceAll("\\s", "");
 
-        // Stack for operands
-        Stack<Integer> values = new Stack<>();
+        // Stack for operands (changed to Number)
+        Stack<Number> values = new Stack<>();
 
-        // Stack for operators
         Stack<Character> ops = new Stack<>();
 
         for (int i = 0; i < expression.length(); i++) {
             char c = expression.charAt(i);
-            sb.setLength(0); // Clear the StringBuilder
+            sb.setLength(0);
 
-//            System.out.println("CHAR: " + c);
-            if (Character.isDigit(c)) {
-                while (i < expression.length() && Character.isDigit(expression.charAt(i))) {
+            if (Character.isDigit(c) || c == '.') {
+                while (i < expression.length() && (Character.isDigit(expression.charAt(i)) || expression.charAt(i) == '.')) {
                     sb.append(expression.charAt(i++));
                 }
                 i--;
-                values.push(Integer.parseInt(sb.toString()));
+                if (sb.toString().contains(".")) {
+                    values.push(Double.parseDouble(sb.toString())); // Parse as Double for decimals
+                } else {
+                    values.push(Integer.parseInt(sb.toString())); // Parse as Integer for integers
+                }
             } else if (Character.isAlphabetic(c)) {
-//                System.out.println("IF ALPHA CHAR: " + c);
                 int value = 0;
                 while (i < expression.length() && Character.isAlphabetic(expression.charAt(i))) {
                     sb.append(expression.charAt(i++));
-                    //System.out.println("RUNNING: " + sb.toString());
                 }
                 i--;
                 if (environment.isDefined(sb.toString())) {
                     value = (int) environment.getVariable(sb.toString());
-//                    System.out.println("VALUE: " + value);
                 } else {
-                    // TODO: trow an exception
+                    // Handle undefined variable
                 }
-//                System.out.println("kjkqlwjelkqwejlk"+value);
-                    values.push(value);
+                values.push(value);
             } else if (c == '(') {
                 ops.push(c);
             } else if (c == ')') {
@@ -67,7 +65,6 @@ public class ExpressionParser {
             }
         }
 
-        // Remaining operations
         while (!ops.empty()) {
             values.push(applyOp(ops.pop(), values.pop(), values.pop()));
         }
@@ -82,19 +79,39 @@ public class ExpressionParser {
         return (op1 != '*' && op1 != '/') || (op2 != '+' && op2 != '-');
     }
 
-    private static int applyOp(char op, int b, int a) {
-        switch (op) {
-            case '+':
-                return a + b;
-            case '-':
-                return a - b;
-            case '*':
-                return a * b;
-            case '/':
-                if (b == 0) {
-                    throw new ArithmeticException("Division by zero");
-                }
-                return a / b;
+    private static Number applyOp(char op, Number b, Number a) {
+        if (a instanceof Double || b instanceof Double) {
+            double da = a.doubleValue();
+            double db = b.doubleValue();
+            switch (op) {
+                case '+':
+                    return da + db;
+                case '-':
+                    return da - db;
+                case '*':
+                    return da * db;
+                case '/':
+                    if (db == 0) {
+                        throw new ArithmeticException("Division by zero");
+                    }
+                    return da / db;
+            }
+        } else {
+            int ia = a.intValue();
+            int ib = b.intValue();
+            switch (op) {
+                case '+':
+                    return ia + ib;
+                case '-':
+                    return ia - ib;
+                case '*':
+                    return ia * ib;
+                case '/':
+                    if (ib == 0) {
+                        throw new ArithmeticException("Division by zero");
+                    }
+                    return ia / ib;
+            }
         }
         return 0;
     }

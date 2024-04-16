@@ -38,7 +38,7 @@ public class Lexer {
 //        Pattern pattern = Pattern.compile("\\b\\w+\\b|\\n|[-+*/=<>!&|]|'|(\\d+(\\.\\d+)?)");
 //            Pattern pattern = Pattern.compile("\\b[\\w.]+\\b|\\n|[-+*/=<>!&|,$()]|#.*|'.'"); // optimal for arithmetic operations DO NOT DELETE
 //            Pattern pattern = Pattern.compile("\\b[\\w.]+\\b|\\n|[-+*/=<>!&|,$()\\[\\]]|#.*|'.'");
-            Pattern pattern = Pattern.compile("\\\"[^\\\"]*\\\"|\\b[\\w.]+\\b|\\n|[-+*/=<>!&|,$()\\[\\]]|#.*|'.'");
+            Pattern pattern = Pattern.compile("\"[^\"]*\"|'[^']*'|\\b[\\w.]+\\b|\\n|[-+*/=<>!&|,$()\\[\\]]|#.*");
             Matcher matcher = pattern.matcher(sourceCode);
             StringBuilder expressionBuilder = new StringBuilder(); // To build expressions
             boolean skipBuildingExpression = false;
@@ -127,6 +127,8 @@ public class Lexer {
                     default:
                         if (word.matches("'.'")) {
                             tokensList.add(new Token(Token.TokenType.VALUE, word, false)); // Tokenize as a single character literal
+                        } else if (word.matches("\".*\"")) {
+                            tokensList.add(new Token(Token.TokenType.VALUE, word, false));
                         } else if (isNumeric(word)) {
                             tokensList.add(new Token(Token.TokenType.VALUE, word, false)); // Tokenize as a numeric literal
                         } else if (isBoolean(word)) {

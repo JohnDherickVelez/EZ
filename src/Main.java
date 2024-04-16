@@ -82,7 +82,6 @@ import java.util.Scanner;
                 System.out.println("Variable declaration: " + variableType + " " + variableName + " = " + variableValue);
             } else if (node instanceof DisplayNode displayNode) {// COPY START
                 StringBuilder outputBuilder = new StringBuilder();
-
                 for (String varName : displayNode.getVariableNames()) {
                     if (varName.equals("$")) {
                         outputBuilder.append("\n"); // Append a newline character if the variable name is "$"

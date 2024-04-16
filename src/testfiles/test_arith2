@@ -1,6 +1,5 @@
 BEGIN CODE
-INT xyz = ((100 * 5)/10 + 10) * 1
-INT abc=100
-
-DISPLAY: [[] & xyz & []]
+INT a = 1
+INT b = 0
+a = b = 2
 END CODE

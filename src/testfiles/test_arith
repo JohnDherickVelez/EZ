@@ -1,5 +1,6 @@
 BEGIN CODE
-    INT a = 15 + 15
-    INT b = ((3*2)+5)
+    INT a = 5
+    INT b = 0
+    BOOL c = "FALSE"
     DISPLAY: a & b
 END CODE

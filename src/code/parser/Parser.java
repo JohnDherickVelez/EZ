@@ -1,14 +1,13 @@
 package code.parser;
 
-//import code.ArithmeticOperations.BinaryOperationNode;
-//import code.ArithmeticOperations.ValueNode;
-//import code.ArithmeticOperations.VariableNode;
 import code.ArithmeticOperations.ExpressionParser;
 import code.Environment.Environment;
 import code.model.Token;
 import code.node.*;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Parser {
     private List<Token> tokensList;
@@ -57,6 +56,7 @@ public class Parser {
                             if (i + 1 < tokensList.size()) {
                                 String datatype = token.getValue();
                                 List<String> variableNames = new ArrayList<>();
+                                String expression = null;
                                 String value = null;
                                 boolean assigned = false;
                                 boolean decleared = false;
@@ -66,13 +66,28 @@ public class Parser {
                                     if (token.getType() == Token.TokenType.VARIABLE) { // Store variable
                                         variableNames.add(token.getValue());
                                         decleared = false;
-                                    } else if (token.getType() == Token.TokenType.EXPRESSION) { // Store value
+                                    }
+                                    else if (token.getType() == Token.TokenType.EXPRESSION) { // Store value
 //                                        value = token.getValue();
-                                        String expression = token.getValue();
-                                        ExpressionParser expressionParser = new ExpressionParser();
-                                        String result = String.valueOf(expressionParser.evaluateExpression(expression));
+                                         expression = token.getValue();
+                                        System.out.println(expression);
+                                        processVariableDeclaration(datatype, variableNames, expression, rootNode);
+//                                        String checkDT = checkDataType(expression);
+//                                        ExpressionParser expressionParser = new ExpressionParser();
+//                                        switch(checkDT) {
+//                                            case "Expression":
+//                                                String result = String.valueOf(expressionParser.evaluateExpression(expression));
+//                                                processVariableDeclaration(datatype, variableNames, result, rootNode); // Call the method
+//                                                break;
+//                                            case "Integer", "Character", "Boolean", "Float":
+//                                                value = token.getValue();
+//                                                processVariableDeclaration(datatype, variableNames, value, rootNode); // Call the method
+//                                                break;
+//                                        }
+                                        // same ra siya ug concept sa Token.TokenType.VALUE
+                                        // but nag try ko with helper functions
 
-                                        processVariableDeclaration(datatype, variableNames, result, rootNode); // Call the method
+
                                         variableNames.clear(); // Clean list
                                         decleared = true;
                                     } else if (token.getType() == Token.TokenType.ASSIGN) {
@@ -155,6 +170,7 @@ public class Parser {
                     String varname = token.getValue();
                     Object new_value = null;
                     String datatype = null;
+
                     while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) {
                         //System.out.println("randomhskejklqwejlqkjeklqeqwe1   "+token.getValue().toString());
                         if (token.getType() == Token.TokenType.ASSIGN) { // case: [x = y = z]
@@ -183,7 +199,7 @@ public class Parser {
                                     if (token.getType() == Token.TokenType.VARIABLE) { // case: [x = y]
                                         // check if [y] exist
                                         if (environment.isDefined(token.getValue().toString())) { // TODO: currently allows words
-                                            new_value = (String) environment.getVariable(token.getValue().toString()); // update value in the environment
+                                            new_value = environment.getVariable(token.getValue().toString()); // update value in the environment
                                             if (variableValueValidator(datatype, new_value)) {
                                                 environment.setVariable(varname, new_value);
                                             } else {
@@ -192,10 +208,14 @@ public class Parser {
                                         } else {
                                             throw new CustomExceptions("Variable " + token.getValue().toString() + " not initially declared");
                                         }
-                                    } else if (token.getType() == Token.TokenType.VALUE) { // case: [x = 3]
-                                        new_value = token.getValue();
-                                        if (variableValueValidator(datatype, new_value)) {
-                                            environment.setVariable(varname, new_value);
+                                    } else if (token.getType() == Token.TokenType.EXPRESSION) { // case: [x = 3]
+//                                        new_value = token.getValue();
+                                        String expression = token.getValue();
+                                        ExpressionParser expressionParser = new ExpressionParser();
+                                        String result = String.valueOf(expressionParser.evaluateExpression(expression));
+
+                                        if (variableValueValidator(datatype, result)) {
+                                            environment.setVariable(varname, result);
                                         } else {
                                             throw new CustomExceptions("Incorrect value" + token.getValue().toString());
                                         }
@@ -237,15 +257,6 @@ public class Parser {
                     }
                     rootNode.addChild(new ScanNode(scanVariables));
                     break;
-//                case EXPRESSION:
-//                    if (!token.getValue().equals("BEGIN CODE") && !token.getValue().equals("END CODE")) {
-//                        String expression = token.getValue();
-//                        // Evaluate the expression
-////                        int result = evaluateExpression(expression);
-//                        // Create a token for the result and add it to the operand stack
-////                        operandStack.push(new Token(Token.TokenType.VALUE, String.valueOf(result), false));
-//                    }
-//                    break;
                 }
             currentTokenIndex++;
             } catch (CustomExceptions e) {
@@ -287,17 +298,64 @@ public class Parser {
             return true;
         } else if (datatype.equals("CHAR") && value.matches("'.'")) {
             return true;
-        } else if (datatype.equals("BOOL") && (value.equals("TRUE") || value.equals("FALSE"))) {
-            return true;
+        } else return datatype.equals("BOOL") && (value.equals("TRUE") || value.equals("FALSE"));
+    }
+
+    public static String checkDataType(String inputStr) {
+        // Check if it's an expression
+        if(isExpression(inputStr)) {
+            return "Expression";
+        } else if (isInteger(inputStr)) {
+            return "Integer";
+        } else if (isCharacter(inputStr)) {
+            return "Character";
+        } else if (isBoolean(inputStr)) {
+            return "Boolean";
+        } else if (isFloat(inputStr)) {
+            return "Float";
         } else {
+            return "Unknown";
+        }
+    }
+    private static boolean isInteger(String inputStr) {
+        try {
+            Integer.parseInt(inputStr);
+            return true;
+        } catch (NumberFormatException e) {
             return false;
         }
     }
-    private boolean isNumeric(String str) {
-        return str.matches("-?\\d+");
+
+    private static boolean isCharacter(String inputStr) {
+        // Check if the input string is a single character enclosed in single quotes
+        return inputStr.matches("'.'");
     }
 
-    private boolean isOperator(String str) {
-        return str.matches("[-+*/]");
+    private static boolean isBoolean(String inputStr) {
+        // Check if the input string is either "TRUE" or "FALSE" (case insensitive)
+        return inputStr.equalsIgnoreCase("TRUE") || inputStr.equalsIgnoreCase("FALSE");
     }
+
+    private static boolean isFloat(String inputStr) {
+        try {
+            Float.parseFloat(inputStr);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+    public static boolean isExpression(String input) {
+        // Regular expression pattern to match expressions with arithmetic operators
+        String pattern = "\\s*\\(\\s*\\d+\\s*[+\\-*/%><=!&|]\\s*\\d+\\s*\\)\\s*";
+
+        // Compile the pattern
+        Pattern regex = Pattern.compile(pattern);
+
+        // Match the input against the pattern
+        Matcher matcher = regex.matcher(input);
+
+        // Return true if input matches the pattern
+        return matcher.matches();
+    }
+
 }

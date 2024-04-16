@@ -1,12 +1,12 @@
 
 import code.Environment.Environment;
 import code.lexer.Lexer;
-import code.lexer.Lexer2;
+//import code.lexer.Lexer2;
 import code.model.Token;
 import code.node.*;
 import code.parser.CustomExceptions;
 import code.parser.Parser;
-import code.parser.Parser2;
+//import code.parser.Parser2;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -16,7 +16,7 @@ import java.util.Scanner;
 
     public class Main {
         public static void main(String[] args) throws CustomExceptions {
-            String filePath = "./src/testfiles/test_arith2"; // Replace this with the path to your text file
+            String filePath = "./src/testfiles/test_arith"; // Replace this with the path to your text file
             StringBuilder sourceCode = new StringBuilder();
 
             try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
@@ -80,8 +80,7 @@ import java.util.Scanner;
                 String variableValue = (String) variableNode.getValue();
                 // Perform actions based on variable type, name, and value
                 System.out.println("Variable declaration: " + variableType + " " + variableName + " = " + variableValue);
-            } else if (node instanceof DisplayNode) {// COPY START
-                DisplayNode displayNode = (DisplayNode) node;
+            } else if (node instanceof DisplayNode displayNode) {// COPY START
                 StringBuilder outputBuilder = new StringBuilder();
 
                 for (String varName : displayNode.getVariableNames()) {
@@ -113,37 +112,7 @@ import java.util.Scanner;
                     outputBuilder.append(" ");
                 }
 
-                System.out.println(outputBuilder.toString());// CHANGES END
-//            else if (node instanceof DisplayNode) {
-//                DisplayNode displayNode = (DisplayNode) node;
-//                StringBuilder outputBuilder = new StringBuilder();
-//
-//                for (String varName : displayNode.getVariableNames()) {
-//                    if (varName.equals("$")) {
-//                        outputBuilder.append("\n"); // Append a newline character if the variable name is "$"
-//                    } else if (varName.startsWith("\"") && varName.endsWith("\"")) {
-//                        // This is quoted text, remove the surrounding quotes and append to the output
-//                        String textInsideQuotes = varName.substring(1, varName.length() - 1);
-//                        outputBuilder.append(textInsideQuotes);
-//                    } else {
-//                        // Check if varName exists in the environment
-//                        Object value = environment.getVariable(varName);
-//
-//                        if (value != null) {
-//                            outputBuilder.append(value); // Append variable value if found
-//                        } else {
-//                            // Append varName as a literal string if not found in environment
-//                            outputBuilder.append(varName);
-//                        }
-//                    }
-//                    // Append a space after each item (including quoted text)
-//                    //outputBuilder.append(" ");
-//                }
-////                // Remove the trailing space added after the last item
-////                if (outputBuilder.length() > 0) {
-////                    outputBuilder.setLength(outputBuilder.length() - 1);
-////                }
-//                System.out.println(outputBuilder.toString());
+                System.out.println(outputBuilder.toString());
             } else if (node instanceof AssignmentNode assignmentNode) {
                 String variableName = assignmentNode.getVariableName();
                 String variableValue = assignmentNode.getValue();

@@ -69,7 +69,7 @@ public class Parser {
                                     } else if (token.getType() == Token.TokenType.EXPRESSION) { // Store value
 //                                        value = token.getValue();
                                         String expression = token.getValue();
-                                        ExpressionParser expressionParser = new ExpressionParser();
+                                        ExpressionParser expressionParser = new ExpressionParser(environment);
                                         String result = String.valueOf(expressionParser.evaluateExpression(expression));
 
                                         processVariableDeclaration(datatype, variableNames, result, rootNode); // Call the method

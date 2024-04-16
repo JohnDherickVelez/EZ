@@ -1,13 +1,22 @@
 package code.ArithmeticOperations;
 
+import code.Environment.Environment;
+
 import java.util.HashMap;
 import java.util.Stack;
 
 public class ExpressionParser {
     private String expression;
+    private Environment environment;
+    private StringBuilder sb = new StringBuilder();
+
+    public ExpressionParser(Environment environment) {
+        this.environment = environment;
+    }
 
     public int evaluateExpression(String expression) {
         // Remove whitespace from the expression
+//        System.out.println("THE Expression: " + expression);
         expression = expression.replaceAll("\\s", "");
 
         // Stack for operands
@@ -18,14 +27,31 @@ public class ExpressionParser {
 
         for (int i = 0; i < expression.length(); i++) {
             char c = expression.charAt(i);
+            sb.setLength(0); // Clear the StringBuilder
 
+//            System.out.println("CHAR: " + c);
             if (Character.isDigit(c)) {
-                StringBuilder sb = new StringBuilder();
                 while (i < expression.length() && Character.isDigit(expression.charAt(i))) {
                     sb.append(expression.charAt(i++));
                 }
                 i--;
                 values.push(Integer.parseInt(sb.toString()));
+            } else if (Character.isAlphabetic(c)) {
+//                System.out.println("IF ALPHA CHAR: " + c);
+                int value = 0;
+                while (i < expression.length() && Character.isAlphabetic(expression.charAt(i))) {
+                    sb.append(expression.charAt(i++));
+                    //System.out.println("RUNNING: " + sb.toString());
+                }
+                i--;
+                if (environment.isDefined(sb.toString())) {
+                    value = (int) environment.getVariable(sb.toString());
+//                    System.out.println("VALUE: " + value);
+                } else {
+                    // TODO: trow an exception
+                }
+//                System.out.println("kjkqlwjelkqwejlk"+value);
+                    values.push(value);
             } else if (c == '(') {
                 ops.push(c);
             } else if (c == ')') {

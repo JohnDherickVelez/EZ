@@ -11,6 +11,17 @@ import java.util.regex.Pattern;
 
 import static code.lexer.ReservedWordChecker.isReservedWord;
 
+import code.model.Token;
+import code.parser.CustomExceptions;
+//import java.io.FileReader;
+//import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static code.lexer.ReservedWordChecker.isReservedWord;
+
 public class Lexer {
     private String sourceCode;
     private int currentTokenIndex = 0;

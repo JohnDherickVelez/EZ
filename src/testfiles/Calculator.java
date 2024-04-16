@@ -40,10 +40,10 @@ public class Calculator {
         // Remove whitespace from the expression
         expression = expression.replaceAll("\\s", "");
 
-        // Stack for operands
+        // Stack for operands Ex: [ 10, 9 ,17 ]
         Stack<Integer> values = new Stack<>();
 
-        // Stack for operators
+        // Stack for operators Ex: [ + , - , * ]
         Stack<Character> ops = new Stack<>();
 
         for (int i = 0; i < expression.length(); i++) {

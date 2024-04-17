@@ -209,25 +209,52 @@ public class Parser {
                                     //System.out.println("randomhskejklqwejlqkjeklqeqwe3   "+token.getValue().toString());
                                     // Update the variable value in the environment
                                     if (token.getType() == Token.TokenType.VARIABLE) { // case: [x = y]
-                                        // check if [y] exist
-                                        if (environment.isDefined(token.getValue().toString())) { // TODO: currently allows words
-                                            new_value =  environment.getVariable(token.getValue()); // update value in the environment
+                                        System.out.println("case 1: ");
+                                        if (tokensList.get(++i).getType() == Token.TokenType.OPERATOR) { // case: [x = 1 + 2]
+                                            while(token.getType() != Token.TokenType.EXPRESSION) {
+                                                // get next token
+                                                i++;
+                                                token = tokensList.get(i);
+                                            }
+                                            String expression = token.getValue();
+                                            ExpressionParser expressionParser = new ExpressionParser(environment);
+                                            new_value = String.valueOf(expressionParser.evaluateExpression(expression));
+                                            environment.setVariable(varname, new_value);
+                                        } else {
+                                            // check if [y] exist
+                                            if (environment.isDefined(token.getValue().toString())) { // TODO: currently allows words
+                                                new_value = environment.getVariable(token.getValue()); // update value in the environment
+                                                dupe_value = new_value.toString();
+                                                if (variableValueValidator(datatype, dupe_value)) {
+                                                    environment.setVariable(varname, new_value);
+                                                } else {
+                                                    throw new CustomExceptions("Incorrect value" + token.getValue().toString());
+                                                }
+                                            } else {
+                                                throw new CustomExceptions("Variable " + token.getValue().toString() + " not initially declared");
+                                            }
+                                        }
+                                    } else if (token.getType() == Token.TokenType.VALUE) { // case: [x = 3]
+                                        System.out.println("case 2: " );
+                                        if (tokensList.get(++i).getType() == Token.TokenType.OPERATOR) { // case: [x = 1 + 2]
+                                            System.out.println("OPERATORRRRRRR");
+                                            while(token.getType() != Token.TokenType.EXPRESSION) {
+                                                // get next token
+                                                i++;
+                                                token = tokensList.get(i);
+                                            }
+                                            String expression = token.getValue();
+                                            ExpressionParser expressionParser = new ExpressionParser(environment);
+                                            new_value = String.valueOf(expressionParser.evaluateExpression(expression));
+                                            environment.setVariable(varname, new_value);
+                                        } else {
+                                            new_value = token.getValue();
                                             dupe_value = new_value.toString();
                                             if (variableValueValidator(datatype, dupe_value)) {
                                                 environment.setVariable(varname, new_value);
                                             } else {
                                                 throw new CustomExceptions("Incorrect value" + token.getValue().toString());
                                             }
-                                        } else {
-                                            throw new CustomExceptions("Variable " + token.getValue().toString() + " not initially declared");
-                                        }
-                                    } else if (token.getType() == Token.TokenType.VALUE) { // case: [x = 3]
-                                        new_value = token.getValue();
-                                        dupe_value = new_value.toString();
-                                        if (variableValueValidator(datatype, dupe_value)) {
-                                            environment.setVariable(varname, new_value);
-                                        } else {
-                                            throw new CustomExceptions("Incorrect value" + token.getValue().toString());
                                         }
                                     }
                                     // add AssignmentNode to root

@@ -1,6 +1,5 @@
 BEGIN CODE
-    CHAR a = 'L'
-    BOOL c = "FALSE"
-    DISPLAY: "JAYDEE"
-    DISPLAY: []]
+    INT a = 1
+    INT b = 2
+    a = b = 3
 END CODE

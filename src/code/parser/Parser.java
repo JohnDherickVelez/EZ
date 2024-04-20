@@ -183,21 +183,19 @@ public class Parser {
                     Object new_value = null;
                     String dupe_value = null;
                     String datatype = null;
-                    while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) {
+                    while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) {   //Iterates the whole statement
                         //System.out.println("randomhskejklqwejlqkjeklqeqwe1   "+token.getValue().toString());
                         if (token.getType() == Token.TokenType.ASSIGN) { // case: [x = y = z]
                             token = tokensList.get(i-1); // set y as initial
                             i--;
                             varname = token.getValue().toString();
                         }
-                        if (token.getType() == Token.TokenType.EXPRESSION)
-                        {
-                            i++;
-                            token = tokensList.get(i);
+                        if (token.getType() == Token.TokenType.EXPRESSION) {
+                            token = tokensList.get(++i);
                             continue;
                         }
-                        //System.out.println("randomhskejklqwejlqkjeklqeqwe1.2   "+token.getValue().toString());
-                        if (environment.isDefined(token.getValue().toString())) { // check if variable exist [int x]
+//                        System.out.println("BEGIN AGAIN:     "+token.getValue());
+                        if (environment.isDefined(token.getValue().toString())) { // check if variable exist [x is declared]
                             i++; // Move to the next token
                             if (i < tokensList.size()) {
                                 token = tokensList.get(i);
@@ -208,8 +206,8 @@ public class Parser {
                                     datatype = environment.getVariableType(varname);
                                     //System.out.println("randomhskejklqwejlqkjeklqeqwe3   "+token.getValue().toString());
                                     // Update the variable value in the environment
-                                    if (token.getType() == Token.TokenType.VARIABLE) { // case: [x = y]
-                                        System.out.println("case 1: ");
+                                    if (token.getType() == Token.TokenType.VARIABLE) { // case1: [x = y]
+//                                        System.out.println("case 1: ");
                                         if (tokensList.get(++i).getType() == Token.TokenType.OPERATOR) { // case: [x = 1 + 2]
                                             while(token.getType() != Token.TokenType.EXPRESSION) {
                                                 // get next token
@@ -234,10 +232,10 @@ public class Parser {
                                                 throw new CustomExceptions("Variable " + token.getValue().toString() + " not initially declared");
                                             }
                                         }
-                                    } else if (token.getType() == Token.TokenType.VALUE) { // case: [x = 3]
-                                        System.out.println("case 2: " );
+                                    } else if (token.getType() == Token.TokenType.VALUE) { // case2: [x = 3]
+//                                        System.out.println("case 2: " );
                                         if (tokensList.get(++i).getType() == Token.TokenType.OPERATOR) { // case: [x = 1 + 2]
-                                            System.out.println("OPERATORRRRRRR");
+//                                            System.out.println("OPERATORRRRRRR");
                                             while(token.getType() != Token.TokenType.EXPRESSION) {
                                                 // get next token
                                                 i++;
@@ -258,9 +256,10 @@ public class Parser {
                                         }
                                     }
                                     // add AssignmentNode to root
+//                                    System.out.println("TOKEN curr:   " + token.getValue());
                                     rootNode.addChild(new AssignmentNode(varname, new_value));
-                                    i++;
                                     token = tokensList.get(i);
+//                                    System.out.println("TOKEN ++:   " + token.getValue());
                                 } else {
                                     throw new CustomExceptions("Invalid assignment for variable '" + varname + "'.");
                                 }

@@ -1,4 +1,7 @@
 BEGIN CODE
     INT a = 1
-    a = 2 + 1
+    INT b = 2
+    a = b = 3
+    a = 1 + 23
+    b = a = b
 END CODE

@@ -146,19 +146,13 @@ public class Lexer {
 
 
             }
-
             // Handle the case where the source code ends with an expression without an endline
             if (expressionBuilder.length() > 0) {
                 tokensList.add(new Token(Token.TokenType.EXPRESSION, expressionBuilder.toString().trim(), true));
             }
 
-            // Print each token from the tokensList
-            System.out.println("Tokens:");
-            for (Token token : tokensList) {
-                System.out.println(currentTokenIndex + ": {" + "Token Value: " + token.getValue() + ", Token type: " + token.getType() + "}");
-                currentTokenIndex++;
-            }
             checkTokenGrammar(tokensList);
+
         } catch (CustomExceptions e) {
             // Handle the custom exception
             System.out.println("Custom exception caught: " + e.getMessage());
@@ -166,6 +160,13 @@ public class Lexer {
         return tokensList;
     }
 
+    public void printTokensFromList(List<Token> tokensList) {
+        System.out.println("Tokens:");
+        for (Token token : tokensList) {
+            System.out.println(currentTokenIndex + ": {" + "Token Value: " + token.getValue() + ", Token type: " + token.getType() + "}");
+            currentTokenIndex++;
+        }
+    }
     public void checkTokenGrammar(List<Token> tokensList) throws CustomExceptions {
         boolean foundBegin = false;
         boolean foundCodeAfterBegin = false;

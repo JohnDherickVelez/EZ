@@ -17,7 +17,10 @@ private Map<String, VariableInfo> variables;
             // Get the existing datatype from the environment
             VariableInfo existingVariable = variables.get(name);
             String datatype = existingVariable.getDatatype();
-
+            String valueChar = String.valueOf(value);
+            if(valueChar.startsWith("\'") && valueChar.endsWith("\'")) {
+                value = valueChar.substring(1, valueChar.length() - 1);
+            }
             // Update the existing variable with the new value and datatype
             variables.put(name, new VariableInfo(value, datatype));
             } else {
@@ -84,7 +87,7 @@ private Map<String, VariableInfo> variables;
             Object value = switch (datatype) {
             case "INT" -> Integer.parseInt(variableValue);
             case "FLOAT" -> Float.parseFloat(variableValue);
-            case "CHAR" -> variableValue.charAt(1); // Assuming single character value
+            case "CHAR" -> variableValue.charAt(0); // Assuming single character value
             case "BOOL" -> Boolean.parseBoolean(variableValue);
             default -> null;
             };

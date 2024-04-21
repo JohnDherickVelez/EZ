@@ -51,27 +51,25 @@ public class Parser {
                         break;
 
                     case DATATYPE:
-                        if (token.getValue().equals("INT") || token.getValue().equals("FLOAT")
-                                || token.getValue().equals("CHAR") || token.getValue().equals("BOOL")) {
+                        if (i + 1 < tokensList.size()) {
+                            String datatype = token.getValue();
+                            List<String> variableNames = new ArrayList<>();
+                            String value = null;
+                            boolean assigned = false;
+                            boolean decleared = false;
 
-                            if (i + 1 < tokensList.size()) {
-                                String datatype = token.getValue();
-                                List<String> variableNames = new ArrayList<>();
-                                String value = null;
-                                boolean assigned = false;
-                                boolean decleared = false;
-
+                        if (token.getValue().equals("INT") || token.getValue().equals("FLOAT")) {
                                 while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) { // Iterate through statement
-
                                     if (token.getType() == Token.TokenType.VARIABLE) { // Store variable
                                         variableNames.add(token.getValue());
                                         decleared = false;
                                     } else if (token.getType() == Token.TokenType.EXPRESSION) { // Store value
-//                                        value = token.getValue();
+//                                          value = token.getValue();
+//                                        System.out.println("Token:   " + token.getValue());
                                         String expression = token.getValue();
                                         ExpressionParser expressionParser = new ExpressionParser(environment);
                                         String result = String.valueOf(expressionParser.evaluateExpression(expression));
-
+//                                        System.out.println("RESULT:   " + result);
                                         processVariableDeclaration(datatype, variableNames, result, rootNode); // Call the method
                                         variableNames.clear(); // Clean list
                                         decleared = true;
@@ -85,17 +83,46 @@ public class Parser {
                                         token = tokensList.get(i);
                                     }
                                 }
+                        } else if (token.getValue().equals("CHAR") || token.getValue().equals("BOOL")) {
+                                while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) {
+                                    if (token.getType() == Token.TokenType.VARIABLE) { // Store variable
+                                        variableNames.add(token.getValue());
+                                        decleared = false;
+                                    } else if (token.getType() == Token.TokenType.EXPRESSION) {
+                                        value = token.getValue();
+                                        if ((datatype.equals("BOOL") && value.startsWith("\"") && value.endsWith("\""))) {
+                                            value = value.substring(1, value.length() - 1);
+                                        }
 
-                                if (!decleared && !assigned) { // For: int x, y, z = 3
-                                    processVariableDeclaration(datatype, variableNames, value, rootNode); // Call the method
-                                } else if (!decleared && assigned) {
-                                    throw new CustomExceptions("No value assigned to variable");
+                                        if (variableValueValidator(datatype, value)){
+                                            processVariableDeclaration(datatype, variableNames, value, rootNode); // Call the method
+                                            variableNames.clear(); // Clean list
+                                            decleared = true;
+                                        } else {
+                                            // TODO: throw an exception
+                                            System.out.println("NOOOOOO WAYYYYYY");
+                                        }
+                                    } else if (token.getType() == Token.TokenType.ASSIGN) {
+                                        assigned = true;
+                                    }
+
+                                    // Move to the next token
+                                    i++;
+                                    if (i < tokensList.size()) {
+                                        token = tokensList.get(i);
+                                    }
                                 }
+                        }
 
-                            } else {
-                                // Handle unexpected token (not an identifier)
-                                throw new CustomExceptions("Expected identifier for variable name.");
+                            if (!decleared && !assigned) { // For: int x, y, z = 3
+                                processVariableDeclaration(datatype, variableNames, value, rootNode); // Call the method
+                            } else if (!decleared && assigned) {
+                                throw new CustomExceptions("No value assigned to variable");
                             }
+
+                        } else { /// hissss
+                            // Handle unexpected token (not an identifier)
+                            throw new CustomExceptions("Expected identifier for variable name.");
                         }
                         break;
 
@@ -135,7 +162,7 @@ public class Parser {
 //                                    System.out.println(displayToken.getValue() + displayToken.getType().toString());
                                 }
                                 String output = BText.toString();
-                                System.out.println(output);
+//                                System.out.println(output);
 
                                 if (tokensList.get(i).getType() == Token.TokenType.IDENTIFIER &&
                                         tokensList.get(i).getValue().equals("]")) {
@@ -154,22 +181,21 @@ public class Parser {
                 case VARIABLE:
                     String varname = token.getValue();
                     Object new_value = null;
+                    String dupe_value = null;
                     String datatype = null;
-                    while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) {
+                    while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) {   //Iterates the whole statement
                         //System.out.println("randomhskejklqwejlqkjeklqeqwe1   "+token.getValue().toString());
                         if (token.getType() == Token.TokenType.ASSIGN) { // case: [x = y = z]
                             token = tokensList.get(i-1); // set y as initial
                             i--;
                             varname = token.getValue().toString();
                         }
-                        if (token.getType() == Token.TokenType.EXPRESSION)
-                        {
-                            i++;
-                            token = tokensList.get(i);
+                        if (token.getType() == Token.TokenType.EXPRESSION) {
+                            token = tokensList.get(++i);
                             continue;
                         }
-                        //System.out.println("randomhskejklqwejlqkjeklqeqwe1.2   "+token.getValue().toString());
-                        if (environment.isDefined(token.getValue().toString())) { // check if variable exist [int x]
+//                        System.out.println("BEGIN AGAIN:     "+token.getValue());
+                        if (environment.isDefined(token.getValue().toString())) { // check if variable exist [x is declared]
                             i++; // Move to the next token
                             if (i < tokensList.size()) {
                                 token = tokensList.get(i);
@@ -180,30 +206,60 @@ public class Parser {
                                     datatype = environment.getVariableType(varname);
                                     //System.out.println("randomhskejklqwejlqkjeklqeqwe3   "+token.getValue().toString());
                                     // Update the variable value in the environment
-                                    if (token.getType() == Token.TokenType.VARIABLE) { // case: [x = y]
-                                        // check if [y] exist
-                                        if (environment.isDefined(token.getValue().toString())) { // TODO: currently allows words
-                                            new_value = (String) environment.getVariable(token.getValue().toString()); // update value in the environment
-                                            if (variableValueValidator(datatype, new_value)) {
+                                    if (token.getType() == Token.TokenType.VARIABLE) { // case1: [x = y]
+//                                        System.out.println("case 1: ");
+                                        if (tokensList.get(++i).getType() == Token.TokenType.OPERATOR) { // case: [x = 1 + 2]
+                                            while(token.getType() != Token.TokenType.EXPRESSION) {
+                                                // get next token
+                                                i++;
+                                                token = tokensList.get(i);
+                                            }
+                                            String expression = token.getValue();
+                                            ExpressionParser expressionParser = new ExpressionParser(environment);
+                                            new_value = String.valueOf(expressionParser.evaluateExpression(expression));
+                                            environment.setVariable(varname, new_value);
+                                        } else {
+                                            // check if [y] exist
+                                            if (environment.isDefined(token.getValue().toString())) { // TODO: currently allows words
+                                                new_value = environment.getVariable(token.getValue()); // update value in the environment
+                                                dupe_value = new_value.toString();
+                                                if (variableValueValidator(datatype, dupe_value)) {
+                                                    environment.setVariable(varname, new_value);
+                                                } else {
+                                                    throw new CustomExceptions("Incorrect value" + token.getValue().toString());
+                                                }
+                                            } else {
+                                                throw new CustomExceptions("Variable " + token.getValue().toString() + " not initially declared");
+                                            }
+                                        }
+                                    } else if (token.getType() == Token.TokenType.VALUE) { // case2: [x = 3]
+//                                        System.out.println("case 2: " );
+                                        if (tokensList.get(++i).getType() == Token.TokenType.OPERATOR) { // case: [x = 1 + 2]
+//                                            System.out.println("OPERATORRRRRRR");
+                                            while(token.getType() != Token.TokenType.EXPRESSION) {
+                                                // get next token
+                                                i++;
+                                                token = tokensList.get(i);
+                                            }
+                                            String expression = token.getValue();
+                                            ExpressionParser expressionParser = new ExpressionParser(environment);
+                                            new_value = String.valueOf(expressionParser.evaluateExpression(expression));
+                                            environment.setVariable(varname, new_value);
+                                        } else {
+                                            new_value = token.getValue();
+                                            dupe_value = new_value.toString();
+                                            if (variableValueValidator(datatype, dupe_value)) {
                                                 environment.setVariable(varname, new_value);
                                             } else {
                                                 throw new CustomExceptions("Incorrect value" + token.getValue().toString());
                                             }
-                                        } else {
-                                            throw new CustomExceptions("Variable " + token.getValue().toString() + " not initially declared");
-                                        }
-                                    } else if (token.getType() == Token.TokenType.VALUE) { // case: [x = 3]
-                                        new_value = token.getValue();
-                                        if (variableValueValidator(datatype, new_value)) {
-                                            environment.setVariable(varname, new_value);
-                                        } else {
-                                            throw new CustomExceptions("Incorrect value" + token.getValue().toString());
                                         }
                                     }
                                     // add AssignmentNode to root
+//                                    System.out.println("TOKEN curr:   " + token.getValue());
                                     rootNode.addChild(new AssignmentNode(varname, new_value));
-                                    i++;
                                     token = tokensList.get(i);
+//                                    System.out.println("TOKEN ++:   " + token.getValue());
                                 } else {
                                     throw new CustomExceptions("Invalid assignment for variable '" + varname + "'.");
                                 }
@@ -279,8 +335,8 @@ public class Parser {
         }
     }
 
-    private boolean variableValueValidator(String datatype, Object values) {
-        String value = values.toString();
+    private boolean variableValueValidator(String datatype, String value) {
+//        System.out.println("datatype:  " + datatype + "    value:   " + value);
         if (datatype.equals("INT") && value.matches("[0-9]+")) {
             return true;
         } else if (datatype.equals("FLOAT") && value.matches("\\d*\\.\\d+")) {

@@ -2,6 +2,7 @@
 import code.Environment.Environment;
 import code.lexer.Lexer;
 //import code.lexer.Lexer2;
+import code.lexer.Lexer2;
 import code.model.Token;
 import code.node.*;
 import code.parser.CustomExceptions;
@@ -16,29 +17,27 @@ import java.util.Scanner;
 
     public class Main {
         public static void main(String[] args) throws CustomExceptions {
-            String filePath = "./src/testfiles/test_arith"; // Replace this with the path to your text file
+            String filePath = "./src/testfiles/test_arith";
             StringBuilder sourceCode = new StringBuilder();
 
             try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    sourceCode.append(line).append("\n"); // Append each line to the sourceCode string
+                    sourceCode.append(line).append("\n");
                 }
             } catch (IOException e) {
                 e.printStackTrace(); // Handle or log any IOException that occurs
             }
-            // Place all Testing functions here:
-
-            // Test if source code is indeed converted to String (Can Comment tests when running full program)
-            System.out.println("Source code:");
-            System.out.println(sourceCode);
+//
+//            System.out.println("Source code:");
+//            System.out.println(sourceCode);
 
             // Test if Lexer successfully tokenizes the source code
+//            Lexer lexer = new Lexer();
             Lexer lexer = new Lexer();
-//            Lexer2 lexer2 = new Lexer2();
             List<Token> tokenlist = lexer.tokenizeSourceCode(String.valueOf(sourceCode));
-//            List<Token> tokenlist = lexer2.tokenizeSourceCode(String.valueOf(sourceCode));
-
+            // Print all tokens from tokenList
+            lexer.printTokensFromList(tokenlist);
             // Environment and Variable List for Variable Hashmap storage
             Environment environment = new Environment();
             List<String> variableList = new ArrayList<>();
@@ -49,18 +48,15 @@ import java.util.Scanner;
 
             // Initializes the root node of the AST
             Node rootNode = parser.produceAST();
-//            Node rootNode = parser.produceAST();
 
+            // Uncomment this for debugging
             environment.displayVariables();
             // Traverses AST
             executeAST(rootNode, environment);
-
             // Displays variables inside the environment
-            environment.displayVariables();
 
-            // Place Interpreter only functions here:
-//             parser.printAllExpressions();
-//            parser.printAllExpressions();
+            // Uncomment this for debugging
+            environment.displayVariables();
         }
         private static void executeAST(Node node, Environment environment) throws CustomExceptions {
             // Perform appropriate actions based on code.node type
@@ -82,7 +78,6 @@ import java.util.Scanner;
                 System.out.println("Variable declaration: " + variableType + " " + variableName + " = " + variableValue);
             } else if (node instanceof DisplayNode displayNode) {// COPY START
                 StringBuilder outputBuilder = new StringBuilder();
-
                 for (String varName : displayNode.getVariableNames()) {
                     if (varName.equals("$")) {
                         outputBuilder.append("\n"); // Append a newline character if the variable name is "$"
@@ -109,7 +104,7 @@ import java.util.Scanner;
                     }
 
                     // Append a space after each item (including quoted text)
-                    outputBuilder.append(" ");
+//                    outputBuilder.append(" ");
                 }
 
                 System.out.println(outputBuilder.toString());
@@ -141,6 +136,7 @@ import java.util.Scanner;
                 executeAST(child, environment);
             }
         }
+
     }
 
 

@@ -1,9 +1,10 @@
 BEGIN CODE
-INT a = 5
+INT a = 5 + 5
 INT b = 4
-a = b
+
 b = 2
 INT c = 5
+CHAR f = 'n'
 BOOL c = TRUE
 #a = 5 + 5
 DISPLAY: a & $ & b & c

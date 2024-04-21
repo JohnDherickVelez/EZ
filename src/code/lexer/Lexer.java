@@ -194,6 +194,7 @@ public class Lexer {
 
         if (!foundBegin) {
             throw new CustomExceptions("Missing starting statement 'BEGIN'");
+
         }
 
         if (!foundCodeAfterBegin) {

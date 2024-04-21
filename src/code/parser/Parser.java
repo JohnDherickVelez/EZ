@@ -1,8 +1,5 @@
 package code.parser;
 
-//import code.ArithmeticOperations.BinaryOperationNode;
-//import code.ArithmeticOperations.ValueNode;
-//import code.ArithmeticOperations.VariableNode;
 import code.ArithmeticOperations.ExpressionParser;
 import code.Environment.Environment;
 import code.model.Token;
@@ -84,34 +81,35 @@ public class Parser {
                                     }
                                 }
                         } else if (token.getValue().equals("CHAR") || token.getValue().equals("BOOL")) {
-                                while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) {
-                                    if (token.getType() == Token.TokenType.VARIABLE) { // Store variable
-                                        variableNames.add(token.getValue());
-                                        decleared = false;
-                                    } else if (token.getType() == Token.TokenType.EXPRESSION) {
-                                        value = token.getValue();
-                                        if ((datatype.equals("BOOL") && value.startsWith("\"") && value.endsWith("\""))) {
-                                            value = value.substring(1, value.length() - 1);
-                                        }
-
-                                        if (variableValueValidator(datatype, value)){
-                                            processVariableDeclaration(datatype, variableNames, value, rootNode); // Call the method
-                                            variableNames.clear(); // Clean list
-                                            decleared = true;
-                                        } else {
-                                            // TODO: throw an exception
-                                            System.out.println("NOOOOOO WAYYYYYY");
-                                        }
-                                    } else if (token.getType() == Token.TokenType.ASSIGN) {
-                                        assigned = true;
+                            while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) {
+                                if (token.getType() == Token.TokenType.VARIABLE) { // Store variable
+                                    variableNames.add(token.getValue());
+                                    decleared = false;
+                                } else if (token.getType() == Token.TokenType.EXPRESSION) {
+                                    value = token.getValue();
+                                    if ((datatype.equals("BOOL") && value.startsWith("\"") && value.endsWith("\""))) {
+                                        value = value.substring(1, value.length() - 1);
+                                        value = value.toUpperCase(); // Convert boolean value to uppercase
                                     }
 
-                                    // Move to the next token
-                                    i++;
-                                    if (i < tokensList.size()) {
-                                        token = tokensList.get(i);
+                                    if (variableValueValidator(datatype, value)){
+                                        processVariableDeclaration(datatype, variableNames, value, rootNode); // Call the method
+                                        variableNames.clear(); // Clean list
+                                        decleared = true;
+                                    } else {
+                                        // TODO: throw an exception
+                                        System.out.println("NOOOOOO WAYYYYYY");
                                     }
+                                } else if (token.getType() == Token.TokenType.ASSIGN) {
+                                    assigned = true;
                                 }
+
+                                // Move to the next token
+                                i++;
+                                if (i < tokensList.size()) {
+                                    token = tokensList.get(i);
+                                }
+                            }
                         }
 
                             if (!decleared && !assigned) { // For: int x, y, z = 3
@@ -128,7 +126,7 @@ public class Parser {
 
                     case DISPLAY:
                         List<String> variableNames = new ArrayList<>();
-                        boolean isFirstVariable = true; // Flag to track if it's the first variable
+
 
                         // Iterate through tokens until the end of the DISPLAY statement
                         while (i < tokensList.size() && tokensList.get(i).getType() != Token.TokenType.ENDLINE) {
@@ -136,7 +134,7 @@ public class Parser {
                             if (displayToken.getType() == Token.TokenType.VARIABLE) {
                                 // If the token is a variable, add its name to the variableNames list
                                 variableNames.add(displayToken.getValue());
-                                isFirstVariable = false; // Reset the flag after processing the first variable
+
                             } else if (displayToken.getType() == Token.TokenType.OPERATOR && displayToken.getValue().equals("&")) {
                                 // Check if there's a variable after '&'
                                 if (i + 1 < tokensList.size() && tokensList.get(i + 1).getType() == Token.TokenType.VARIABLE) {
@@ -159,10 +157,8 @@ public class Parser {
                                     displayToken = tokensList.get(i);
                                     BText.append(displayToken.getValue());
                                     i++; // Move to the next token
-//                                    System.out.println(displayToken.getValue() + displayToken.getType().toString());
                                 }
                                 String output = BText.toString();
-//                                System.out.println(output);
 
                                 if (tokensList.get(i).getType() == Token.TokenType.IDENTIFIER &&
                                         tokensList.get(i).getValue().equals("]")) {
@@ -321,14 +317,22 @@ public class Parser {
                 rootNode.addChild(floatVariableNode);
                 environment.placeVariables(floatVariableNode);
             } else if (datatype.equals("CHAR") && value.matches("'.'")) {
-                VariableDeclarationNode charVariableNode = new VariableDeclarationNode("CHAR", variableName, value);
-                rootNode.addChild(charVariableNode);
-                environment.placeVariables(charVariableNode);
+                // Adjusted regular expression to allow for any single character between single quotes
+                if (value.length() == 3 && value.charAt(0) == '\'' && value.charAt(2) == '\'') {
+                    // Extract the character from between the single quotes
+                    char charValue = value.charAt(1);
+                    VariableDeclarationNode charVariableNode = new VariableDeclarationNode("CHAR", variableName, String.valueOf(charValue));
+                    rootNode.addChild(charVariableNode);
+                    environment.placeVariables(charVariableNode);
+                } else {
+                    throw new CustomExceptions("Invalid format for CHAR variable '" + variableName + "'.");
+                }
             } else if (datatype.equals("BOOL") && (value.equals("TRUE") || value.equals("FALSE"))) {
+                value = value.toUpperCase();
                 if (!value.matches("(TRUE|FALSE)")) {
                     throw new CustomExceptions("Invalid value for BOOL variable '" + variableName + "'. It should be either \"TRUE\" or \"FALSE\".");
                 }
-                VariableDeclarationNode boolVariableNode = new VariableDeclarationNode("BOOL", variableName, value);
+                VariableDeclarationNode boolVariableNode = new VariableDeclarationNode("BOOL", variableName, value.toUpperCase());
                 rootNode.addChild(boolVariableNode);
                 environment.placeVariables(boolVariableNode);
             }

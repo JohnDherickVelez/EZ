@@ -1,0 +1,7 @@
+BEGIN CODE
+    INT a = 12
+    FLOAT b = 3.14
+    CHAR c='c'
+    BOOL d = "FALSE"
+    DISPLAY: a & b & c & d
+END CODE

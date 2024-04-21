@@ -1,14 +1,13 @@
 BEGIN CODE
-INT a = 5 + 5
-INT b = 4
+#INT a = 5
+#INT b = 4
+#a = b
+#b = 2
+#INT c = 5
+#BOOL c = TRUE
+DISPLAY: "JD"
+DISPLAY: []]
+DISPLAY: [&*&]
 
-b = 2
-INT c = 5
-CHAR f = 'n'
-BOOL c = TRUE
-#a = 5 + 5
-DISPLAY: a & $ & b & c
-# SCAN: a, b,
-DISPLAY: a & b
 
 END CODE

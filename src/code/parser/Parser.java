@@ -166,7 +166,9 @@ public class Parser {
                                     // Append the collected quoted text as a single variable name
                                     BText.append(tokensList.get(i).getValue());
                                     variableNames.add(BText.toString());
-                                } else {variableNames.add(BText.toString());}
+                                } else {
+                                    variableNames.add(BText.toString());
+                                }
 
                             } else if (displayToken.getType() == Token.TokenType.TEXT) {
                                 String text = displayToken.getValue();
@@ -175,8 +177,34 @@ public class Parser {
                                     variableNames.add(text);
                                 }
                             }
-                            i++;
+                            if (i < tokensList.size()) {
+                                Token nextToken = tokensList.get(i);
+                                if (nextToken.getType() == Token.TokenType.VARIABLE) {
+                                    // Append the variable name to the list
+                                    variableNames.add(nextToken.getValue());
+                                } else if (nextToken.getType() == Token.TokenType.OPERATOR && nextToken.getValue().equals("\"")) {
+                                    // Handle quoted text within DISPLAY
+                                    StringBuilder quotedText = new StringBuilder();
+                                    i++; // Move past the opening quote
 
+                                    while (i < tokensList.size() &&
+                                            tokensList.get(i).getType() != Token.TokenType.OPERATOR &&
+                                            !tokensList.get(i).getValue().equals("\"")) {
+                                        // Append token value to the quoted text
+                                        quotedText.append(tokensList.get(i).getValue());
+                                        i++; // Move to the next token
+                                    }
+
+                                    if (i < tokensList.size() &&
+                                            tokensList.get(i).getType() == Token.TokenType.OPERATOR &&
+                                            tokensList.get(i).getValue().equals("\"")) {
+                                        // Append the collected quoted text as a single variable name
+                                        variableNames.add(quotedText.toString());
+                                    }
+                                    i++;
+
+                                }
+                            }
                         }
                         // Create a new DisplayNode with the list of variable names
                         rootNode.addChild(new DisplayNode(variableNames));

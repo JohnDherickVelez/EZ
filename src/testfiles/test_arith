@@ -4,4 +4,5 @@ BEGIN CODE
     INT c = 3
     a = b = c = 12 + 24
     DISPLAY: a & $ [&] & "last" & b
+    DISPLAY: "JD"
 END CODE

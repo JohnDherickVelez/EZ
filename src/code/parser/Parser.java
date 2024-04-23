@@ -137,7 +137,9 @@ public class Parser {
 
                             } else if (displayToken.getType() == Token.TokenType.OPERATOR && displayToken.getValue().equals("&")) {
                                 // Check if there's a variable after '&'
-                                if (i + 1 < tokensList.size() && tokensList.get(i + 1).getType() == Token.TokenType.VARIABLE) {
+                                if (i + 1 < tokensList.size() && tokensList.get(i + 1).getType() == Token.TokenType.VARIABLE
+                                || tokensList.get(i + 1).getType() == Token.TokenType.TEXT
+                                || tokensList.get(i + 1).getType() == Token.TokenType.IDENTIFIER) {
                                     variableNames.add(tokensList.get(i + 1).getValue());
                                     i++; // Move to the next token as we've already processed the variable after '&'
                                 } else if (i + 1 < tokensList.size() && tokensList.get(i + 1).getType() ==
@@ -149,7 +151,6 @@ public class Parser {
                             } else if (displayToken.getType() == Token.TokenType.IDENTIFIER && displayToken.getValue().equals("[")) {
                                 // Handle quoted text within DISPLAY
                                 StringBuilder BText = new StringBuilder();
-
                                 // Move past the opening quote
 
                                 while (!displayToken.getValue().equals("]")) {
@@ -158,7 +159,7 @@ public class Parser {
                                     BText.append(displayToken.getValue());
                                     i++; // Move to the next token
                                 }
-                                String output = BText.toString();
+//                                String output = BText.toString();
 
                                 if (tokensList.get(i).getType() == Token.TokenType.IDENTIFIER &&
                                         tokensList.get(i).getValue().equals("]")) {
@@ -167,6 +168,12 @@ public class Parser {
                                     variableNames.add(BText.toString());
                                 } else {variableNames.add(BText.toString());}
 
+                            } else if (displayToken.getType() == Token.TokenType.TEXT) {
+                                String text = displayToken.getValue();
+//                                System.out.println("quoted string:      " + text);
+                                if (text.startsWith("\"") && text.endsWith("\"")) {
+                                    variableNames.add(text);
+                                }
                             }
                             i++;
 

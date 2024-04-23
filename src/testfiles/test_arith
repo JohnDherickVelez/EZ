@@ -1,8 +1,7 @@
 BEGIN CODE
     INT a = 1
     INT b = 2
-    a = b = 3
-    a = 1 + 23
-    b = a = b
+    INT c = 3
+    a = b = c = 12 + 24
     DISPLAY: a & $ [&] & "last" & b
 END CODE

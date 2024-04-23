@@ -27,8 +27,8 @@ import java.util.Scanner;
                 e.printStackTrace(); // Handle or log any IOException that occurs
             }
 //
-//            System.out.println("Source code:");
-//            System.out.println(sourceCode);
+            System.out.println("Source code:");
+            System.out.println(sourceCode);
 
             // Test if Lexer successfully tokenizes the source code
 //            Lexer2 lexer = new Lexer2();
@@ -82,7 +82,7 @@ import java.util.Scanner;
                 String variableValue = (String) variableNode.getValue();
                 // Perform actions based on variable type, name, and value
                 System.out.println("Variable declaration: " + variableType + " " + variableName + " = " + variableValue);
-            } else if (node instanceof DisplayNode displayNode) {// COPY START
+            } else if (node instanceof DisplayNode displayNode) {
                 StringBuilder outputBuilder = new StringBuilder();
                 for (String varName : displayNode.getVariableNames()) {
                     if (varName.equals("$")) {

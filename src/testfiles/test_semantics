@@ -1,7 +1,3 @@
 BEGIN CODE
-    INT a,e = 12
-    FLOAT b = 3.14
-    CHAR c= 'c'
-    BOOL d = "FALSE"
-    DISPLAY: a & b & c
+    DISPLAY: " dear" & [[]
 END CODE

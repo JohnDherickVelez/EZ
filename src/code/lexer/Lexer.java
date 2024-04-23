@@ -128,7 +128,7 @@ public class Lexer {
                         if (word.matches("'.'")) {
                             tokensList.add(new Token(Token.TokenType.VALUE, word, false)); // Tokenize as a single character literal
                         } else if (word.matches("\".*\"")) {
-                            tokensList.add(new Token(Token.TokenType.VALUE, word, false));
+                            tokensList.add(new Token(Token.TokenType.TEXT, word, false));
                         } else if (isNumeric(word)) {
                             tokensList.add(new Token(Token.TokenType.VALUE, word, false)); // Tokenize as a numeric literal
                         } else if (isBoolean(word)) {

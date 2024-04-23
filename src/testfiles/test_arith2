@@ -1,3 +1,3 @@
 BEGIN CODE
-    BOOL t = 5 == 5
+    BOOL t = 5 > 5
 END CODE

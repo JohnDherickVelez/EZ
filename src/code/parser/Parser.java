@@ -80,7 +80,39 @@ public class Parser {
                                         token = tokensList.get(i);
                                     }
                                 }
-                        } else if (token.getValue().equals("CHAR") || token.getValue().equals("BOOL")) {
+                        }
+//                        else if (token.getValue().equals("CHAR") || token.getValue().equals("BOOL")) {
+//                            while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) {
+//                                if (token.getType() == Token.TokenType.VARIABLE) { // Store variable
+//                                    variableNames.add(token.getValue());
+//                                    decleared = false;
+//                                } else if (token.getType() == Token.TokenType.EXPRESSION) {
+//                                    value = token.getValue();
+//                                    if ((datatype.equals("BOOL") && value.startsWith("\"") && value.endsWith("\""))) {
+//                                        value = value.substring(1, value.length() - 1);
+//                                        value = value.toUpperCase(); // Convert boolean value to uppercase
+//                                    } // this 'if' statement checks if it has "TRUE" or "FALSE"
+//
+//                                    if (variableValueValidator(datatype, value)){
+//                                        processVariableDeclaration(datatype, variableNames, value, rootNode); // Call the method
+//                                        variableNames.clear(); // Clean list
+//                                        decleared = true;
+//                                    } else {
+//                                        // TODO: throw an exception
+//                                        System.out.println("NOOOOOO WAYYYYYY");
+//                                    }
+//                                } else if (token.getType() == Token.TokenType.ASSIGN) {
+//                                    assigned = true;
+//                                }
+//
+//                                // Move to the next token
+//                                i++;
+//                                if (i < tokensList.size()) {
+//                                    token = tokensList.get(i);
+//                                }
+//                            }
+//                        }
+                        else if (token.getValue().equals("CHAR") || token.getValue().equals("BOOL")) {
                             while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) {
                                 if (token.getType() == Token.TokenType.VARIABLE) { // Store variable
                                     variableNames.add(token.getValue());
@@ -90,15 +122,27 @@ public class Parser {
                                     if ((datatype.equals("BOOL") && value.startsWith("\"") && value.endsWith("\""))) {
                                         value = value.substring(1, value.length() - 1);
                                         value = value.toUpperCase(); // Convert boolean value to uppercase
-                                    }
+                                    } // this 'if' statement checks if it has "TRUE" or "FALSE"
 
-                                    if (variableValueValidator(datatype, value)){
-                                        processVariableDeclaration(datatype, variableNames, value, rootNode); // Call the method
+                                    if (datatype.equals("BOOL") && hasLogicalOperator(value)) {
+                                        // Handle expressions with logical operators separately
+                                        // You can add your logic here
+                                        String logicalExpression = token.getValue();
+                                        ExpressionParser expressionParser = new ExpressionParser(environment);
+                                        String resultL = String.valueOf(expressionParser.evaluateLogicalExpression(logicalExpression)).toUpperCase();
+                                        processVariableDeclaration(datatype, variableNames, resultL, rootNode); // Call the method
                                         variableNames.clear(); // Clean list
                                         decleared = true;
                                     } else {
-                                        // TODO: throw an exception
-                                        System.out.println("NOOOOOO WAYYYYYY");
+                                        // Handle expressions without logical operators
+                                        if (variableValueValidator(datatype, value)){
+                                            processVariableDeclaration(datatype, variableNames, value, rootNode); // Call the method
+                                            variableNames.clear(); // Clean list
+                                            decleared = true;
+                                        } else {
+                                            // TODO: throw an exception
+                                            System.out.println("NOOOOOO WAYYYYYY");
+                                        }
                                     }
                                 } else if (token.getType() == Token.TokenType.ASSIGN) {
                                     assigned = true;
@@ -118,7 +162,7 @@ public class Parser {
                                 throw new CustomExceptions("No value assigned to variable");
                             }
 
-                        } else { /// hissss
+                        } else {
                             // Handle unexpected token (not an identifier)
                             throw new CustomExceptions("Expected identifier for variable name.");
                         }
@@ -139,7 +183,8 @@ public class Parser {
                                 // Check if there's a variable after '&'
                                 if (i + 1 < tokensList.size() && tokensList.get(i + 1).getType() == Token.TokenType.VARIABLE
                                 || tokensList.get(i + 1).getType() == Token.TokenType.TEXT
-                                || tokensList.get(i + 1).getType() == Token.TokenType.IDENTIFIER) {
+                                || tokensList.get(i + 1).getType() == Token.TokenType.IDENTIFIER
+                                        || tokensList.get(i + 1).getType() == Token.TokenType.OPERATOR) {
                                     variableNames.add(tokensList.get(i + 1).getValue());
                                     i++; // Move to the next token as we've already processed the variable after '&'
                                 } else if (i + 1 < tokensList.size() && tokensList.get(i + 1).getType() ==
@@ -354,6 +399,19 @@ public class Parser {
         } else {
             return false;
         }
+    }
+    private boolean hasLogicalOperator(String str) {
+        // Define an array of logical operators
+        String[] logicalOperators = {"<", ">", ">=", "<=", "!=", "||", "&&", "=="};
+
+        // Check if the string contains any logical operator
+        for (String operator : logicalOperators) {
+            if (str.contains(operator)) {
+                return true;
+            }
+        }
+
+        return false;
     }
     private boolean isNumeric(String str) {
         return str.matches("-?\\d+");

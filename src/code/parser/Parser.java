@@ -148,20 +148,15 @@ public class Parser {
                                 } else {
                                     throw new CustomExceptions("Expected variable after '&' token.");
                                 }
-                            } else if (displayToken.getType() == Token.TokenType.IDENTIFIER && displayToken.getValue().equals("[")) {
-                                // Handle quoted text within DISPLAY
+                            } else if (displayToken.getType() == Token.TokenType.ESCAPE) {
                                 StringBuilder BText = new StringBuilder();
-                                // Move past the opening quote
-
-                                while (!displayToken.getValue().equals("]")) {
-                                    // Append token value to the quoted text
-                                    displayToken = tokensList.get(i);
-                                    BText.append(displayToken.getValue());
-                                    i++; // Move to the next token
+                                String text = displayToken.getValue();
+//                                System.out.println("quoted string:      " + text);
+                                if (text.startsWith("[") && text.endsWith("]")) {
+                                    BText.append(text);
                                 }
-//                                String output = BText.toString();
 
-                                if (tokensList.get(i).getType() == Token.TokenType.IDENTIFIER &&
+                                if (tokensList.get(++i).getType() == Token.TokenType.IDENTIFIER &&
                                         tokensList.get(i).getValue().equals("]")) {
                                     // Append the collected quoted text as a single variable name
                                     BText.append(tokensList.get(i).getValue());

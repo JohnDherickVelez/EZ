@@ -39,7 +39,7 @@ public class Token {
         ASSIGN,
         WHITESPACE,
         TEXT,
-        S_QUOTE, DISPLAY,
+        S_QUOTE, DISPLAY, ESCAPE,
         SCAN, OPEN_P, CLOSE_P, EXPRESSION,
     }
 }

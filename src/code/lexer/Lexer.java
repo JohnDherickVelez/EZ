@@ -38,7 +38,9 @@ public class Lexer {
 //        Pattern pattern = Pattern.compile("\\b\\w+\\b|\\n|[-+*/=<>!&|]|'|(\\d+(\\.\\d+)?)");
 //            Pattern pattern = Pattern.compile("\\b[\\w.]+\\b|\\n|[-+*/=<>!&|,$()]|#.*|'.'"); // optimal for arithmetic operations DO NOT DELETE
 //            Pattern pattern = Pattern.compile("\\b[\\w.]+\\b|\\n|[-+*/=<>!&|,$()\\[\\]]|#.*|'.'");
-            Pattern pattern = Pattern.compile("\"[^\"]*\"|'[^']*'|\\b[\\w.]+\\b|\\n|[-+*/=<>!&|,$()\\[\\]]|#.*");
+//            Pattern pattern = Pattern.compile("\"[^\"]*\"|'[^']*'|\\b[\\w.]+\\b|\\n|[-+*/=<>!&|,$()\\[\\]]|#.*");
+            Pattern pattern = Pattern.compile("\\[[^\\]]*\\]|\\][^\\]]*\\[|\"[^\"]*\"|'[^']*'|\\b[\\w.]+\\b|\\n|[-+*/=<>!&|,$()\\[\\]]|#.*");
+
             Matcher matcher = pattern.matcher(sourceCode);
             StringBuilder expressionBuilder = new StringBuilder(); // To build expressions
             boolean skipBuildingExpression = false;
@@ -133,6 +135,8 @@ public class Lexer {
                             tokensList.add(new Token(Token.TokenType.VALUE, word, false)); // Tokenize as a numeric literal
                         } else if (isBoolean(word)) {
                             tokensList.add(new Token(Token.TokenType.VALUE, word, false)); // Tokenize as a numeric literal
+                        } else if (word.matches("\\[[^\\]]*\\]")) {
+                            tokensList.add(new Token(Token.TokenType.ESCAPE, word, false)); // Tokenize text inside square brackets
                         } else {
                             tokensList.add(new Token(Token.TokenType.VARIABLE, word, false)); // Default to variable if not a number
                         }

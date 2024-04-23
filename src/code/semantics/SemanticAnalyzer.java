@@ -23,17 +23,58 @@ public class SemanticAnalyzer {
         // Update the environment or throw exceptions for semantic errors
 
         // Example: Check variable usage against declaration
+        checkDisplayUsage(tokens);
         checkVariableUsage(tokens);
 
         if (rootNode != null) {
             checkTypeCompatibility(rootNode);
         }
     }
-
+    private void checkDisplayUsage(List<Token> tokensList) throws CustomExceptions {
+        int i = 0;
+        while (i < tokensList.size()) {
+            Token currentToken = tokensList.get(i);
+            if (currentToken.getValue().equals("DISPLAY")) {
+                i++; // Move to the next token after "DISPLAY"
+                while (i < tokensList.size() && tokensList.get(i).getType() != Token.TokenType.ENDLINE) {
+                    Token token = tokensList.get(i);
+                    if (token.getType() == Token.TokenType.VARIABLE) {
+                        String variableName = token.getValue();
+                        if (!environment.isDefined(variableName)) {
+                            throw new CustomExceptions("Variable '" + variableName + "' is not defined.");
+                        }
+                    } else if (token.getType() == Token.TokenType.OPERATOR && token.getValue().equals("&")) {
+                        // Check if there's a variable after '&'
+                        if (i + 1 < tokensList.size() && tokensList.get(i + 1).getType() == Token.TokenType.VARIABLE) {
+                            i++; // Move to the next token as we've already processed the variable after '&'
+                        } else {
+                            throw new CustomExceptions("Expected variable after '&' token.");
+                        }
+                    } else if (token.getType() == Token.TokenType.VARIABLE && token.getValue().startsWith("\"")) {
+                        // Check if the string has 2 double quotes
+                        String value = token.getValue();
+                        if (value.length() < 2 || value.charAt(0) != '"' || value.charAt(value.length() - 1) != '"') {
+                            throw new CustomExceptions("Invalid string format: " + value);
+                        }
+                    } else if (token.getType() == Token.TokenType.VARIABLE && token.getValue().startsWith("'")) {
+                        // Check if the string has 2 single quotes
+                        String value = token.getValue();
+                        if (value.length() < 2 || value.charAt(0) != '\'' || value.charAt(value.length() - 1) != '\'') {
+                            throw new CustomExceptions("Invalid character format: " + value);
+                        }
+                    }
+                    i++; // Move to the next token
+                }
+            } else {
+                i++; // Move to the next token if "DISPLAY" is not found
+            }
+        }
+    }
     private void checkVariableUsage(List<Token> tokensList) throws CustomExceptions {
         for (int i = 0; i < tokensList.size() - 1; i++) {
             Token currentToken = tokensList.get(i);
             Token nextToken = tokensList.get(i + 1);
+
             if (currentToken.getValue().equals("INT")) {
                 int j = i + 1;
                 while (j < tokensList.size() && !tokensList.get(j).getValue().equals("=")) {
@@ -98,6 +139,7 @@ public class SemanticAnalyzer {
                     throw new CustomExceptions("Variable '" + nextToken.getValue() + "' is not assigned a boolean value.");
                 }
             }
+
         }
     }
     private boolean isValidBool(String value) {
@@ -151,13 +193,20 @@ public class SemanticAnalyzer {
         List<Token> tokenlist = new ArrayList<>();
         List<Node> ASTNode = new ArrayList<>();
         Environment environment1 = new Environment();
-        tokenlist.add(new Token(Token.TokenType.DATATYPE, "BOOL", true));
+        Object value = "qsdasd";
+        String varname = "a";
+        environment1.setVariable("a", 1);
+        environment1.setVariable("b", 2);
+        environment1.setVariable("d", 3);
+        tokenlist.add(new Token(Token.TokenType.DISPLAY, "DISPLAY", true));
         tokenlist.add(new Token(Token.TokenType.VARIABLE, "a", false));
-        tokenlist.add(new Token(Token.TokenType.VARIABLE, "b", false));
-        tokenlist.add(new Token(Token.TokenType.VARIABLE, "c", false));
-        tokenlist.add(new Token(Token.TokenType.ASSIGN, "=", false));
-        tokenlist.add(new Token(Token.TokenType.VARIABLE, "\"TRUE\"", false));
-
+        tokenlist.add(new Token(Token.TokenType.ENDLINE, "end of line", true));
+//        tokenlist.add(new Token(Token.TokenType.DATATYPE, "INT", true));
+//        tokenlist.add(new Token(Token.TokenType.VARIABLE, "e", false));
+//        tokenlist.add(new Token(Token.TokenType.ASSIGN, "=", false));
+//        tokenlist.add(new Token(Token.TokenType.VARIABLE, "9", false));
+//
+//        tokenlist.add(new Token(Token.TokenType.ENDLINE, "end of line", true));
         SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(environment1);
         // Pass null for the rootNode since we're only testing checkVariableUsage
         semanticAnalyzer.analyze(tokenlist, null);

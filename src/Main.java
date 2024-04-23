@@ -15,7 +15,7 @@ import java.util.Scanner;
 
     public class Main {
         public static void main(String[] args) throws CustomExceptions {
-            String filePath = "./src/testfiles/test_semantics";
+            String filePath = "./src/testfiles/test_arith2";
             StringBuilder sourceCode = new StringBuilder();
 
             try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
@@ -48,12 +48,12 @@ import java.util.Scanner;
             // Uncomment this for debugging
             environment.displayVariables();
             SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(environment);
-            try {
-                semanticAnalyzer.analyze(tokenlist, rootNode);
-            } catch (CustomExceptions e) {
-                System.err.println("Semantic error: " + e.getMessage());
-                return; // Exit the program if semantic errors are detected
-            }
+//            try {
+//                semanticAnalyzer.analyze(tokenlist, rootNode);
+//            } catch (CustomExceptions e) {
+//                System.err.println("Semantic error: " + e.getMessage());
+//                return; // Exit the program if semantic errors are detected
+//            }
 
             // If semantic analysis passes without errors, execute the AST
             try {

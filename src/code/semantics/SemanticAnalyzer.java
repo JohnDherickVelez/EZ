@@ -49,7 +49,8 @@ public class SemanticAnalyzer {
                         if (i + 1 < tokensList.size() && tokensList.get(i + 1).getType() == Token.TokenType.VARIABLE
                                 || tokensList.get(i + 1).getType() == Token.TokenType.TEXT
                                 || tokensList.get(i + 1).getType() == Token.TokenType.IDENTIFIER
-                                || tokensList.get(i + 1).getType() == Token.TokenType.OPERATOR) {
+                                || tokensList.get(i + 1).getType() == Token.TokenType.OPERATOR
+                                || tokensList.get(i + 1).getType() == Token.TokenType.ESCAPE) {
                             i++; // Move to the next token as we've already processed the variable after '&'
                         } else {
                             throw new CustomExceptions("Expected variable after '&' token.");

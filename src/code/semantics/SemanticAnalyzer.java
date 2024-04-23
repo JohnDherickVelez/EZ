@@ -34,6 +34,7 @@ public class SemanticAnalyzer {
         int i = 0;
         while (i < tokensList.size()) {
             Token currentToken = tokensList.get(i);
+
             if (currentToken.getValue().equals("DISPLAY")) {
                 i++; // Move to the next token after "DISPLAY"
                 while (i < tokensList.size() && tokensList.get(i).getType() != Token.TokenType.ENDLINE) {
@@ -45,7 +46,10 @@ public class SemanticAnalyzer {
                         }
                     } else if (token.getType() == Token.TokenType.OPERATOR && token.getValue().equals("&")) {
                         // Check if there's a variable after '&'
-                        if (i + 1 < tokensList.size() && tokensList.get(i + 1).getType() == Token.TokenType.VARIABLE) {
+                        if (i + 1 < tokensList.size() && tokensList.get(i + 1).getType() == Token.TokenType.VARIABLE
+                                || tokensList.get(i + 1).getType() == Token.TokenType.TEXT
+                                || tokensList.get(i + 1).getType() == Token.TokenType.IDENTIFIER
+                                || tokensList.get(i + 1).getType() == Token.TokenType.OPERATOR) {
                             i++; // Move to the next token as we've already processed the variable after '&'
                         } else {
                             throw new CustomExceptions("Expected variable after '&' token.");

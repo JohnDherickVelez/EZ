@@ -1,3 +1,6 @@
 BEGIN CODE
+    CHAR c = 'c'
+    CHAR d = 'a'
+
     DISPLAY: " dear" & [[]
 END CODE

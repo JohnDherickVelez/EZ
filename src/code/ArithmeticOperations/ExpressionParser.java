@@ -51,19 +51,19 @@ public class ExpressionParser {
                 ops.push(c);
             } else if (c == ')') {
                 while (ops.peek() != '(') {
-                    values.push(applyOp(ops.pop(), values.pop(), values.pop()));
+                    values.push(applyOp(ops.pop(),'\0', values.pop(), values.pop()));
                 }
                 ops.pop();
             } else if (c == '+' || c == '-' || c == '*' || c == '/') {
                 while (!ops.empty() && hasPrecedence(c, ops.peek())) {
-                    values.push(applyOp(ops.pop(), values.pop(), values.pop()));
+                    values.push(applyOp(ops.pop(),'\0', values.pop(), values.pop()));
                 }
                 ops.push(c);
             }
         }
 
         while (!ops.empty()) {
-            values.push(applyOp(ops.pop(), values.pop(), values.pop()));
+            values.push(applyOp(ops.pop(),'\0', values.pop(), values.pop()));
         }
 
         return values.pop();
@@ -78,6 +78,10 @@ public class ExpressionParser {
 
         for (int i = 0; i < expression.length(); i++) {
             char c = expression.charAt(i);
+            char cnext = '\0';
+            if (i < expression.length()-1) {
+                cnext = expression.charAt(i + 1);
+            }
             StringBuilder sb = new StringBuilder();
 
             if (Character.isDigit(c) || c == '.') {
@@ -109,41 +113,39 @@ public class ExpressionParser {
             } else if (c == ')') {
                 // Evaluate expression inside parentheses
                 while (ops.peek() != '(') {
-                    values.push(applyOp(ops.pop(), values.pop(), values.pop()));
+                    values.push(applyOp(ops.pop(),'\0', values.pop(), values.pop()));
                 }
                 ops.pop(); // Pop '('
             } else if (c == '+' || c == '-' || c == '*' || c == '/') {
                 // Handle arithmetic operators
                 while (!ops.empty() && hasPrecedence(c, ops.peek())) {
-                    values.push(applyOp(ops.pop(), values.pop(), values.pop()));
+                    values.push(applyOp(ops.pop(),'\0', values.pop(), values.pop()));
                 }
                 ops.push(c);
-            } else if (c == '<' || c == '>' || c == '!' || c == '=') {
+            } else if (c == '<' || c == '>' || c == '!' || c == '='
+                    || c == '<' && cnext == '=' || c == '>' && cnext == '='
+                    || c == '=' && cnext == '=' || c == '<' && cnext == '>' ) {
+//                System.out.println("C:   " + c + "   CNEXT:    " + cnext);
                 // Handle logical comparison operators
-                if (c == '=' && expression.charAt(i + 1) == '=') {
-                    i++;
-                    while (!ops.empty() && hasPrecedence(c, ops.peek())) {
-                        values.push(applyOp(ops.pop(), values.pop(), values.pop()));
+                while (!ops.empty() && hasPrecedence(c, ops.peek())) {
+                    if(cnext == '=' || cnext == '>') {
+//                        System.out.println("1lksjelqwjeqwljkekqwe");
+                        values.push(applyOp(ops.pop(), cnext, values.pop(), values.pop()));
+                    } else if (c == '<' || c == '>' || c == '!' || c == '=') {
+//                        System.out.println("2lksjelqwjeqwljkekqwe");
+                        values.push(applyOp(ops.pop(), '\0', values.pop(), values.pop()));
                     }
-                    ops.push(c);
-                } else if (c == '!' && expression.charAt(i + 1) == '=') {
-                    i++;
-                    while (!ops.empty() && hasPrecedence(c, ops.peek())) {
-                        values.push(applyOp(ops.pop(), values.pop(), values.pop()));
-                    }
-                    ops.push(c);
-                } else {
-                    while (!ops.empty() && hasPrecedence(c, ops.peek())) {
-                        values.push(applyOp(ops.pop(), values.pop(), values.pop()));
-                    }
-                    ops.push(c);
+//                    System.out.println("lLOOOLLOLOLOLOL");
                 }
+//                System.out.println("l222LOOOLLOLOLOLOL");
+                ops.push(c);
+                i++;
             }
         }
 
         // Evaluate remaining operators
         while (!ops.empty()) {
-            values.push(applyOp(ops.pop(), values.pop(), values.pop()));
+            values.push(applyOp(ops.pop(), '\0', values.pop(), values.pop()));
         }
 
         // The result will be on top of the 'values' stack
@@ -156,13 +158,14 @@ public class ExpressionParser {
             return false;
         }
 //        return (op1 != '*' && op1 != '/') || (op2 != '+' && op2 != '-');
-        if ((op1 == '<' || op1 == '>' || op1 == '!' || op1 == '=') && (op2 == '+' || op2 == '-' || op2 == '*' || op2 == '/')) {
+        if ((op1 == '<' || op1 == '>' || op1 == '!' || op1 == '=') || (op2 == '>' || op2 == '=' )) {
             return true;
         }
-        return false;
+        return true;
     }
 
-    private static Number applyOp(char op, Number b, Number a) {
+    private static Number applyOp(char op, char op2, Number b, Number a) {
+//        System.out.println("OP: " + op + "  OP2:  " + op2);
         if (a instanceof Double || b instanceof Double) {
             double da = a.doubleValue();
             double db = b.doubleValue();
@@ -179,11 +182,22 @@ public class ExpressionParser {
                     }
                     return da / db;
                 case '<':
-                    return a.doubleValue() < b.doubleValue() ? 1 : 0;
+                    switch (op2) {
+                        case '=':
+                            System.out.println("WORKINGGGGGGG!!!!! ");
+                            return a.doubleValue() <= b.doubleValue() ? 1 : 0;
+                        case '>':
+                            return a.doubleValue() != b.doubleValue() ? 1 : 0;
+                        default:
+                            return a.doubleValue() < b.doubleValue() ? 1 : 0;
+                    }
                 case '>':
-                    return a.doubleValue() > b.doubleValue() ? 1 : 0;
-                case '!':
-                    return a.doubleValue() != b.doubleValue() ? 1 : 0;
+                    switch (op2) {
+                        case '=':
+                            return a.doubleValue() >= b.doubleValue() ? 1 : 0;
+                        default:
+                            return a.doubleValue() > b.doubleValue() ? 1 : 0;
+                    }
                 case '=':
                     return a.doubleValue() == b.doubleValue() ? 1 : 0;
                 default:
@@ -205,11 +219,22 @@ public class ExpressionParser {
                     }
                     return ia / ib;
                 case '<':
-                    return a.doubleValue() < b.doubleValue() ? 1 : 0;
+                    switch (op2) {
+                        case '=':
+                            System.out.println("WORKINGGGGGGG!!!!! ");
+                            return a.doubleValue() <= b.doubleValue() ? 1 : 0;
+                        case '>':
+                            return a.doubleValue() != b.doubleValue() ? 1 : 0;
+                        default:
+                            return a.doubleValue() < b.doubleValue() ? 1 : 0;
+                    }
                 case '>':
-                    return a.doubleValue() > b.doubleValue() ? 1 : 0;
-                case '!':
-                    return a.doubleValue() != b.doubleValue() ? 1 : 0;
+                    switch (op2) {
+                        case '=':
+                            return a.doubleValue() >= b.doubleValue() ? 1 : 0;
+                        default:
+                            return a.doubleValue() > b.doubleValue() ? 1 : 0;
+                    }
                 case '=':
                     return a.doubleValue() == b.doubleValue() ? 1 : 0;
                 default:

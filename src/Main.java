@@ -1,6 +1,6 @@
 import code.Environment.Environment;
 import code.lexer.Lexer;
-import code.lexer.Lexer2;
+//import code.lexer.Lexer2;
 import code.model.Token;
 import code.node.*;
 import code.parser.CustomExceptions;

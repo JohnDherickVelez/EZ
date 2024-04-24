@@ -127,6 +127,7 @@ public class Parser {
                                     if (datatype.equals("BOOL") && hasLogicalOperator(value)) {
                                         // Handle expressions with logical operators separately
                                         // You can add your logic here
+                                        System.out.println("TOKEEENN VALUEEE:    " + token.getValue());
                                         String logicalExpression = token.getValue();
                                         ExpressionParser expressionParser = new ExpressionParser(environment);
                                         String resultL = String.valueOf(expressionParser.evaluateLogicalExpression(logicalExpression)).toUpperCase();
@@ -402,7 +403,7 @@ public class Parser {
     }
     private boolean hasLogicalOperator(String str) {
         // Define an array of logical operators
-        String[] logicalOperators = {"<", ">", ">=", "<=", "!=", "||", "&&", "=="};
+        String[] logicalOperators = {"<", ">", ">=", "<=", "==", "<>", "AND", "OR", "NOT"};
 
         // Check if the string contains any logical operator
         for (String operator : logicalOperators) {
@@ -420,4 +421,37 @@ public class Parser {
     private boolean isOperator(String str) {
         return str.matches("[-+*/]");
     }
+
+//    private boolean compareValues(Object value1, Object value2, String operator) {
+//        // Handle different comparison operators
+//        switch (operator) {
+//            case "==":
+//                return value1.equals(value2);
+//            case "!=":
+//                return !value1.equals(value2);
+//            case ">":
+//                if (value1 instanceof Comparable && value2 instanceof Comparable) {
+//                    return ((Comparable) value1).compareTo(value2) > 0;
+//                }
+//                break;
+//            case ">=":
+//                if (value1 instanceof Comparable && value2 instanceof Comparable) {
+//                    return ((Comparable) value1).compareTo(value2) >= 0;
+//                }
+//                break;
+//            case "<":
+//                if (value1 instanceof Comparable && value2 instanceof Comparable) {
+//                    return ((Comparable) value1).compareTo(value2) < 0;
+//                }
+//                break;
+//            case "<=":
+//                if (value1 instanceof Comparable && value2 instanceof Comparable) {
+//                    return ((Comparable) value1).compareTo(value2) <= 0;
+//                }
+//                break;
+//            default:
+//                System.out.println("Unsupported comparison operator: " + operator);
+//        }
+//        return false; // Default return value if comparison fails
+//    }
 }

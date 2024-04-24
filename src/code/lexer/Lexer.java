@@ -98,12 +98,12 @@ public class Lexer {
                     case "-":
                     case "*":
                     case "/":
-                    case "<":
-                    case ">":
                     case "!":
                     case "&":
                     case "|":
                     case "$":
+                    case "<":
+                    case ">":
                         tokensList.add(new Token(Token.TokenType.OPERATOR, word, true));
                         break;
                     case "[":

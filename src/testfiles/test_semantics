@@ -2,6 +2,6 @@ BEGIN CODE
     INT a = 5
     INT b = 0
     INT d = 5 + 5
-    a = 5 +5
+    a = 5 + 5
     DISPLAY: d & b & a
 END CODE

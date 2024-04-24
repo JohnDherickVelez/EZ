@@ -1,5 +1,6 @@
 import code.Environment.Environment;
 import code.lexer.Lexer;
+import code.lexer.Lexer2;
 import code.model.Token;
 import code.node.*;
 import code.parser.CustomExceptions;
@@ -36,6 +37,7 @@ import java.util.Scanner;
             List<Token> tokenlist = lexer.tokenizeSourceCode(String.valueOf(sourceCode));
             // Print all tokens from tokenList
             lexer.printTokensFromList(tokenlist);
+
             // Environment and Variable List for Variable Hashmap storage
             Environment environment = new Environment();
 

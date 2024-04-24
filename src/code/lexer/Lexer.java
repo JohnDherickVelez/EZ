@@ -45,6 +45,7 @@ public class Lexer {
             StringBuilder expressionBuilder = new StringBuilder(); // To build expressions
             boolean skipBuildingExpression = false;
             boolean assignmentFound = false;
+            int firstEqualFound = 0;
             while (matcher.find()) {
                 String word = matcher.group(); // Get the matched word
 
@@ -53,9 +54,9 @@ public class Lexer {
                     // Skip this token (comment)
                     continue;
                 }
-
-                if (word.equals("=")) {
+                if (word.equals("=") && firstEqualFound == 0) {
                     assignmentFound = true;
+                    firstEqualFound = 1;
                     tokensList.add(new Token(Token.TokenType.ASSIGN, word, true));
                     expressionBuilder.setLength(0);
                     continue;
@@ -65,10 +66,13 @@ public class Lexer {
                 if (word.equals("\n")) {
                     if (expressionBuilder.length() > 0) {
                         // Add the current expression as a single token
-                        tokensList.add(new Token(Token.TokenType.EXPRESSION, expressionBuilder.toString().trim(), true));
+                        String expression =expressionBuilder.toString().trim();
+                        expression = expression.replaceAll("\\s", "");
+                        tokensList.add(new Token(Token.TokenType.EXPRESSION, expression, true));
                         expressionBuilder.setLength(0); // Clear the expression builder
                     }
                     tokensList.add(new Token(Token.TokenType.ENDLINE, "end of line", false));
+                    firstEqualFound = 0;
 //                    skipBuildingExpression = false;
                     assignmentFound = false;
                     continue;

@@ -8,17 +8,17 @@ public class ReservedWordChecker {
 
     // Initialize the set of reserved words
     static {
-        reservedWords.add("int");
-        reservedWords.add("float");
-        reservedWords.add("char");
-        reservedWords.add("bool");
-        reservedWords.add("and");
-        reservedWords.add("or");
-        reservedWords.add("not");
-        reservedWords.add("if");
-        reservedWords.add("else");
-        reservedWords.add("begin");
-        reservedWords.add("end");
+        reservedWords.add("INT");
+        reservedWords.add("FLOAT");
+        reservedWords.add("CHAR");
+        reservedWords.add("BOOL");
+        reservedWords.add("AND");
+        reservedWords.add("OR");
+        reservedWords.add("NOT");
+        reservedWords.add("IF");
+        reservedWords.add("ELSE");
+        reservedWords.add("BEGIN");
+        reservedWords.add("END");
     }
 
     public static boolean isReservedWord(String word) {

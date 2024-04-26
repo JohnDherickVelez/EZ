@@ -72,6 +72,9 @@ public class Parser {
                                         decleared = true;
                                     } else if (token.getType() == Token.TokenType.ASSIGN) {
                                         assigned = true;
+                                    } else if (token.getType() == Token.TokenType.ENDLINE) {
+                                        processVariableDeclaration(datatype, variableNames, String.valueOf(0), rootNode); // Call the method
+
                                     }
 
                                     // Move to the next token
@@ -81,37 +84,7 @@ public class Parser {
                                     }
                                 }
                         }
-//                        else if (token.getValue().equals("CHAR") || token.getValue().equals("BOOL")) {
-//                            while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) {
-//                                if (token.getType() == Token.TokenType.VARIABLE) { // Store variable
-//                                    variableNames.add(token.getValue());
-//                                    decleared = false;
-//                                } else if (token.getType() == Token.TokenType.EXPRESSION) {
-//                                    value = token.getValue();
-//                                    if ((datatype.equals("BOOL") && value.startsWith("\"") && value.endsWith("\""))) {
-//                                        value = value.substring(1, value.length() - 1);
-//                                        value = value.toUpperCase(); // Convert boolean value to uppercase
-//                                    } // this 'if' statement checks if it has "TRUE" or "FALSE"
-//
-//                                    if (variableValueValidator(datatype, value)){
-//                                        processVariableDeclaration(datatype, variableNames, value, rootNode); // Call the method
-//                                        variableNames.clear(); // Clean list
-//                                        decleared = true;
-//                                    } else {
-//                                        // TODO: throw an exception
-//                                        System.out.println("NOOOOOO WAYYYYYY");
-//                                    }
-//                                } else if (token.getType() == Token.TokenType.ASSIGN) {
-//                                    assigned = true;
-//                                }
-//
-//                                // Move to the next token
-//                                i++;
-//                                if (i < tokensList.size()) {
-//                                    token = tokensList.get(i);
-//                                }
-//                            }
-//                        }
+
                         else if (token.getValue().equals("CHAR") || token.getValue().equals("BOOL")) {
                             while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) {
                                 if (token.getType() == Token.TokenType.VARIABLE) { // Store variable
@@ -142,7 +115,7 @@ public class Parser {
                                             decleared = true;
                                         } else {
                                             // TODO: throw an exception
-                                            System.out.println("NOOOOOO WAYYYYYY");
+//                                            System.out.println("NOOOOOO WAYYYYYY");
                                         }
                                     }
                                 } else if (token.getType() == Token.TokenType.ASSIGN) {
@@ -185,7 +158,8 @@ public class Parser {
                                 if (i + 1 < tokensList.size() && tokensList.get(i + 1).getType() == Token.TokenType.VARIABLE
                                 || tokensList.get(i + 1).getType() == Token.TokenType.TEXT
                                 || tokensList.get(i + 1).getType() == Token.TokenType.IDENTIFIER
-                                        || tokensList.get(i + 1).getType() == Token.TokenType.OPERATOR) {
+                                        || tokensList.get(i + 1).getType() == Token.TokenType.OPERATOR
+                                        || tokensList.get(i + 1).getType() == Token.TokenType.ESCAPE) {
                                     variableNames.add(tokensList.get(i + 1).getValue());
                                     i++; // Move to the next token as we've already processed the variable after '&'
                                 } else if (i + 1 < tokensList.size() && tokensList.get(i + 1).getType() ==
@@ -217,7 +191,6 @@ public class Parser {
                                 }
                             }
                             i++;
-
                         }
                         // Create a new DisplayNode with the list of variable names
                         rootNode.addChild(new DisplayNode(variableNames));
@@ -337,15 +310,6 @@ public class Parser {
                     }
                     rootNode.addChild(new ScanNode(scanVariables));
                     break;
-//                case EXPRESSION:
-//                    if (!token.getValue().equals("BEGIN CODE") && !token.getValue().equals("END CODE")) {
-//                        String expression = token.getValue();
-//                        // Evaluate the expression
-////                        int result = evaluateExpression(expression);
-//                        // Create a token for the result and add it to the operand stack
-////                        operandStack.push(new Token(Token.TokenType.VALUE, String.valueOf(result), false));
-//                    }
-//                    break;
                 }
             currentTokenIndex++;
             } catch (CustomExceptions e) {

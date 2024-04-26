@@ -29,7 +29,7 @@ public class Lexer {
     // Constructor to initialize the tokensList
 
     public List<Token> tokenizeSourceCode(String sourceCode) throws CustomExceptions {
-        try {
+
 //            Pattern pattern = Pattern.compile("\\b[()\\w.]+\\b|\\n|[-+*/=<>!&|,$]|#.*|'.'"); // good regex for float
 //        Pattern pattern = Pattern.compile("\\b\\w+\\b|\\n|[-+*/=<>!&|]");
 //        Pattern pattern = Pattern.compile("\\b\\w+\\b|\\n|[-+*/=<>!&|]|'");
@@ -66,7 +66,7 @@ public class Lexer {
                 if (word.equals("\n")) {
                     if (expressionBuilder.length() > 0) {
                         // Add the current expression as a single token
-                        String expression =expressionBuilder.toString().trim();
+                        String expression = expressionBuilder.toString().trim();
                         expression = expression.replaceAll("\\s", "");
                         tokensList.add(new Token(Token.TokenType.EXPRESSION, expression, true));
                         expressionBuilder.setLength(0); // Clear the expression builder
@@ -151,20 +151,11 @@ public class Lexer {
                 if (!skipBuildingExpression && !word.equals("BEGIN") && !word.equals("CODE") && !word.equals("END") && !word.equals("DISPLAY") && !word.equals("SCAN")) {
                     expressionBuilder.append(word).append(" "); // Append the word with a space delimiter
                 }
-
-
             }
             // Handle the case where the source code ends with an expression without an endline
             if (expressionBuilder.length() > 0) {
                 tokensList.add(new Token(Token.TokenType.EXPRESSION, expressionBuilder.toString().trim(), true));
             }
-
-            checkTokenGrammar(tokensList);
-
-        } catch (CustomExceptions e) {
-            // Handle the custom exception
-            System.out.println("Custom exception caught: " + e.getMessage());
-        }
         return tokensList;
     }
 
@@ -174,49 +165,6 @@ public class Lexer {
             System.out.println(currentTokenIndex + ": {" + "Token Value: " + token.getValue() + ", Token type: " + token.getType() + "}");
             currentTokenIndex++;
         }
-    }
-    public void checkTokenGrammar(List<Token> tokensList) throws CustomExceptions {
-        boolean foundBegin = false;
-        boolean foundCodeAfterBegin = false;
-        boolean foundEnd = false;
-        boolean foundCodeAfterEnd = false;
-
-        for (int i = 0; i < tokensList.size() - 1; i++) {
-            Token currentToken = tokensList.get(i);
-            Token nextToken = tokensList.get(i + 1);
-
-            if (currentToken.getValue().equals("BEGIN")) {
-                foundBegin = true;
-                if (nextToken.getValue().equals("CODE")) {
-                    foundCodeAfterBegin = true;
-                }
-            } else if (currentToken.getValue().equals("END")) {
-                foundEnd = true;
-                if (nextToken.getValue().equals("CODE")) {
-                    foundCodeAfterEnd = true;
-                }
-            } else if (!currentToken.getIsReservedKey() && isReservedWord(currentToken.getValue())) {
-                throw new CustomExceptions("Variable name is a reserved word: " + currentToken.getValue().toString());
-            }
-        }
-
-        if (!foundBegin) {
-            throw new CustomExceptions("Missing starting statement 'BEGIN'");
-
-        }
-
-        if (!foundCodeAfterBegin) {
-            throw new CustomExceptions("Missing 'CODE' after 'BEGIN'");
-        }
-
-        if (!foundEnd) {
-            throw new CustomExceptions("Missing ending statement 'END'");
-        }
-
-        if (!foundCodeAfterEnd) {
-            throw new CustomExceptions("Missing 'CODE' after 'END'");
-        }
-
     }
 
     private boolean isNumeric(String str) {

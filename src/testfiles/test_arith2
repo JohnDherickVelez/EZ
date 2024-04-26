@@ -1,4 +1,8 @@
 BEGIN CODE
-    BOOL t = (5 > 5)
-    BOOL f = ((5 == 5) && (5 == 8))
+INT a
+SCAN: a
+IF(a<0)
+  BEGIN IF
+   DISPLAY: a + 10
+  END IF
 END CODE

@@ -10,6 +10,8 @@ import code.parser.CustomExceptions;
 import java.util.ArrayList;
 import java.util.List;
 
+import static code.lexer.ReservedWordChecker.isReservedWord;
+
 public class SemanticAnalyzer {
     private Environment environment;
 
@@ -23,6 +25,7 @@ public class SemanticAnalyzer {
         // Update the environment or throw exceptions for semantic errors
 
         // Example: Check variable usage against declaration
+        checkTokenGrammar(tokens);
         checkDisplayUsage(tokens);
         checkVariableUsage(tokens);
 
@@ -30,17 +33,64 @@ public class SemanticAnalyzer {
             checkTypeCompatibility(rootNode);
         }
     }
+    public void checkTokenGrammar(List<Token> tokensList) throws CustomExceptions {
+        boolean foundBegin = false;
+        boolean foundCodeAfterBegin = false;
+        boolean foundEnd = false;
+        boolean foundCodeAfterEnd = false;
+
+        for (int i = 0; i < tokensList.size() - 1; i++) {
+            Token currentToken = tokensList.get(i);
+            Token nextToken = tokensList.get(i + 1);
+
+            if (currentToken.getValue().equals("BEGIN")) {
+                foundBegin = true;
+                if (nextToken.getValue().equals("CODE")) {
+                    foundCodeAfterBegin = true;
+                }
+            } else if (currentToken.getValue().equals("END")) {
+                foundEnd = true;
+                if (nextToken.getValue().equals("CODE")) {
+                    foundCodeAfterEnd = true;
+                }
+            } else if (!currentToken.getIsReservedKey() && isReservedWord(currentToken.getValue())) {
+                throw new CustomExceptions("Variable name is a reserved word: " + currentToken.getValue().toString());
+            }
+        }
+
+        if (!foundBegin) {
+            throw new CustomExceptions("Missing starting statement 'BEGIN'");
+
+        }
+
+        if (!foundCodeAfterBegin) {
+            throw new CustomExceptions("Missing 'CODE' after 'BEGIN'");
+        }
+
+        if (!foundEnd) {
+            throw new CustomExceptions("Missing ending statement 'END'");
+        }
+
+        if (!foundCodeAfterEnd) {
+            throw new CustomExceptions("Missing 'CODE' after 'END'");
+        }
+    }
+
     private void checkDisplayUsage(List<Token> tokensList) throws CustomExceptions {
         int i = 0;
         while (i < tokensList.size()) {
             Token currentToken = tokensList.get(i);
 
             if (currentToken.getValue().equals("DISPLAY")) {
+
                 i++; // Move to the next token after "DISPLAY"
+
                 while (i < tokensList.size() && tokensList.get(i).getType() != Token.TokenType.ENDLINE) {
                     Token token = tokensList.get(i);
                     if (token.getType() == Token.TokenType.VARIABLE) {
                         String variableName = token.getValue();
+
+
                         if (!environment.isDefined(variableName)) {
                             throw new CustomExceptions("Variable '" + variableName + "' is not defined.");
                         }
@@ -58,18 +108,23 @@ public class SemanticAnalyzer {
                     } else if (token.getType() == Token.TokenType.VARIABLE && token.getValue().startsWith("\"")) {
                         // Check if the string has 2 double quotes
                         String value = token.getValue();
+
                         if (value.length() < 2 || value.charAt(0) != '"' || value.charAt(value.length() - 1) != '"') {
                             throw new CustomExceptions("Invalid string format: " + value);
                         }
+
                     } else if (token.getType() == Token.TokenType.VARIABLE && token.getValue().startsWith("'")) {
                         // Check if the string has 2 single quotes
                         String value = token.getValue();
+
                         if (value.length() < 2 || value.charAt(0) != '\'' || value.charAt(value.length() - 1) != '\'') {
                             throw new CustomExceptions("Invalid character format: " + value);
                         }
                     }
                     i++; // Move to the next token
                 }
+                // Check if the next token after the loop is an ENDLINE token
+
             } else {
                 i++; // Move to the next token if "DISPLAY" is not found
             }
@@ -140,7 +195,7 @@ public class SemanticAnalyzer {
                 // Now j points to '='
                 // Check the expression on the right side of '='
                 Token expressionToken = tokensList.get(j + 1);
-                if (!isValidBool(expressionToken.getValue())) {
+                if (!isValidBool(expressionToken.getValue()) && !expressionToken.getValue().matches("(\\(|\\)|=|\\*|/|%|-|\\+|<|>|<>|>=|<=|AND|OR)") ) {
                     throw new CustomExceptions("Variable '" + nextToken.getValue() + "' is not assigned a boolean value.");
                 }
             }

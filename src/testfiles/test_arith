@@ -1,7 +1,5 @@
+# this is a sample program in CODE
 BEGIN CODE
-    INT a = 1
-    INT b = 2
-    INT c = 3
-    a = b = c = 12 + 24
-    DISPLAY: a & $ [&] & "last" & b
+# this is a sample program in CODE
 END CODE
+# this is a sample program in CODE

@@ -12,10 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 // TODO:
-// Naming conventions | SHOULD NOT START WITH NUMBERS
-// Negative numbers
-// Default variable declarations to zero in Semantics
-//
+// TODO: DONE!! Naming conventions | SHOULD NOT START WITH NUMBERS
+// TODO: NOT YET DONE!! Negative numbers
+// TODO: DONE !! Default variable declarations to zero in Semantics
+// TODO: NOT YET DONE!! Handle these cases
+// INT a = 10
+// INT b = a + 10
+// the output is a = 20; b - 20 <---- 'a' should not be added with 10. Only 'b'!
     public class Main {
         public static void main(String[] args) throws CustomExceptions {
             // Builds source code to string
@@ -62,13 +65,13 @@ import java.util.Scanner;
 
             // Initializes Semantic Analyzer
             SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(environment);
-////             Can uncomment to run AST with/out errors
-            try {
-                semanticAnalyzer.analyze(tokenlist, rootNode);
-            } catch (CustomExceptions e) {
-                System.err.println("Semantic error: " + e.getMessage());
-                return; // Exit the program if semantic errors are detected
-            }
+//////             Can uncomment to run AST with/out errors
+//            try {
+//                semanticAnalyzer.analyze(tokenlist, rootNode);
+//            } catch (CustomExceptions e) {
+//                System.err.println("Semantic error: " + e.getMessage());
+//                return; // Exit the program if semantic errors are detected
+//            }
 
             // If semantic analysis passes without errors, execute the AST
             try {

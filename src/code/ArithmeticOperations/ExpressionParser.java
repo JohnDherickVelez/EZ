@@ -43,8 +43,6 @@ public class ExpressionParser {
                 i--;
                 if (environment.isDefined(sb.toString())) {
                     value = (int) environment.getVariable(sb.toString());
-                } else {
-                    // Handle undefined variable
                 }
                 values.push(value);
             } else if (c == '(') {
@@ -82,6 +80,7 @@ public class ExpressionParser {
             if (i < expression.length()-1) {
                 cnext = expression.charAt(i + 1);
             }
+//            System.out.println(cnext);
             StringBuilder sb = new StringBuilder();
 
             if (Character.isDigit(c) || c == '.') {
@@ -104,8 +103,6 @@ public class ExpressionParser {
                 i--;
                 if (environment.isDefined(sb.toString())) {
                     value = (int) environment.getVariable(sb.toString());
-                } else {
-                    // Handle undefined variable
                 }
                 values.push(value);
             } else if (c == '(') {
@@ -122,27 +119,26 @@ public class ExpressionParser {
                     values.push(applyOp(ops.pop(),'\0', values.pop(), values.pop()));
                 }
                 ops.push(c);
-            } else if (c == '<' || c == '>' || c == '!' || c == '='
-                    || c == '<' && cnext == '=' || c == '>' && cnext == '='
-                    || c == '=' && cnext == '=' || c == '<' && cnext == '>' ) {
-//                System.out.println("C:   " + c + "   CNEXT:    " + cnext);
-                // Handle logical comparison operators
-                while (!ops.empty() && hasPrecedence(c, ops.peek())) {
-                    if(cnext == '=' || cnext == '>') {
-//                        System.out.println("1lksjelqwjeqwljkekqwe");
+            }
+            else if (c == '<' || c == '>' || c == '=' || c == '!') {
+                // TODO : '<>' cannot be evaluated properly
+                if (cnext == '=' || cnext == '>') {
+                    System.out.println(cnext);
+                    while (!ops.empty() && hasPrecedence(c, ops.peek())) {
                         values.push(applyOp(ops.pop(), cnext, values.pop(), values.pop()));
-                    } else if (c == '<' || c == '>' || c == '!' || c == '=') {
-//                        System.out.println("2lksjelqwjeqwljkekqwe");
+                        System.out.println(cnext);
+                    }
+                    ops.push(c);
+                    i++;
+                } else {
+                    System.out.println("asd12083123123;djgsdgf");
+                    while (!ops.empty() && hasPrecedence(c, ops.peek())) {
                         values.push(applyOp(ops.pop(), '\0', values.pop(), values.pop()));
                     }
-//                    System.out.println("lLOOOLLOLOLOLOL");
+                    ops.push(c);
                 }
-//                System.out.println("l222LOOOLLOLOLOLOL");
-                ops.push(c);
-                i++;
             }
         }
-
         // Evaluate remaining operators
         while (!ops.empty()) {
             values.push(applyOp(ops.pop(), '\0', values.pop(), values.pop()));
@@ -165,7 +161,7 @@ public class ExpressionParser {
     }
 
     private static Number applyOp(char op, char op2, Number b, Number a) {
-//        System.out.println("OP: " + op + "  OP2:  " + op2);
+        System.out.println("op1" + op + " " + "op2" + op2);
         if (a instanceof Double || b instanceof Double) {
             double da = a.doubleValue();
             double db = b.doubleValue();
@@ -181,25 +177,18 @@ public class ExpressionParser {
                         throw new ArithmeticException("Division by zero");
                     }
                     return da / db;
+//                case '<':
+//                    return (op2 == '=' ? da <= db : da < db) ? 1 : 0;
                 case '<':
-                    switch (op2) {
-                        case '=':
-                            System.out.println("WORKINGGGGGGG!!!!! ");
-                            return a.doubleValue() <= b.doubleValue() ? 1 : 0;
-                        case '>':
-                            return a.doubleValue() != b.doubleValue() ? 1 : 0;
-                        default:
-                            return a.doubleValue() < b.doubleValue() ? 1 : 0;
-                    }
+                    return switch (op2) {
+                        case '=' -> da <= db ? 1 : 0;
+                        case '>' -> da != db ? 1 : 0; // Handle '!=' operation when op2 is '>'
+                        default -> da < db ? 1 : 0;
+                    };
                 case '>':
-                    switch (op2) {
-                        case '=':
-                            return a.doubleValue() >= b.doubleValue() ? 1 : 0;
-                        default:
-                            return a.doubleValue() > b.doubleValue() ? 1 : 0;
-                    }
+                    return (op2 == '=' ? da >= db : da > db) ? 1 : 0;
                 case '=':
-                    return a.doubleValue() == b.doubleValue() ? 1 : 0;
+                    return da == db ? 1 : 0;
                 default:
                     throw new IllegalArgumentException("Unsupported operation: " + op);
             }
@@ -219,27 +208,13 @@ public class ExpressionParser {
                     }
                     return ia / ib;
                 case '<':
-                    switch (op2) {
-                        case '=':
-                            System.out.println("WORKINGGGGGGG!!!!! ");
-                            return a.doubleValue() <= b.doubleValue() ? 1 : 0;
-                        case '>':
-                            return a.doubleValue() != b.doubleValue() ? 1 : 0;
-                        default:
-                            return a.doubleValue() < b.doubleValue() ? 1 : 0;
-                    }
+                    return (op2 == '=' ? ia <= ib : ia < ib) ? 1 : 0;
                 case '>':
-                    switch (op2) {
-                        case '=':
-                            return a.doubleValue() >= b.doubleValue() ? 1 : 0;
-                        default:
-                            return a.doubleValue() > b.doubleValue() ? 1 : 0;
-                    }
+                    return (op2 == '=' ? ia >= ib : ia > ib) ? 1 : 0;
                 case '=':
-                    return a.doubleValue() == b.doubleValue() ? 1 : 0;
+                    return ia == ib ? 1 : 0;
                 default:
                     throw new IllegalArgumentException("Unsupported operation: " + op);
-
             }
         }
     }
@@ -279,7 +254,7 @@ public class ExpressionParser {
 //        boolean ehh = applyLogicalOp("<", 10, 5);
 //        System.out.println(ehh);
 
-        String logicalExpression = "8 == 8";
+        String logicalExpression = "8 > 10";
         boolean result = expressionParser.evaluateLogicalExpression(logicalExpression);
 
         System.out.println("Result of logical expression evaluation: " + result);

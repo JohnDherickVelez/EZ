@@ -1,5 +1,7 @@
 BEGIN CODE
-    INT a,b
-    DISPLAY: a,b
-
+    INT a = 10
+    IF (a == 10)
+    BEGIN IF
+        DISPLAY: a
+    END IF
 END CODE

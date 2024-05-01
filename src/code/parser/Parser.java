@@ -19,7 +19,10 @@ public class Parser {
         this.tokensList = tokensList;
         this.environment = environment;
     }
+    public static boolean parseIfExpression(String expression) {
 
+        return true;
+    }
     public ASTNode produceAST() throws CustomExceptions {
         ASTNode rootNode = new ASTNode(); // Create the root code.node
 
@@ -29,24 +32,59 @@ public class Parser {
             try {
                 switch (token.getType()) {
                     case DELIMITER:
-                        if (Objects.equals(String.valueOf(token.getValue()), "BEGIN")) {
-                            // Add logic for processing "BEGIN" token
-                            if (i + 1 < tokensList.size() &&
-                                    Objects.equals(tokensList.get(i + 1).getValue(), "CODE")) {
-                                // Add logic for processing "BEGIN CODE" sequence
-                                rootNode.addChild(new DelimiterNode("BEGIN_CODE", true));
-                                i++; // Move to the next token after "CODE"
-                            }
-                        } else if (Objects.equals(String.valueOf(token.getValue()), "END")) {
-                            if (i + 1 < tokensList.size() &&
-                                    Objects.equals(tokensList.get(i + 1).getValue(), "CODE")) {
+                        Token nextToken = tokensList.get(i+1);
+                        // TODO: REVAMP BEGIN CODE TOKEN PARSING
+                        if (Objects.equals(String.valueOf(token.getValue()), "BEGIN CODE")) {
+                            // Add logic for processing "BEGIN CODE" sequence
+                            rootNode.addChild(new DelimiterNode("BEGIN CODE", true));
+                            i++; // Move to the next token after "CODE"
+                        }
+                        if(Objects.equals(String.valueOf(token.getValue()), "END CODE")) {
                                 // Add logic for processing "END CODE" sequence
-                                rootNode.addChild(new DelimiterNode("END_CODE", false));
+                                rootNode.addChild(new DelimiterNode("END CODE", false));
                                 i++; // Move to the next token after "CODE"
+                        }
+                        if (Objects.equals(String.valueOf(token.getValue()), "IF")) {
+                            // Parse the condition expression for the if statement
+                            ExpressionParser expressionParser = new ExpressionParser(environment);
+                            i++; // Move to the next token after "IF"
+                            // Skip tokens until reaching the opening parenthesis "("
+                            while (i < tokensList.size() && !Objects.equals(tokensList.get(i).getType(), Token.TokenType.EXPRESSION)) {
+                                i++; // Move to the next token
                             }
+//                            System.out.println(tokensList.get(i)); // should print out EXPRESSION token value
+                            String expression = token.getValue();
+                            boolean conditionResult = expressionParser.evaluateLogicalExpression(expression);
+//                                // Create the IfNode with the evaluated condition
+                                IfNode ifNode = new IfNode(conditionResult);
+//                                // Add the IfNode to the AST
+                                List<Token> ifBlockTokens = new ArrayList<>(); // store all tokens inside if BLOCk
+                            i = i + 4; // i = i + 2 should be of value BEGIN IF immed. after token IF
+                            // Iterate through tokens until 'END IF' is encountered
+                            // should handle exception if i = i + 4 is not of token BEGIN IF
+                            // LAZY ALGO GAMING I bet daghan kaynig problema unya
+                            while (i < tokensList.size() && !Objects.equals(tokensList.get(i).getValue(), "end of line")) {
+                                // Add tokens to the if block list
+                                ifBlockTokens.add(tokensList.get(i));
+                                i++;
+                            }
+                            // Print all tokens inside the if block
+                            for (Token tokenP : ifBlockTokens) {
+                                System.out.println(tokenP);
+                            }
+
+                            Parser ifBlockParser = new Parser(ifBlockTokens, environment);
+                            ASTNode ifBlockAST = ifBlockParser.produceAST();
+                            ifNode.setIfBlock(ifBlockAST);
+                            rootNode.addChild(ifNode);
+
+//                            System.out.println(ifBlockTokens);
+                            // TODO: FIND OUT HOW TO ADD IF BLOCK TO NODE
+                            // Currently, you're inside BEGIN IF
+//                                rootNode.addChild(ifNode);
+
                         }
                         break;
-
                     case DATATYPE:
                         if (i + 1 < tokensList.size()) {
                             String datatype = token.getValue();
@@ -56,33 +94,31 @@ public class Parser {
                             boolean decleared = false;
 
                         if (token.getValue().equals("INT") || token.getValue().equals("FLOAT")) {
-                                while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) { // Iterate through statement
-                                    if (token.getType() == Token.TokenType.VARIABLE) { // Store variable
-                                        variableNames.add(token.getValue());
-                                        decleared = false;
-                                    } else if (token.getType() == Token.TokenType.EXPRESSION) { // Store value
-//                                          value = token.getValue();
-//                                        System.out.println("Token:   " + token.getValue());
-                                        String expression = token.getValue();
-                                        ExpressionParser expressionParser = new ExpressionParser(environment);
-                                        String result = String.valueOf(expressionParser.evaluateExpression(expression));
-//                                        System.out.println("RESULT:   " + result);
-                                        processVariableDeclaration(datatype, variableNames, result, rootNode); // Call the method
-                                        variableNames.clear(); // Clean list
-                                        decleared = true;
-                                    } else if (token.getType() == Token.TokenType.ASSIGN) {
-                                        assigned = true;
-                                    } else if (token.getType() == Token.TokenType.ENDLINE) {
-                                        processVariableDeclaration(datatype, variableNames, String.valueOf(0), rootNode); // Call the method
-
-                                    }
-
-                                    // Move to the next token
-                                    i++;
-                                    if (i < tokensList.size()) {
-                                        token = tokensList.get(i);
-                                    }
+                            while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) { // Iterate through statement
+                                if (token.getType() == Token.TokenType.VARIABLE) { // Store variable
+                                    variableNames.add(token.getValue());
+                                    decleared = false;
+                                } else if (token.getType() == Token.TokenType.EXPRESSION) { // Store value
+//                                         value = token.getValue();
+//                                       System.out.println("Token:   " + token.getValue());
+                                    String expression = token.getValue();
+                                    ExpressionParser expressionParser = new ExpressionParser(environment);
+                                    String result = String.valueOf(expressionParser.evaluateExpression(expression));
+//                                       System.out.println("RESULT:   " + result);
+                                    processVariableDeclaration(datatype, variableNames, result, rootNode); // Call the method
+                                    variableNames.clear(); // Clean list
+                                    decleared = true;
+                                } else if (token.getType() == Token.TokenType.ASSIGN) {
+                                    assigned = true;
+                                } else if (token.getType() == Token.TokenType.ENDLINE) {
+                                    processVariableDeclaration(datatype, variableNames, String.valueOf(0), rootNode); // Call the method
                                 }
+                                // Move to the next token
+                                i++;
+                                if (i < tokensList.size()) {
+                                    token = tokensList.get(i);
+                                }
+                            }
                         }
 
                         else if (token.getValue().equals("CHAR") || token.getValue().equals("BOOL")) {
@@ -129,7 +165,6 @@ public class Parser {
                                 }
                             }
                         }
-
                             if (!decleared && !assigned) { // For: int x, y, z = 3
                                 processVariableDeclaration(datatype, variableNames, value, rootNode); // Call the method
                             } else if (!decleared && assigned) {
@@ -291,9 +326,12 @@ public class Parser {
                 case SCAN:
                     List<String> scanVariables = new ArrayList<>();
                     i++; // Move to the next token after SCAN
+                    i++; // DEBUG GAMING
                     boolean commaExpected = false; // Flag to track if a comma is expected
                     while (i < tokensList.size() && tokensList.get(i).getType() != Token.TokenType.ENDLINE) {
                         Token scanToken = tokensList.get(i);
+//                        System.out.println(scanToken);
+
                         if (scanToken.getType() == Token.TokenType.VARIABLE) {
                             if (commaExpected) {
                                 throw new CustomExceptions("Expected ',' between variables.");

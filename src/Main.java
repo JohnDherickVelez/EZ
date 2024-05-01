@@ -1,12 +1,10 @@
 import code.Environment.Environment;
 import code.lexer.Lexer;
-//import code.lexer.Lexer2;
 import code.model.Token;
 import code.node.*;
 import code.parser.CustomExceptions;
 import code.parser.Parser;
 import code.semantics.SemanticAnalyzer;
-//import code.parser.Parser2;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -20,10 +18,20 @@ import java.util.Scanner;
 //
     public class Main {
         public static void main(String[] args) throws CustomExceptions {
-            String filePath = "./src/testfiles/test_arith2";
+            // Builds source code to string
+            String sourceCode = String.valueOf(stringBuildSourceCode("./src/testfiles/test_semantics"));
+
+            // Prints source
+//            printSourceCode(String.valueOf(sourceCode));
+
+            //initializes all Interpreter objects
+            initializeVariables_1(new StringBuilder(sourceCode));
+        }
+
+        public static StringBuilder stringBuildSourceCode(String filepath) {
             StringBuilder sourceCode = new StringBuilder();
 
-            try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(filepath))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     sourceCode.append(line).append("\n");
@@ -31,34 +39,36 @@ import java.util.Scanner;
             } catch (IOException e) {
                 e.printStackTrace(); // Handle or log any IOException that occurs
             }
-//
-//            System.out.println("Source code:");
-//            System.out.println(sourceCode);
+            return sourceCode;
+        }
 
+        public static void printSourceCode(String sourceCode) {
+            System.out.println(sourceCode);
+        }
+        private static void initializeVariables_1(StringBuilder sourceCode) throws CustomExceptions {
+            // initializes sourcecode
 //            Lexer2 lexer = new Lexer2();
             Lexer lexer = new Lexer();
             List<Token> tokenlist = lexer.tokenizeSourceCode(String.valueOf(sourceCode));
-            // Print all tokens from tokenList
-//            lexer.printTokensFromList(tokenlist);
 
-            // Environment and Variable List for Variable Hashmap storage
+            // initializes environment
             Environment environment = new Environment();
 
-            // Parser Instantiation
+            // initializes Parser
             Parser parser = new Parser(tokenlist, environment);
 
-            // Initializes the root node of the AST
+            // initializes Abstract Syntax Tree
             Node rootNode = parser.produceAST();
 
-            // Uncomment this for debugging
-//            environment.displayVariables();
+            // Initializes Semantic Analyzer
             SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(environment);
-//            try {
-//                semanticAnalyzer.analyze(tokenlist, rootNode);
-//            } catch (CustomExceptions e) {
-//                System.err.println("Semantic error: " + e.getMessage());
-//                return; // Exit the program if semantic errors are detected
-//            }
+////             Can uncomment to run AST with/out errors
+            try {
+                semanticAnalyzer.analyze(tokenlist, rootNode);
+            } catch (CustomExceptions e) {
+                System.err.println("Semantic error: " + e.getMessage());
+                return; // Exit the program if semantic errors are detected
+            }
 
             // If semantic analysis passes without errors, execute the AST
             try {
@@ -66,27 +76,30 @@ import java.util.Scanner;
             } catch (CustomExceptions e) {
                 System.err.println("Runtime error: " + e.getMessage());
             }
-            // Uncomment this for debugging
-//            environment.displayVariables();
+
+            // uncomment if deem necessary
+            environment.displayVariables();
+            lexer.printTokensFromList(tokenlist);
         }
+
         private static void executeAST(Node node, Environment environment) throws CustomExceptions {
             // Perform appropriate actions based on code.node type
             if (node instanceof DelimiterNode delimiterNode) {
                 // Execute functionality based on delimiter type
-                if (delimiterNode.getDataType().equals("BEGIN_CODE")) {
+                if (delimiterNode.getDataType().equals("BEGIN CODE")) {
                     // Logic to start the program
-//                    System.out.println("Program started...");
-                } else if (delimiterNode.getDataType().equals("END_CODE")) {
+                    System.out.println("Program started...");
+                } else if (delimiterNode.getDataType().equals("END CODE")) {
                     // Logic to end the program
-//                    System.out.println("Program ended...");
+                    System.out.println("Program ended...");
                 }
             } else if (node instanceof VariableDeclarationNode variableNode) {
                 // Logic to handle variable declarations
-                String variableType = variableNode.getDataType();
-                String variableName = variableNode.getVariableName();
-                String variableValue = (String) variableNode.getValue();
-                // Perform actions based on variable type, name, and value
-//                System.out.println("Variable declaration: " + variableType + " " + variableName + " = " + variableValue);
+//                String variableType = variableNode.getDataType();
+//                String variableName = variableNode.getVariableName();
+//                String variableValue = (String) variableNode.getValue();
+//                // Perform actions based on variable type, name, and value
+////                System.out.println("Variable declaration: " + variableType + " " + variableName + " = " + variableValue);
             } else if (node instanceof DisplayNode displayNode) {
                 StringBuilder outputBuilder = new StringBuilder();
                 for (String varName : displayNode.getVariableNames()) {
@@ -114,7 +127,6 @@ import java.util.Scanner;
                         }
                     }
                 }
-
                 System.out.println(outputBuilder);
             } else if (node instanceof AssignmentNode assignmentNode) {
                 String variableName = assignmentNode.getVariableName();
@@ -158,6 +170,17 @@ import java.util.Scanner;
                 for (int i = 0; i < scannedVariables.size(); i++) {
                     String variableName = scannedVariables.get(i);
                     environment.setVariable(variableName, userInput.get(i));
+                }
+            }
+            else if(node instanceof IfNode) {
+                IfNode ifNode = (IfNode) node;
+                boolean condition = ifNode.getCondition();
+
+                // If the condition is true, execute the child nodes of the if block
+                if (condition) {
+                    for (Node child : ifNode.getChildren()) {
+                        executeAST(child, environment);
+                    }
                 }
             }
             // Traverse child nodes recursively

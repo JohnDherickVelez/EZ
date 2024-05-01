@@ -27,7 +27,6 @@ public class Lexer {
     private int currentTokenIndex = 0;
     private List<Token> tokensList = new ArrayList<>();
     // Constructor to initialize the tokensList
-
     public List<Token> tokenizeSourceCode(String sourceCode) throws CustomExceptions {
 
 //            Pattern pattern = Pattern.compile("\\b[()\\w.]+\\b|\\n|[-+*/=<>!&|,$]|#.*|'.'"); // good regex for float
@@ -39,7 +38,7 @@ public class Lexer {
 //            Pattern pattern = Pattern.compile("\\b[\\w.]+\\b|\\n|[-+*/=<>!&|,$()]|#.*|'.'"); // optimal for arithmetic operations DO NOT DELETE
 //            Pattern pattern = Pattern.compile("\\b[\\w.]+\\b|\\n|[-+*/=<>!&|,$()\\[\\]]|#.*|'.'");
 //            Pattern pattern = Pattern.compile("\"[^\"]*\"|'[^']*'|\\b[\\w.]+\\b|\\n|[-+*/=<>!&|,$()\\[\\]]|#.*");
-            Pattern pattern = Pattern.compile("\\[[^\\]]*\\]|\\][^\\]]*\\[|\"[^\"]*\"|'[^']*'|\\b[\\w.]+\\b|\\n|[-+*/=<>!&|,$()\\[\\]]|#.*");
+            Pattern pattern = Pattern.compile("\\[[^\\]]*\\]|\\][^\\]]*\\[|\"[^\"]*\"|'[^']*'|\\b[\\w.]+\\b|\\n|[-+*/=<>!&|,$():\\[\\]]|#.*");
 
             Matcher matcher = pattern.matcher(sourceCode);
             StringBuilder expressionBuilder = new StringBuilder(); // To build expressions
@@ -82,10 +81,33 @@ public class Lexer {
                 // If not an endline token, handle as before
                 switch (word) {
                     case "BEGIN":
+                        if (matcher.find()) {
+                            if (matcher.group().equals("IF")) {
+                                tokensList.add(new Token(Token.TokenType.DELIMITER, "BEGIN IF", true));
+                            } else if (matcher.group().equals("CODE")) {
+                                tokensList.add(new Token(Token.TokenType.DELIMITER, "BEGIN CODE", true));
+                            } else {
+                                tokensList.add(new Token(Token.TokenType.DELIMITER, word, true));
+                            }
+                        }
+                        break;
                     case "END":
-                    case "CODE":
+                        if (matcher.find()) {
+                            if (matcher.group().equals("IF")) {
+                                tokensList.add(new Token(Token.TokenType.DELIMITER, "END IF", true));
+                            } else if (matcher.group().equals("CODE")) {
+                                tokensList.add(new Token(Token.TokenType.DELIMITER, "END CODE", true));
+                            } else {
+                                tokensList.add(new Token(Token.TokenType.DELIMITER, word, true));
+                            }
+                        }
+                        break;
                     case ":":
                     case ",":
+                    case "IF":
+                    case "CODE":
+                    case "BEGIN IF":
+                    case "END IF":
                         tokensList.add(new Token(Token.TokenType.DELIMITER, word, true));
                         break;
                     case "INT":
@@ -148,7 +170,8 @@ public class Lexer {
                 }
 
 //                expressionBuilder.append(word).append(" "); // Append the word with a space delimiter
-                if (!skipBuildingExpression && !word.equals("BEGIN") && !word.equals("CODE") && !word.equals("END") && !word.equals("DISPLAY") && !word.equals("SCAN")) {
+                if (!skipBuildingExpression && !word.equals("BEGIN") && !word.equals("CODE") && !word.equals("END")
+                        && !word.equals("DISPLAY") && !word.equals("SCAN") && !word.equals("IF")) {
                     expressionBuilder.append(word).append(" "); // Append the word with a space delimiter
                 }
             }

@@ -1,24 +1,44 @@
 package code.node;
 
-public class IfNode  {
-//    implements ASTNode
-    private final ASTNode condition;
-    private final ASTNode ifBody;
+import java.util.ArrayList;
+import java.util.List;
 
-    public IfNode(ASTNode condition, ASTNode ifBody) {
+public class IfNode extends ASTNode {
+    private boolean condition;
+    private ASTNode ifBlock;
+    private List<Node> children;
+
+    public IfNode(boolean condition) {
         this.condition = condition;
-        this.ifBody = ifBody;
+        this.ifBlock = null; // Initialize ifBlock to null
+        this.children = new ArrayList<>();
     }
 
-//    @Override
-//    public void print(int indentLevel) {
-//        for (int i = 0; i < indentLevel; i++) {
-//            System.out.print("  "); // Print indentation
-//        }
-//        System.out.println("If Statement:");
-//        System.out.println("  Condition:");
-//        condition.print(indentLevel + 1); // Recursively print condition code.node
-//        System.out.println("  Body:");
-//        ifBody.print(indentLevel + 1); // Recursively print if body code.node
-//    }
+    public boolean getCondition() {
+        return condition;
+    }
+
+    public void setIfBlock(ASTNode ifBlock) {
+        this.ifBlock = ifBlock;
+    }
+
+    @Override
+    public void addChild(Node node) {
+        // IfNode doesn't support adding child nodes directly
+        throw new UnsupportedOperationException("IfNode doesn't support adding child nodes directly.");
+    }
+
+    @Override
+    public List<Node> getChildren() {
+        // IfNode doesn't have children
+        return children;
+    }
+
+    @Override
+    public String toString() {
+        return "IfNode{" +
+                "condition=" + condition +
+                ", ifBlock=" + ifBlock +
+                '}';
+    }
 }

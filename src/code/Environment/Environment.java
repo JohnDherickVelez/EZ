@@ -6,101 +6,114 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Environment {
-private Map<String, VariableInfo> variables;
+    private Map<String, VariableInfo> variables;
 
-        public Environment() { variables = new HashMap<>(); }
+    public Environment() {
+        variables = new HashMap<>();
+    }
 
-        // Store a variable value along with datatype in the environment
-        public void setVariable(String name, Object value) {
-            // Check if the variable already exists in the environment
-            if (variables.containsKey(name)) {
+    // Store a variable value along with datatype in the environment
+    public void setVariable(String name, Object value) {
+        // Check if the variable already exists in the environment
+        if (variables.containsKey(name)) {
             // Get the existing datatype from the environment
             VariableInfo existingVariable = variables.get(name);
             String datatype = existingVariable.getDatatype();
             String valueChar = String.valueOf(value);
-            if(valueChar.startsWith("\'") && valueChar.endsWith("\'")) {
+            if (valueChar.startsWith("'") && valueChar.endsWith("'")) {
                 value = valueChar.substring(1, valueChar.length() - 1);
             }
             // Update the existing variable with the new value and datatype
             variables.put(name, new VariableInfo(value, datatype));
-            } else {
+        } else {
             // If the variable doesn't exist, add it with a default datatype (or without datatype)
             variables.put(name, new VariableInfo(value, ""));
-            }
+        }
+    }
+
+    // Retrieve a variable value from the environment
+    public Object getVariable(String name) {
+        VariableInfo variableInfo = variables.get(name);
+        return variableInfo != null ? variableInfo.getValue() : null;
+    }
+
+    // Retrieve datatype of a variable from the environment
+    public String getVariableType(String name) {
+        VariableInfo variableInfo = variables.get(name);
+        return variableInfo != null ? variableInfo.getDatatype() : null;
+    }
+
+    // Check if a variable is defined in the environment
+    public boolean isDefined(String name) {
+        return variables.containsKey(name);
+    }
+
+    // Remove a variable from the environment
+    public void removeVariable(String name) {
+        variables.remove(name);
+    }
+
+    // Clear all variables from the environment
+    public void clear() {
+        variables.clear();
+    }
+
+    // Inner class to hold variable information (value and datatype)
+    private static class VariableInfo {
+        private Object value;
+        private String datatype;
+
+        public VariableInfo(Object value, String datatype) {
+            this.value = value;
+            this.datatype = datatype;
         }
 
-        // Retrieve a variable value from the environment
-        public Object getVariable(String name) {
-            VariableInfo variableInfo = variables.get(name);
-            return variableInfo != null ? variableInfo.getValue() : null;
+        public Object getValue() {
+            return value;
         }
 
-        // Retrieve datatype of a variable from the environment
-        public String getVariableType(String name) {
-            VariableInfo variableInfo = variables.get(name);
-            return variableInfo != null ? variableInfo.getDatatype() : null;
+        public String getDatatype() {
+            return datatype;
         }
+    }
 
-        // Check if a variable is defined in the environment
-        public boolean isDefined(String name) {
-            return variables.containsKey(name);
-        }
+    public void updateVariable(String variableName, Object value, String datatype) {
+        variables.put(variableName, new VariableInfo(value, datatype));
+    }
 
-        // Remove a variable from the environment
-        public void removeVariable(String name) {
-            variables.remove(name);
-        }
+    public void placeVariables(VariableDeclarationNode variableNode) {
+        String variableName = variableNode.getVariableName();
+        String variableValue = (String) variableNode.getValue();
+        String datatype = variableNode.getDataType();
 
-        // Clear all variables from the environment
-        public void clear() {
-            variables.clear();
-        }
-
-        // Inner class to hold variable information (value and datatype)
-        private static class VariableInfo {
-            private Object value;
-            private String datatype;
-
-            public VariableInfo(Object value, String datatype) {
-                this.value = value;
-                this.datatype = datatype;
-            }
-
-            public Object getValue() {
-                return value;
-            }
-
-            public String getDatatype() {
-                return datatype;
-            }
-        }
-
-        public void updateVariable(String variableName, Object value, String datatype) {
-            variables.put(variableName, new VariableInfo(value, datatype));
-        }
-
-        public void placeVariables(VariableDeclarationNode variableNode) {
-            String variableName = variableNode.getVariableName();
-            String variableValue = (String) variableNode.getValue();
-            String datatype = variableNode.getDataType();
-
-            Object value = switch (datatype) {
-            case "INT" -> Integer.parseInt(variableValue);
-            case "FLOAT" -> Float.parseFloat(variableValue);
-            case "CHAR" -> variableValue.charAt(0); // Assuming single character value
-            case "BOOL" -> Boolean.parseBoolean(variableValue);
-            default -> null;
-            };
-
-            updateVariable(variableName, value, datatype);
-        }
-
-
-        public void displayVariables() {
-            System.out.println("Variables in the environment:");
-                for (String name : variables.keySet()) {
-                VariableInfo variableInfo = variables.get(name);
-                System.out.println(name + " = " + variableInfo.getValue() + " (Type: " + variableInfo.getDatatype() + ")");
+        Object value = switch (datatype) {
+            case "INT" -> {
+                if (variableValue.matches("-?\\d+")) { // Regular expression to check for valid integer format
+                    yield Integer.parseInt(variableValue);
+                } else {
+                    throw new IllegalArgumentException("Invalid integer format for variable: " + variableName);
                 }
             }
+            case "FLOAT" -> Float.parseFloat(variableValue);
+            case "CHAR" -> {
+                if (variableValue.length() == 1) {
+                    yield variableValue.charAt(0);
+                } else {
+                    throw new IllegalArgumentException("Invalid character format for variable: " + variableName);
+                }
+            }
+            case "BOOL" -> Boolean.parseBoolean(variableValue);
+            default -> throw new IllegalArgumentException("Unsupported datatype: " + datatype);
+        };
+
+        updateVariable(variableName, value, datatype);
+    }
+
+    public void displayVariables() {
+        System.out.println("Variables in the environment:");
+        for (String name : variables.keySet()) {
+            VariableInfo variableInfo = variables.get(name);
+            System.out.println(name + " = " + variableInfo.getValue() + " (Type: " + variableInfo.getDatatype() + ")");
         }
+    }
+}

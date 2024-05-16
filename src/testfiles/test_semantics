@@ -1,7 +1,7 @@
 BEGIN CODE
-    INT a = 10
-    IF (a == 10)
-    BEGIN IF
-        DISPLAY: a
-    END IF
+    INT x = 2 + -1
+    INT y = 0
+    DISPLAY: x
 END CODE
+
+

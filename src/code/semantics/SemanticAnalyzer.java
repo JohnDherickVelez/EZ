@@ -22,12 +22,7 @@ public class SemanticAnalyzer {
     }
 
     public void analyze(List<Token> tokens, Node rootNode) throws CustomExceptions {
-        // Perform semantic analysis here
-        // You can traverse the AST and perform checks on variables, expressions, etc.
-        // Update the environment or throw exceptions for semantic errors
-
-        // Example: Check variable usage against declaration
-//        checkTokenGrammar(tokens);
+        checkTokenGrammar(tokens);
         checkDisplayUsage(tokens);
         checkVariableUsage(tokens);
 
@@ -35,16 +30,26 @@ public class SemanticAnalyzer {
             checkTypeCompatibility(rootNode);
         }
     }
-//    public void checkTokenGrammar(List<Token> tokensList) throws CustomExceptions {
-//        boolean foundBegin = false;
-//        boolean foundCodeAfterBegin = false;
-//        boolean foundEnd = false;
-//        boolean foundCodeAfterEnd = false;
-//
-//        for (int i = 0; i < tokensList.size() - 1; i++) {
-//            Token currentToken = tokensList.get(i);
-//            Token nextToken = tokensList.get(i + 1);
-//
+    public void checkTokenGrammar(List<Token> tokensList) throws CustomExceptions {
+        // Check if the source code starts with BEGIN CODE
+        // Check if the source code starts with BEGIN CODE
+//        System.out.println("theres begin code" + tokensList.get(0).getValue());
+//        System.out.println("theres end code" + tokensList.get(tokensList.size() - 2).getValue());
+        if (tokensList.isEmpty() || !tokensList.get(0).getValue().equals("BEGIN CODE")) {
+            throw new CustomExceptions("Source code must start with BEGIN CODE");
+        }
+
+        // Check if the source code ends with END CODE
+        if (!tokensList.isEmpty() && !tokensList.get(tokensList.size() - 2).getValue().equals("END CODE")) {
+            throw new CustomExceptions("Source code must end with END CODE");
+        }
+
+        // Check for the presence of BEGIN and END tokens without CODE in between
+    }
+//            else {
+//                throw new CustomExceptions("MISSING BEGIN CODE");
+//            }
+
 //            if (currentToken.getValue().equals("BEGIN")) {
 //                foundBegin = true;
 //                if (nextToken.getValue().equals("CODE")) {
@@ -76,7 +81,6 @@ public class SemanticAnalyzer {
 //        if (!foundCodeAfterEnd) {
 //            throw new CustomExceptions("Missing 'CODE' after 'END'");
 //        }
-//    }
 
     private void checkDisplayUsage(List<Token> tokensList) throws CustomExceptions {
         int i = 0;
@@ -174,7 +178,7 @@ private void checkVariableUsage(List<Token> tokensList) throws CustomExceptions 
             // Check the expression on the right side of '='
             // TODO: CANT HANDLE CASES INT a,b <--- default initializers
             Token expressionToken = tokensList.get(j+1);
-            System.out.println(expressionToken);
+//            System.out.println(expressionToken);
             if (currentToken.getValue().equals("INT")) {
                 if (!expressionToken.getValue().matches("-?\\d+")) {
                     throw new CustomExceptions("Variable '" + nextToken.getValue() + "' is not assigned an integer value.");

@@ -99,8 +99,10 @@ public class Lexer {
                                 tokensList.add(new Token(Token.TokenType.DELIMITER, "END CODE", true));
                             } else {
                                 tokensList.add(new Token(Token.TokenType.DELIMITER, word, true));
+                                tokensList.add(new Token(Token.TokenType.ENDLINE, "end of line", true));
                             }
                         }
+
                         break;
                     case ":":
                     case ",":

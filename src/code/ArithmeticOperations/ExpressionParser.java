@@ -5,7 +5,7 @@ import code.Environment.Environment;
 import java.util.Stack;
 
 public class ExpressionParser {
-    private String expression;
+    // Uses Stack for handling arithmetic operations | currently does not handle negative values
     private Environment environment;
     private StringBuilder sb = new StringBuilder();
 
@@ -15,18 +15,21 @@ public class ExpressionParser {
 
     public Number evaluateExpression(String expression) {
         expression = expression.replaceAll("\\s", "");
-
+        System.out.println("Expression: " + expression);
         // Stack for operands (changed to Number)
         Stack<Number> values = new Stack<>();
-
         Stack<Character> ops = new Stack<>();
 
         for (int i = 0; i < expression.length(); i++) {
             char c = expression.charAt(i);
             sb.setLength(0);
 
-            if (Character.isDigit(c) || c == '.') {
+           if (Character.isDigit(c) || c == '.') {
+                System.out.println(c);
+//               System.out.println(expression.charAt(i+1));
+                // Handle numeric operands
                 while (i < expression.length() && (Character.isDigit(expression.charAt(i)) || expression.charAt(i) == '.')) {
+//                    System.out.println(expression.charAt(i++));
                     sb.append(expression.charAt(i++));
                 }
                 i--;
@@ -36,36 +39,47 @@ public class ExpressionParser {
                     values.push(Integer.parseInt(sb.toString())); // Parse as Integer for integers
                 }
             } else if (Character.isAlphabetic(c)) {
-                int value = 0;
+                // Handle variable operands
+                StringBuilder variableName = new StringBuilder();
                 while (i < expression.length() && Character.isAlphabetic(expression.charAt(i))) {
-                    sb.append(expression.charAt(i++));
+                    variableName.append(expression.charAt(i++));
                 }
                 i--;
-                if (environment.isDefined(sb.toString())) {
-                    value = (int) environment.getVariable(sb.toString());
+                String varName = variableName.toString();
+                if (environment.isDefined(varName)) {
+                    Object value = environment.getVariable(varName);
+                    if (value instanceof Number) {
+                        values.push((Number) value);
+                    } else {
+                        throw new IllegalArgumentException("Variable '" + varName + "' is not a numeric type.");
+                    }
+                } else {
+                    throw new IllegalArgumentException("Variable '" + varName + "' is not defined.");
                 }
-                values.push(value);
             } else if (c == '(') {
                 ops.push(c);
             } else if (c == ')') {
                 while (ops.peek() != '(') {
-                    values.push(applyOp(ops.pop(),'\0', values.pop(), values.pop()));
+                    values.push(applyOp(ops.pop(), '\0', values.pop(), values.pop()));
                 }
-                ops.pop();
+                ops.pop(); // Pop '('
             } else if (c == '+' || c == '-' || c == '*' || c == '/') {
+                // Handle arithmetic operators
                 while (!ops.empty() && hasPrecedence(c, ops.peek())) {
-                    values.push(applyOp(ops.pop(),'\0', values.pop(), values.pop()));
+                    values.push(applyOp(ops.pop(), '\0', values.pop(), values.pop()));
                 }
                 ops.push(c);
             }
         }
 
         while (!ops.empty()) {
-            values.push(applyOp(ops.pop(),'\0', values.pop(), values.pop()));
+            values.push(applyOp(ops.pop(), '\0', values.pop(), values.pop()));
         }
 
+        // The result will be on top of the 'values' stack
         return values.pop();
     }
+
 
     public boolean evaluateLogicalExpression(String expression) {
         expression = expression.replaceAll("\\s", "");
@@ -94,7 +108,7 @@ public class ExpressionParser {
                 } else {
                     values.push(Integer.parseInt(sb.toString())); // Parse as Integer for integers
                 }
-            } else if (Character.isAlphabetic(c)) {
+            } else if (Character.isAlphabetic(c)) { // if encountered C is a variable
                 // Handle variable operands
                 int value = 0;
                 while (i < expression.length() && Character.isAlphabetic(expression.charAt(i))) {
@@ -102,9 +116,10 @@ public class ExpressionParser {
                 }
                 i--;
                 if (environment.isDefined(sb.toString())) {
+
                     value = (int) environment.getVariable(sb.toString());
                 }
-                values.push(value);
+                values.push(value); // no expression parsing happened
             } else if (c == '(') {
                 ops.push(c);
             } else if (c == ')') {
@@ -123,15 +138,15 @@ public class ExpressionParser {
             else if (c == '<' || c == '>' || c == '=' || c == '!') {
                 // TODO : '<>' cannot be evaluated properly
                 if (cnext == '=' || cnext == '>') {
-                    System.out.println(cnext);
+//                    System.out.println(cnext);
                     while (!ops.empty() && hasPrecedence(c, ops.peek())) {
                         values.push(applyOp(ops.pop(), cnext, values.pop(), values.pop()));
-                        System.out.println(cnext);
+//                        System.out.println(cnext);
                     }
                     ops.push(c);
                     i++;
                 } else {
-                    System.out.println("asd12083123123;djgsdgf");
+//                    System.out.println("asd12083123123;djgsdgf");
                     while (!ops.empty() && hasPrecedence(c, ops.peek())) {
                         values.push(applyOp(ops.pop(), '\0', values.pop(), values.pop()));
                     }
@@ -161,7 +176,7 @@ public class ExpressionParser {
     }
 
     private static Number applyOp(char op, char op2, Number b, Number a) {
-        System.out.println("op1" + op + " " + "op2" + op2);
+//        System.out.println("op1" + op + " " + "op2" + op2);
         if (a instanceof Double || b instanceof Double) {
             double da = a.doubleValue();
             double db = b.doubleValue();
@@ -221,9 +236,9 @@ public class ExpressionParser {
 
     private static Boolean applyLogicalOp(String op, Number b, Number a) {
         int ia = a.intValue();
-        System.out.println("Value of ia: " + ia);
+//        System.out.println("Value of ia: " + ia);
         int ib = b.intValue();
-        System.out.println("Value of ib: " + ib);
+//        System.out.println("Value of ib: " + ib);
         switch (op) {
             case "<":
                 return ia < ib;
@@ -248,19 +263,12 @@ public class ExpressionParser {
 
         // Test arithmetic expressions
         String arithmeticExpression = "x + y * 2";
-        Number arithmeticResult = expressionParser.evaluateExpression(arithmeticExpression);
+        String arithmeticExpression2 = "x * 3";
+        Number arithmeticResult = expressionParser.evaluateExpression(arithmeticExpression2);
         System.out.println(arithmeticExpression + " = " + arithmeticResult); // Expected: 25
 
 //        boolean ehh = applyLogicalOp("<", 10, 5);
 //        System.out.println(ehh);
-
-        String logicalExpression = "8 > 10";
-        boolean result = expressionParser.evaluateLogicalExpression(logicalExpression);
-
-        System.out.println("Result of logical expression evaluation: " + result);
-
-
-
     }
 
 }

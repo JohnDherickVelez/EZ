@@ -1,9 +1,11 @@
 import code.Environment.Environment;
 import code.lexer.Lexer;
+import code.lexer.Lexer2;
 import code.model.Token;
 import code.node.*;
 import code.parser.CustomExceptions;
 import code.parser.Parser;
+import code.parser.Parser2;
 import code.semantics.SemanticAnalyzer;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -50,22 +52,22 @@ import java.util.Scanner;
         }
         private static void initializeVariables_1(StringBuilder sourceCode) throws CustomExceptions {
             // initializes sourcecode
-//            Lexer2 lexer = new Lexer2();
-            Lexer lexer = new Lexer();
+            Lexer2 lexer = new Lexer2();
+//            Lexer lexer = new Lexer();
             List<Token> tokenlist = lexer.tokenizeSourceCode(String.valueOf(sourceCode));
 
             // initializes environment
             Environment environment = new Environment();
 
-            // initializes Parser
-            Parser parser = new Parser(tokenlist, environment);
+//            Parser parser = new Parser(tokenlist, environment);
+            Parser2 parser = new Parser2(tokenlist, environment);
 
             // initializes Abstract Syntax Tree
             Node rootNode = parser.produceAST();
 
             // Initializes Semantic Analyzer
             SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(environment);
-//////             Can uncomment to run AST with/out errors
+//             Can uncomment to run AST with/out errors
 //            try {
 //                semanticAnalyzer.analyze(tokenlist, rootNode);
 //            } catch (CustomExceptions e) {
@@ -102,7 +104,7 @@ import java.util.Scanner;
 //                String variableName = variableNode.getVariableName();
 //                String variableValue = (String) variableNode.getValue();
 //                // Perform actions based on variable type, name, and value
-////                System.out.println("Variable declaration: " + variableType + " " + variableName + " = " + variableValue);
+//                System.out.println("Variable declaration: " + variableType + " " + variableName + " = " + variableValue);
             } else if (node instanceof DisplayNode displayNode) {
                 StringBuilder outputBuilder = new StringBuilder();
                 for (String varName : displayNode.getVariableNames()) {

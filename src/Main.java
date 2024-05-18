@@ -177,17 +177,6 @@ import java.util.Scanner;
                     environment.setVariable(variableName, userInput.get(i));
                 }
             }
-            else if(node instanceof IfNode) {
-                IfNode ifNode = (IfNode) node;
-                boolean condition = ifNode.getCondition();
-
-                // If the condition is true, execute the child nodes of the if block
-                if (condition) {
-                    for (Node child : ifNode.getChildren()) {
-                        executeAST(child, environment);
-                    }
-                }
-            }
             // Traverse child nodes recursively
             List<Node> children = node.getChildren();
             for (Node child : children) {

@@ -3,42 +3,25 @@ package code.node;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IfNode extends ASTNode {
-    private boolean condition;
-    private ASTNode ifBlock;
-    private List<Node> children;
+public class IfNode extends Node {
+    private ConditionNode condition;
+    private List<Node> ifBlock;
 
-    public IfNode(boolean condition) {
+    public IfNode(ConditionNode condition) {
         this.condition = condition;
-        this.ifBlock = null; // Initialize ifBlock to null
-        this.children = new ArrayList<>();
+        this.ifBlock = new ArrayList<>();
     }
 
-    public boolean getCondition() {
+    public ConditionNode getCondition() {
         return condition;
     }
 
-    public void setIfBlock(ASTNode ifBlock) {
-        this.ifBlock = ifBlock;
+    public List<Node> getIfBlock() {
+        return ifBlock;
     }
 
-    @Override
-    public void addChild(Node node) {
-        // IfNode doesn't support adding child nodes directly
-        throw new UnsupportedOperationException("IfNode doesn't support adding child nodes directly.");
-    }
-
-    @Override
-    public List<Node> getChildren() {
-        // IfNode doesn't have children
-        return children;
-    }
-
-    @Override
-    public String toString() {
-        return "IfNode{" +
-                "condition=" + condition +
-                ", ifBlock=" + ifBlock +
-                '}';
+    public void addIfBlockNode(Node node) {
+        ifBlock.add(node);
     }
 }
+

@@ -6,3 +6,16 @@ IF(a<0)
    DISPLAY: a + 10
   END IF
 END CODE
+
+BEGIN CODE
+    INT x = 1
+    BOOL c = "TRUE"
+    IF(x>2)
+    BEGIN IF
+        x=5
+    END IF
+    ELSE
+    BEGIN IF
+        x = 3
+    END IF
+END CODE

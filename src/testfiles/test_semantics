@@ -1,7 +1,16 @@
 BEGIN CODE
-    INT x = 2 + -1
-    INT y = 0
-    DISPLAY: x
+    INT a = 10
+    IF(a>5)
+        BEGIN IF
+            a = 11
+        END IF
 END CODE
+
+
+
+
+# YOU'RE STUCK IN ELSE IF
+# CHECK IF ELSE IF CHATGPT WORKS
+
 
 

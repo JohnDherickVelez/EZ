@@ -100,9 +100,9 @@ import java.util.Scanner;
                 }
             } else if (node instanceof VariableDeclarationNode variableNode) {
                 // Logic to handle variable declarations
-//                String variableType = variableNode.getDataType();
-//                String variableName = variableNode.getVariableName();
-//                String variableValue = (String) variableNode.getValue();
+                String variableType = variableNode.getDataType();
+                String variableName = variableNode.getVariableName();
+                String variableValue = (String) variableNode.getValue();
 //                // Perform actions based on variable type, name, and value
 //                System.out.println("Variable declaration: " + variableType + " " + variableName + " = " + variableValue);
             } else if (node instanceof DisplayNode displayNode) {

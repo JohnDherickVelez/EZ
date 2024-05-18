@@ -4,10 +4,6 @@ BEGIN CODE
         BEGIN IF
             a = 11
         END IF
-    ELSE
-        BEGIN IF
-            a = 12
-        END IF
 END CODE
 
 

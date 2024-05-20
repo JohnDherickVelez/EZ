@@ -1,27 +1,18 @@
 package code.node;
 
+import code.model.Token;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class IfNode extends Node {
-    private ConditionNode condition;
-    private List<Node> ifBlock;
-
-    public IfNode(ConditionNode condition) {
-        this.condition = condition;
-        this.ifBlock = new ArrayList<>();
+    private final Boolean expressionResult;
+    public IfNode(Boolean expressionResult) {
+        this.expressionResult = expressionResult;
     }
 
-    public ConditionNode getCondition() {
-        return condition;
-    }
-
-    public List<Node> getIfBlock() {
-        return ifBlock;
-    }
-
-    public void addIfBlockNode(Node node) {
-        ifBlock.add(node);
+    public Boolean getExpressionResult() {
+        return expressionResult;
     }
 }
 

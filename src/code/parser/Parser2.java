@@ -47,93 +47,51 @@ public class Parser2 {
                                     token = tokensList.get(i);
                                 }
                             }
-//                            if (token.getType() == Token.TokenType.EXPRESSION) {
-//                                // Process the IF expression
-//                                String ifExpression = token.getValue();
-//                                ExpressionParser2 expressionParser = new ExpressionParser2(environment);
-//                                boolean ifResult = expressionParser.evaluateLogicalExpression(ifExpression);
-//                                System.out.println(ifResult);
-//                                i++; // Move to the next token after the expression
-//
-//                                if (!ifResult) {
-//                                    // Skip the IF block
-//                                    if (Objects.equals(tokensList.get(i).getValue(), "BEGIN IF")) {
-//                                        int beginCount = 1;
-//                                        while (i < tokensList.size() && beginCount > 0) {
-//                                            i++;
-//                                            Token nextToken = tokensList.get(i);
-//                                            if (Objects.equals(nextToken.getValue(), "BEGIN IF")) {
-//                                                beginCount++;
-//                                            } else if (Objects.equals(nextToken.getValue(), "END IF")) {
-//                                                beginCount--;
-//                                            }
-//                                        }
-//                                        if (i < tokensList.size() && Objects.equals(tokensList.get(i).getValue(), "END IF")) {
-//                                            i++; // Skip "END IF"
-//                                        }
-//                                    }
-//                                    // Process the ELSE block if it exists
-//                                    if (i < tokensList.size() && Objects.equals(tokensList.get(i).getValue(), "ELSE")) {
-//                                        i++; // Skip "ELSE"
-//                                        if (Objects.equals(tokensList.get(i).getValue(), "BEGIN IF")) {
-//                                            i++; // Skip "BEGIN IF"
-//                                            // Let the parser continue processing the ELSE block
-//                                            int beginCount = 1;
-//                                            while (i < tokensList.size() && beginCount > 0) {
-//                                                i++;
-//                                                Token innerToken = tokensList.get(i);
-//                                                if (Objects.equals(innerToken.getValue(), "BEGIN IF")) {
-//                                                    beginCount++;
-//                                                } else if (Objects.equals(innerToken.getValue(), "END IF")) {
-//                                                    beginCount--;
-//                                                }
-//                                            }
-//                                            if (i < tokensList.size() && Objects.equals(tokensList.get(i).getValue(), "END IF")) {
-//                                                i++; // Skip "END IF"
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//                            } else {
-//                                throw new CustomExceptions("Expected expression after IF");
-//                            }
-//                        }
-//                        break;
-
-//                    case DELIMITER:
-//                        boolean isTrue = false;
-//
-//                        if (Objects.equals(String.valueOf(token.getValue()), "BEGIN CODE")) {
-//                            // Add logic for processing "BEGIN CODE" sequence
-//                            rootNode.addChild(new DelimiterNode("BEGIN CODE", true));
-//                            i++; // Move to the next token after "CODE"
-//                        }
-//                        if(Objects.equals(String.valueOf(token.getValue()), "END CODE")) {
-//                            // Add logic for processing "END CODE" sequence
-//                            rootNode.addChild(new DelimiterNode("END CODE", false));
-//                            i++; // Move to the next token after "CODE"
-//                        }
-//                        if (Objects.equals(String.valueOf(token.getValue()), "IF")) {
-//                            // I want you to handle case IF
-//                            i++;
-//                            while (i < tokensList.size() && token.getType() != Token.TokenType.EXPRESSION) {
-//                                i++;
-//                                if (i < tokensList.size()) {
-//                                    token = tokensList.get(i);
-//                                }
-//                            }
                             if (token.getType() == Token.TokenType.EXPRESSION) {
                                 // Process the IF expression
                                 String ifExpression = token.getValue();
 //                                System.out.println("Processing IF expression: " + ifExpression);
 
                                 ExpressionParser2 expressionParser = new ExpressionParser2(environment);
-                                String ifResult = String.valueOf(expressionParser.evaluateLogicalExpression(ifExpression));
-                                System.out.println(ifResult);
-                                i+=2;
-                                System.out.println(tokensList.get(i));
+                                boolean ifResult = expressionParser.evaluateLogicalExpression(ifExpression);
+////                                System.out.println(ifResult);
+////                                System.out.println(tokensList.get(i).getValue());
+//
+//                                IfNode ifNode = new IfNode(ifResult);
+//                                i += 2; // Skip to the token after "BEGIN IF"
+//                                if (Objects.equals(tokensList.get(i).getValue(), "BEGIN IF")) {
+//                                    int ifBlockStart = i;
+//                                    int beginCount = 1; // Track nested "BEGIN IF"
+//                                    while (i < tokensList.size() && beginCount > 0) {
+//                                        i++;
+//                                        if (Objects.equals(tokensList.get(i).getValue(), "BEGIN IF")) {
+//                                            beginCount++;
+//                                        } else if (Objects.equals(tokensList.get(i).getValue(), "END IF")) {
+//                                            beginCount--;
+//                                        }
+//                                    }
+//                                    if (beginCount == 0 && Objects.equals(tokensList.get(i).getValue(), "END IF")) {
+//                                        i++;
+//                                    }
+//                                    if(ifNode.getExpressionResult()) {
+//                                        List<Token> ifBlockTokens = tokensList.subList(ifBlockStart + 1, i - 1);
+//                                        Parser2 ifParser = new Parser2(ifBlockTokens, environment);
+//                                        ASTNode ifBlockAST = ifParser.produceAST();
+//                                        ifNode.addChild(ifBlockAST);
+//                                    }
+//                                }
+//                                rootNode.addChild(ifNode);
+//                            } else {
+//                                throw new CustomExceptions("Expected expression after IF");
+//                            }
+//                        } else if(Objects.equals(String.valueOf(token.getValue()), "ELSE IF")){
+//                            System.out.println("biatch");
+//                        }
+//                        break;
 
-                                if (ifResult.equals("false")) {
+                                // DONT TOUCH!!
+                                // IF STATEMENT IS WORKING
+                                if (!ifResult) {
                                     if (Objects.equals(tokensList.get(i).getValue(), "BEGIN IF")) {
                                         int beginCount = 1; // To track nested "BEGIN IF"
                                         while (i < tokensList.size()) {
@@ -154,7 +112,6 @@ public class Parser2 {
                             } else {
                                 throw new CustomExceptions("Expected expression after IF");
                             }
-
                         }
                         break;
                     case DATATYPE:
@@ -163,76 +120,157 @@ public class Parser2 {
                             List<String> variableNames = new ArrayList<>();
                             String value = null;
                             boolean assigned = false;
-                            boolean declared = false;
+                            boolean decleared = false;
 
-                            while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) { // Iterate through statement
-                                if (token.getType() == Token.TokenType.VARIABLE) {
-                                    if (!assigned) {
-                                        // Only add variables to the list if not after an assignment token
+
+//                            while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) { // Iterate through statement
+//                                if (token.getType() == Token.TokenType.VARIABLE) {
+//                                    if (!assigned) {
+//                                        // Only add variables to the list if not after an assignment token
+//                                        variableNames.add(token.getValue());
+//                                    }
+//                                    declared = false;
+//                                } else if (token.getType() == Token.TokenType.EXPRESSION) {
+//                                    String expression = token.getValue();
+//                                    ExpressionParser2 expressionParser = new ExpressionParser2(environment);
+//                                    String result;
+//
+//                                    // Evaluate expression based on datatype
+//                                    if (datatype.equals("INT")) {
+//                                        result = String.valueOf((int) expressionParser.calculate(expression)); // Cast to int
+//                                    } else if (datatype.equals("FLOAT")) {
+//                                        result = String.valueOf(expressionParser.calculate(expression));
+//                                    } else if (datatype.equals("CHAR") || datatype.equals("BOOL")) {
+//                                        value = token.getValue();
+//                                        if (datatype.equals("BOOL")) {
+//                                            if (value.startsWith("\"") && value.endsWith("\"")) {
+//                                                value = value.substring(1, value.length() - 1).toUpperCase(); // Convert boolean value to uppercase
+//                                            }
+//                                            if (hasLogicalOperator(value)) {
+//                                                String logicalExpression = token.getValue();
+//                                                result = String.valueOf(expressionParser.evaluateLogicalExpression(logicalExpression)).toUpperCase();
+//                                            } else {
+//                                                if (variableValueValidator(datatype, value)) {
+//                                                    result = value;
+//                                                } else {
+//                                                    throw new IllegalArgumentException("Invalid boolean expression: " + value);
+//                                                }
+//                                            }
+//                                        } else if (datatype.equals("CHAR")) {
+//                                            if (value.length() == 1) {
+//                                                result = value;
+//                                            } else {
+//                                                throw new IllegalArgumentException("Invalid character value: " + value);
+//                                            }
+//                                        } else {
+//                                            throw new IllegalArgumentException("Unsupported datatype: " + datatype);
+//                                        }
+//                                    } else {
+//                                        throw new IllegalArgumentException("Unsupported datatype: " + datatype);
+//                                    }
+//
+//                                    processVariableDeclaration(datatype, variableNames, result, rootNode); // Call the method
+//                                    variableNames.clear(); // Clean list
+//                                    declared = true;
+//                                } else if (token.getType() == Token.TokenType.ASSIGN) {
+//                                    assigned = true;
+//                                } else if (token.getType() == Token.TokenType.ENDLINE) {
+//                                    processVariableDeclaration(datatype, variableNames, String.valueOf(0), rootNode); // Call the method
+//                                }
+//
+//                                // Move to the next token
+//                                i++;
+//                                if (i < tokensList.size()) {
+//                                    token = tokensList.get(i);
+//                                }
+//                            }
+//                            if (!declared && !assigned) { // For: int x, y, z
+//                                processVariableDeclaration(datatype, variableNames, value, rootNode); // Call the method
+//                            } else if (!declared && assigned) {
+//                                throw new CustomExceptions("No value assigned to variable");
+//                            }
+//
+//                        } else {
+//                            // Handle unexpected token (not an identifier)
+//                            throw new CustomExceptions("Expected identifier for variable name.");
+//                        }
+//                        break;
+                            if (token.getValue().equals("INT") || token.getValue().equals("FLOAT")) {
+                                while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) { // Iterate through statement
+                                    if (token.getType() == Token.TokenType.VARIABLE) { // Store variable
                                         variableNames.add(token.getValue());
-                                    }
-                                    declared = false;
-                                } else if (token.getType() == Token.TokenType.EXPRESSION) {
-                                    String expression = token.getValue();
-                                    ExpressionParser2 expressionParser = new ExpressionParser2(environment);
-                                    String result;
-
-                                    // Evaluate expression based on datatype
-                                    if (datatype.equals("INT")) {
-                                        result = String.valueOf((int) expressionParser.calculate(expression)); // Cast to int
-                                    } else if (datatype.equals("FLOAT")) {
-                                        result = String.valueOf(expressionParser.calculate(expression));
-                                    } else if (datatype.equals("CHAR") || datatype.equals("BOOL")) {
-                                        value = token.getValue();
-                                        if (datatype.equals("BOOL")) {
-                                            if (value.startsWith("\"") && value.endsWith("\"")) {
-                                                value = value.substring(1, value.length() - 1).toUpperCase(); // Convert boolean value to uppercase
-                                            }
-                                            if (hasLogicalOperator(value)) {
-                                                String logicalExpression = token.getValue();
-                                                result = String.valueOf(expressionParser.evaluateLogicalExpression(logicalExpression)).toUpperCase();
-                                            } else {
-                                                if (variableValueValidator(datatype, value)) {
-                                                    result = value;
-                                                } else {
-                                                    throw new IllegalArgumentException("Invalid boolean expression: " + value);
-                                                }
-                                            }
-                                        } else if (datatype.equals("CHAR")) {
-                                            if (value.length() == 1) {
-                                                result = value;
-                                            } else {
-                                                throw new IllegalArgumentException("Invalid character value: " + value);
-                                            }
-                                        } else {
-                                            throw new IllegalArgumentException("Unsupported datatype: " + datatype);
+                                        decleared = false;
+                                    } else if (token.getType() == Token.TokenType.EXPRESSION) { // Store value
+//                                          value = token.getValue();
+//                                        System.out.println("Token:   " + token.getValue());
+                                        String expression = token.getValue();
+//                                        System.out.println(expression);
+                                        ExpressionParser2 expressionParser = new ExpressionParser2(environment);
+                                        if(Objects.equals(datatype, "INT")) {
+                                            String result = String.valueOf((int) expressionParser.calculate(expression));
+                                            processVariableDeclaration(datatype, variableNames, result, rootNode); // Call the method
+                                            variableNames.clear(); // Clean list
                                         }
-                                    } else {
-                                        throw new IllegalArgumentException("Unsupported datatype: " + datatype);
+                                        if(Objects.equals(datatype, "FLOAT")) {
+                                            String result = String.valueOf(expressionParser.calculate(expression));
+                                            processVariableDeclaration(datatype, variableNames, result, rootNode); // Call the method
+                                            variableNames.clear(); // Clean list
+                                            decleared = true;
+                                        }
+
+
+//                                        processVariableDeclaration(datatype, variableNames, result, rootNode); // Call the method
+//                                        variableNames.clear(); // Clean list
+//                                        decleared = true;
+                                    } else if (token.getType() == Token.TokenType.ASSIGN) {
+                                        assigned = true;
                                     }
 
-                                    processVariableDeclaration(datatype, variableNames, result, rootNode); // Call the method
-                                    variableNames.clear(); // Clean list
-                                    declared = true;
-                                } else if (token.getType() == Token.TokenType.ASSIGN) {
-                                    assigned = true;
-                                } else if (token.getType() == Token.TokenType.ENDLINE) {
-                                    processVariableDeclaration(datatype, variableNames, String.valueOf(0), rootNode); // Call the method
+                                    // Move to the next token
+                                    i++;
+                                    if (i < tokensList.size()) {
+                                        token = tokensList.get(i);
+                                    }
                                 }
+                            } else if (token.getValue().equals("CHAR") || token.getValue().equals("BOOL")) {
+                                while (token.getType() != Token.TokenType.ENDLINE && i < tokensList.size()) {
+                                    if (token.getType() == Token.TokenType.VARIABLE) { // Store variable
+                                        variableNames.add(token.getValue());
+                                        decleared = false;
+                                    } else if (token.getType() == Token.TokenType.EXPRESSION) {
+                                        value = token.getValue();
+                                        if ((datatype.equals("BOOL") && value.startsWith("\"") && value.endsWith("\""))) {
+                                            value = value.substring(1, value.length() - 1);
+                                            value = value.toUpperCase(); // Convert boolean value to uppercase
+                                        }
 
-                                // Move to the next token
-                                i++;
-                                if (i < tokensList.size()) {
-                                    token = tokensList.get(i);
+                                        if (variableValueValidator(datatype, value)){
+                                            processVariableDeclaration(datatype, variableNames, value, rootNode); // Call the method
+                                            variableNames.clear(); // Clean list
+                                            decleared = true;
+                                        } else {
+                                            // TODO: throw an exception
+                                            System.out.println("NOOOOOO WAYYYYYY");
+                                        }
+                                    } else if (token.getType() == Token.TokenType.ASSIGN) {
+                                        assigned = true;
+                                    }
+
+                                    // Move to the next token
+                                    i++;
+                                    if (i < tokensList.size()) {
+                                        token = tokensList.get(i);
+                                    }
                                 }
                             }
-                            if (!declared && !assigned) { // For: int x, y, z
-                                processVariableDeclaration(datatype, variableNames, value, rootNode); // Call the method
-                            } else if (!declared && assigned) {
-                                throw new CustomExceptions("No value assigned to variable");
-                            }
+//
+//                            if (!decleared && !assigned) { // For: int x, y, z = 3 // TODO: something wrong with this lines of code
+//                                processVariableDeclaration(datatype, variableNames, value, rootNode); // Call the method
+//                            } else if (!decleared && assigned) {
+//                                throw new CustomExceptions("No value assigned to variable");
+//                            }
 
-                        } else {
+                        } else { /// hissss
                             // Handle unexpected token (not an identifier)
                             throw new CustomExceptions("Expected identifier for variable name.");
                         }
@@ -292,7 +330,7 @@ public class Parser2 {
                         rootNode.addChild(new DisplayNode(variableNames));
                         break;
                     case VARIABLE:
-                        System.out.println("Case Variable found: " + token.getValue());
+//                        System.out.println("Case Variable found: " + token.getValue());
                         String varname = token.getValue();
                         Object new_value = null;
                         String dupe_value = null;
@@ -417,7 +455,6 @@ public class Parser2 {
                 VariableDeclarationNode intVariableNode = new VariableDeclarationNode("INT", variableName, value);
                 rootNode.addChild(intVariableNode);
                 environment.placeVariables(intVariableNode); // Place the variable into the environment
-//                System.out.println(intVariableNode);
             } else if (datatype.equals("FLOAT") && value.matches("\\d*\\.\\d+")) {
                 VariableDeclarationNode floatVariableNode = (new VariableDeclarationNode("FLOAT", variableName, value));
                 rootNode.addChild(floatVariableNode);
@@ -480,5 +517,117 @@ public class Parser2 {
 
     private boolean isOperator(String str) {
         return str.matches("[-+*/]");
+    }
+    private static void executeAST(Node node, Environment environment) throws CustomExceptions {
+        // Perform appropriate actions based on code.node type
+        if (node instanceof DelimiterNode delimiterNode) {
+            // Execute functionality based on delimiter type
+            if (delimiterNode.getDataType().equals("BEGIN CODE")) {
+
+                // Logic to start the program
+                System.out.println("Start Delimiter Node: Program started...");
+            } else if (delimiterNode.getDataType().equals("END CODE")) {
+                // Logic to end the program
+                System.out.println("End Delimiter Node: Program ended...");
+            }
+        } else if (node instanceof VariableDeclarationNode variableNode) {
+            System.out.println("oidngosdfngpdfg");
+            // Logic to handle variable declarations
+            String variableType = variableNode.getDataType();
+            String variableName = variableNode.getVariableName();
+            String variableValue = (String) variableNode.getValue();
+//                // Perform actions based on variable type, name, and value
+            System.out.println("Variable declaration: " + variableType + " " + variableName + " = " + variableValue);
+        } else if (node instanceof DisplayNode displayNode) {
+            System.out.print("Display Node: ");
+            StringBuilder outputBuilder = new StringBuilder();
+            for (String varName : displayNode.getVariableNames()) {
+                if (varName.equals("$")) {
+                    outputBuilder.append("\n"); // Append a newline character if the variable name is "$"
+                } else if (varName.startsWith("\"") && varName.endsWith("\"")) {
+                    // This is quoted text, remove the surrounding quotes and append to the output
+                    String textInsideQuotes = varName.substring(1, varName.length() - 1);
+                    outputBuilder.append(textInsideQuotes);
+
+                } else if (varName.startsWith("[") && varName.endsWith("]")) {
+                    // This is quoted text, remove the surrounding quotes and append to the output
+                    String textInsideBrackets = varName.substring(1, varName.length() - 1);
+                    outputBuilder.append(textInsideBrackets);
+
+                } else {
+                    // Check if varName exists in the environment
+                    Object value = environment.getVariable(varName);
+
+                    if (value != null) {
+                        outputBuilder.append(value); // Append variable value if found
+                    } else {
+                        // Append varName as a literal string if not found in environment
+                        outputBuilder.append(varName);
+                    }
+                }
+            }
+            System.out.println(outputBuilder);
+        } else if (node instanceof AssignmentNode assignmentNode) {
+
+            String variableName = assignmentNode.getVariableName();
+            String variableValue = assignmentNode.getValue();
+//            System.out.println("Assignment statement: " + variableName + " = " + variableValue);
+        }
+//            else if(node instanceof ScanNode scanNode) {
+//                List<String> scannedVariables = scanNode.getScanVariables();
+////                System.out.println("Scanned variables: " + scannedVariables);
+//                Scanner scanner = new Scanner(System.in);
+//                List<Integer> userInput = new ArrayList<>();
+//
+//                // Prompt the user for input based on scanned variables
+//                for (String variableName : scannedVariables) {
+//                    System.out.print("Enter value for " + variableName + ": ");
+//                    int value = scanner.nextInt();
+//                    userInput.add(value);
+//                }
+//
+//                // Update variables in the environment with user input
+//                for (int i = 0; i < scannedVariables.size(); i++) {
+//                    String variableName = scannedVariables.get(i);
+//                    environment.setVariable(variableName, userInput.get(i));
+//                }
+//            }
+        else if(node instanceof ScanNode scanNode) {
+            List<String> scannedVariables = scanNode.getScanVariables();
+            System.out.println("Scanned variables: " + scannedVariables);
+            Scanner scanner = new Scanner(System.in);
+            List<String> userInput = new ArrayList<>();
+            String inputLine = scanner.nextLine();
+            userInput = List.of(inputLine.split(","));
+            // Prompt the user for input based on scanned variables
+//                for (String variableName : scannedVariables) {
+//                    System.out.print("Enter value for " + variableName + ": ");
+//                    String value = scanner.nextLine();
+//                    userInput.add(value);
+//                }
+
+            // Update variables in the environment with user input
+            for (int i = 0; i < scannedVariables.size(); i++) {
+                String variableName = scannedVariables.get(i);
+                environment.setVariable(variableName, userInput.get(i));
+            }
+        }
+        else if(node instanceof IfNode ifNode) {
+            boolean condition = ifNode.getExpressionResult();
+            System.out.println(condition);
+            if(condition) {
+                for(Node child : ifNode.getChildren()) {
+                    System.out.println("inside if block");
+                    executeAST(child, environment);
+                }
+            } else {
+                System.out.println("uwu");
+            }
+        }
+        // Traverse child nodes recursively
+        List<Node> children = node.getChildren();
+        for (Node child : children) {
+            executeAST(child, environment);
+        }
     }
 }

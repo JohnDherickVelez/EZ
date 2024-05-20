@@ -92,11 +92,12 @@ import java.util.Scanner;
             if (node instanceof DelimiterNode delimiterNode) {
                 // Execute functionality based on delimiter type
                 if (delimiterNode.getDataType().equals("BEGIN CODE")) {
+
                     // Logic to start the program
-                    System.out.println("Program started...");
+                    System.out.println("Start Delimiter Node: Program started...");
                 } else if (delimiterNode.getDataType().equals("END CODE")) {
                     // Logic to end the program
-                    System.out.println("Program ended...");
+                    System.out.println("End Delimiter Node: Program ended...");
                 }
             } else if (node instanceof VariableDeclarationNode variableNode) {
                 // Logic to handle variable declarations
@@ -104,8 +105,9 @@ import java.util.Scanner;
                 String variableName = variableNode.getVariableName();
                 String variableValue = (String) variableNode.getValue();
 //                // Perform actions based on variable type, name, and value
-//                System.out.println("Variable declaration: " + variableType + " " + variableName + " = " + variableValue);
+                System.out.println("Variable declaration: " + variableType + " " + variableName + " = " + variableValue);
             } else if (node instanceof DisplayNode displayNode) {
+                System.out.print("Display Node: ");
                 StringBuilder outputBuilder = new StringBuilder();
                 for (String varName : displayNode.getVariableNames()) {
                     if (varName.equals("$")) {
@@ -134,9 +136,10 @@ import java.util.Scanner;
                 }
                 System.out.println(outputBuilder);
             } else if (node instanceof AssignmentNode assignmentNode) {
+
                 String variableName = assignmentNode.getVariableName();
                 String variableValue = assignmentNode.getValue();
-//                System.out.println("Assignment statement: " + variableName + " = " + variableValue);
+                System.out.println("Assignment statement: " + variableName + " = " + variableValue);
             }
 //            else if(node instanceof ScanNode scanNode) {
 //                List<String> scannedVariables = scanNode.getScanVariables();
@@ -159,7 +162,7 @@ import java.util.Scanner;
 //            }
             else if(node instanceof ScanNode scanNode) {
                 List<String> scannedVariables = scanNode.getScanVariables();
-//                System.out.println("Scanned variables: " + scannedVariables);
+                System.out.println("Scanned variables: " + scannedVariables);
                 Scanner scanner = new Scanner(System.in);
                 List<String> userInput = new ArrayList<>();
                 String inputLine = scanner.nextLine();
@@ -176,6 +179,13 @@ import java.util.Scanner;
                     String variableName = scannedVariables.get(i);
                     environment.setVariable(variableName, userInput.get(i));
                 }
+            }
+            else if (node instanceof IfNode ifNode) {
+                    System.out.println("inside if block");
+                    for (Node child : ifNode.getChildren()) {
+                        executeAST(child, environment);
+                    }
+
             }
             // Traverse child nodes recursively
             List<Node> children = node.getChildren();

@@ -1,16 +1,4 @@
 BEGIN CODE
-    INT a = 10
-    IF(a<5)
-        BEGIN IF
-            a = 11
-        END IF
+    INT a,b,c = 2 + 2
+    DISPLAY: a
 END CODE
-
-
-
-
-# YOU'RE STUCK IN ELSE IF
-# CHECK IF ELSE IF CHATGPT WORKS
-
-
-

@@ -4,7 +4,8 @@ import code.model.Token;
 import code.node.*;
 import code.parser.CustomExceptions;
 import code.parser.Parser;
-import code.semantics.SemanticAnalyzer;
+
+import code.semantics.SemanticAnalyzer2;
 //import code.parser.Parser2;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -47,7 +48,7 @@ import java.util.Scanner;
 
             // Uncomment this for debugging
             environment.displayVariables();
-            SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer(environment);
+            SemanticAnalyzer2 semanticAnalyzer = new SemanticAnalyzer2(environment);
             try {
                 semanticAnalyzer.analyze(tokenlist, rootNode);
             } catch (CustomExceptions e) {

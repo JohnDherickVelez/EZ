@@ -1,3 +1,5 @@
+# Test 6: Missing '=' in variable declaration
 BEGIN CODE
-    DISPLAY: " dear" & [[]
+INT c
+DISPLAY: c
 END CODE

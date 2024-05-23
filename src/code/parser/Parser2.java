@@ -275,7 +275,6 @@ public class Parser2 {
                             throw new CustomExceptions("Expected identifier for variable name.");
                         }
                         break;
-
                     case DISPLAY:
                         List<String> variableNames = new ArrayList<>();
                         Boolean isInt = false;
@@ -392,7 +391,7 @@ public class Parser2 {
                                         result = String.valueOf(expressionParser.calculate(expression));
                                     } else if (datatype.equals("CHAR") || datatype.equals("BOOL")) {
                                         // Handle CHAR and BOOL datatypes separately
-                                        System.out.println("DATATYPE:   " + datatype);
+//                                        System.out.println("DATATYPE:   " + datatype);
                                         value = token.getValue();
                                         if (datatype.equals("BOOL")) {
                                             if (value.startsWith("\"") && value.endsWith("\"")) {
@@ -425,7 +424,7 @@ public class Parser2 {
                                     } else {
                                         throw new IllegalArgumentException("Unsupported datatype: " + datatype);
                                     }
-
+//                                    System.out.println("Result:   " + result + "   VarName:   " + variableName + "  Datatype:  " + datatype);
                                     processVariableAssignment(datatype, variableName, result); // Call the method
                                     variableName.clear(); // Clean list
                                     declared = true;
@@ -676,6 +675,7 @@ public class Parser2 {
 
     private void processVariableAssignment(String datatype, List<String> variableNames, String value) throws CustomExceptions {
         for (String variableName : variableNames) {
+//            System.out.println("VARIABLE NAME:  " + variableName + "  VALUE:  " + value + "   VALUE LENGTH:  " + value.length());
             if (datatype.equals("INT") && value.matches("[0-9]+")) {
                 AssignmentNode intAssignmentNode = new AssignmentNode(variableName, value);
                 environment.setVariable(variableName,value); // Place the variable into the environment
@@ -683,11 +683,11 @@ public class Parser2 {
             } else if (datatype.equals("FLOAT") && value.matches("\\d*\\.\\d+")) {
                 AssignmentNode intAssignmentNode = new AssignmentNode(variableName, value);
                 environment.setVariable(variableName,value);
-            } else if (datatype.equals("CHAR") && value.matches("'.'")) {
+            } else if (datatype.equals("CHAR")) {
                 // Adjusted regular expression to allow for any single character between single quotes
-                if (value.length() == 3 && value.charAt(0) == '\'' && value.charAt(2) == '\'') {
+                if (value.length() == 1 ) {
                     // Extract the character from between the single quotes
-                    char charValue = value.charAt(1);
+                    char charValue = value.charAt(0);
                     AssignmentNode charAssignmentNode = new AssignmentNode(variableName, charValue);
                     environment.setVariable(variableName,charValue);
                 } else {

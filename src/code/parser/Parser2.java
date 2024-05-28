@@ -23,6 +23,9 @@ public class Parser2 {
 
     public ASTNode produceAST() throws CustomExceptions {
         ASTNode rootNode = new ASTNode(); // Create the root code.node
+        Boolean is_If = false;
+        Boolean is_ElseIf = false;
+        Boolean is_Else = false;
 
         for (int i = 0; i < tokensList.size(); i++) {
             Token token = tokensList.get(i);
@@ -53,46 +56,23 @@ public class Parser2 {
 //                                System.out.println("Processing IF expression: " + ifExpression);
 
                                 ExpressionParser2 expressionParser = new ExpressionParser2(environment);
-                                boolean ifResult = expressionParser.evaluateLogicalExpression(ifExpression);
-////                                System.out.println(ifResult);
-////                                System.out.println(tokensList.get(i).getValue());
-//
-//                                IfNode ifNode = new IfNode(ifResult);
-//                                i += 2; // Skip to the token after "BEGIN IF"
-//                                if (Objects.equals(tokensList.get(i).getValue(), "BEGIN IF")) {
-//                                    int ifBlockStart = i;
-//                                    int beginCount = 1; // Track nested "BEGIN IF"
-//                                    while (i < tokensList.size() && beginCount > 0) {
-//                                        i++;
-//                                        if (Objects.equals(tokensList.get(i).getValue(), "BEGIN IF")) {
-//                                            beginCount++;
-//                                        } else if (Objects.equals(tokensList.get(i).getValue(), "END IF")) {
-//                                            beginCount--;
-//                                        }
-//                                    }
-//                                    if (beginCount == 0 && Objects.equals(tokensList.get(i).getValue(), "END IF")) {
-//                                        i++;
-//                                    }
-//                                    if(ifNode.getExpressionResult()) {
-//                                        List<Token> ifBlockTokens = tokensList.subList(ifBlockStart + 1, i - 1);
-//                                        Parser2 ifParser = new Parser2(ifBlockTokens, environment);
-//                                        ASTNode ifBlockAST = ifParser.produceAST();
-//                                        ifNode.addChild(ifBlockAST);
-//                                    }
-//                                }
-//                                rootNode.addChild(ifNode);
-//                            } else {
-//                                throw new CustomExceptions("Expected expression after IF");
-//                            }
-//                        } else if(Objects.equals(String.valueOf(token.getValue()), "ELSE IF")){
-//                            System.out.println("biatch");
-//                        }
-//                        break;
+                                boolean condition_Result = expressionParser.evaluateLogicalExpression(ifExpression);
 
-                                // DONT TOUCH!!
-                                // IF STATEMENT IS WORKING
-                                if (!ifResult) {
+                                if (!is_If && !is_ElseIf && !is_Else) {
+                                    if (condition_Result) {
+                                        is_If = true;
+                                        is_ElseIf = true;
+                                        is_Else = true;
+                                    } else {
+                                        is_If = true;
+                                    }
+                                }
+
+                                // BEGIN|END SKIPPER
+                                if (is_If && !is_ElseIf && !is_Else) {
+                                    System.out.println("INSIDE" + tokensList.get(i).getValue());
                                     if (Objects.equals(tokensList.get(i).getValue(), "BEGIN IF")) {
+                                        System.out.println("WORKING>>>");
                                         int beginCount = 1; // To track nested "BEGIN IF"
                                         while (i < tokensList.size()) {
                                             i++; // Move to the next token
@@ -112,7 +92,88 @@ public class Parser2 {
                             } else {
                                 throw new CustomExceptions("Expected expression after IF");
                             }
+                        }  else if (Objects.equals(String.valueOf(token.getValue()), "ELSE IF")) {
+                            // Handle case IF
+                            i++;
+                            while (i < tokensList.size() && token.getType() != Token.TokenType.EXPRESSION) {
+                                i++;
+                                if (i < tokensList.size()) {
+                                    token = tokensList.get(i);
+                                }
+                            }
+                            if (token.getType() == Token.TokenType.EXPRESSION) {
+                                // Process the IF expression
+                                String ifExpression = token.getValue();
+//                                System.out.println("Processing IF expression: " + ifExpression);
+
+                                ExpressionParser2 expressionParser = new ExpressionParser2(environment);
+                                boolean condition_Result = expressionParser.evaluateLogicalExpression(ifExpression);
+
+                                if (is_If && !is_Else) {
+                                    if (condition_Result) {
+                                        is_ElseIf = true;
+                                        is_Else = true;
+                                    } else {
+                                        is_ElseIf = true;
+                                    }
+                                }
+
+                                // BEGIN|END SKIPPER
+                                if (is_Else) {
+                                    if (Objects.equals(tokensList.get(i).getValue(), "BEGIN IF")) {
+                                        int beginCount = 1; // To track nested "BEGIN IF"
+                                        while (i < tokensList.size()) {
+                                            i++; // Move to the next token
+                                            Token nextToken = tokensList.get(i);
+                                            if (Objects.equals(nextToken.getValue(), "BEGIN IF")) {
+                                                beginCount++;
+                                            } else if (Objects.equals(nextToken.getValue(), "END IF")) {
+                                                beginCount--;
+                                                if (beginCount == 0) {
+                                                    // Found the matching "END IF", exit the loop
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        // TODO: ADD TOKEN_NEXT CHECKER
+                                    }
+                                }
+
+                            } else {
+                                throw new CustomExceptions("Expected expression after ELSE IF");
+                            }
+                        } else if (Objects.equals(String.valueOf(token.getValue()), "ELSE")) {
+                            if (is_If && is_ElseIf && !is_Else) {
+                                is_If = false;
+                                is_ElseIf = false;
+                                is_Else = false;
+                            }
+                            System.out.println("IF: " + is_If);
+                            System.out.println("ELSE IF: " + is_ElseIf);
+                            System.out.println("ELSE: " + is_Else);
+
+                            // BEGIN|END SKIPPER
+                            if (is_If || is_ElseIf || is_Else) {
+                                if (Objects.equals(tokensList.get(i).getValue(), "BEGIN IF")) {
+                                    int beginCount = 1; // To track nested "BEGIN IF"
+                                    while (i < tokensList.size()) {
+                                        i++; // Move to the next token
+                                        Token nextToken = tokensList.get(i);
+                                        if (Objects.equals(nextToken.getValue(), "BEGIN IF")) {
+                                            beginCount++;
+                                        } else if (Objects.equals(nextToken.getValue(), "END IF")) {
+                                            beginCount--;
+                                            if (beginCount == 0) {
+                                                // Found the matching "END IF", exit the loop
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    // TODO: ADD TOKEN_NEXT CHECKER
+                                }
+                            }
                         }
+
                         break;
                     case DATATYPE:
                         if (i + 1 < tokensList.size()) {
@@ -706,7 +767,7 @@ public class Parser2 {
 
     private String expressionTrimmer(String expression) {
         expression = expression.trim();
-        System.out.println("PRE-EXPRESSION:   " + expression);
+//        System.out.println("PRE-EXPRESSION:   " + expression);
         // Check and process the expression
         if (expression.contains("=")) {
             // Case: y = 2
@@ -721,7 +782,7 @@ public class Parser2 {
             expression = expression.charAt(0) + " " + expression.charAt(2) + " 1";
             expression = expression.replaceAll("\s", "");
         }
-        System.out.println("POST-EXPRESSION:   " + expression);
+//        System.out.println("POST-EXPRESSION:   " + expression);
         return expression;
     }
 }
